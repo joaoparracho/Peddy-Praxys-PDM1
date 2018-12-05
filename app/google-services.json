@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "866756746766",
+    "firebase_url": "https://peddypraxis.firebaseio.com",
+    "project_id": "peddypraxis",
+    "storage_bucket": "peddypraxis.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:866756746766:android:e232333ba46d1df9",
+        "android_client_info": {
+          "package_name": "com.example.joaoparracho.peddypraxis"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "866756746766-dil5r76jhgeoij11va3k3n29jvdskff8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHYkQy45tD8qjO-zK3aEogsBRR6gMZdEA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
