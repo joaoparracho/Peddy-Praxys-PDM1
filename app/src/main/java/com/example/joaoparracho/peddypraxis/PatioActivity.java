@@ -60,7 +60,6 @@ public final class PatioActivity extends AppCompatActivity
     private String selectedModel = FACE_CONTOUR;
     private TextView mTextViewCountDown;
     private long mTimeInMillis=60*1000;
-    private int delayTimer=5;
     CountDownTimer2 m1;
 
     public static Handler mHandler;
@@ -91,11 +90,12 @@ public final class PatioActivity extends AppCompatActivity
                 if(Singleton.getInstance().getFd()) {
                     if(m1.ismPaused()) m1.resume();
                     mTimeInMillis = millisUntilFinished;
+                    Singleton.getInstance().setFd(false);
                 }
-                else if(delayTimer++>5) {
+                else{
                     m1.pause();
-                    delayTimer=0;
                 }
+                //Singleton.getInstance().setDelayTimer(Singleton.getInstance().getDelayTimer()+1);
                 mTextViewCountDown.setText(updateCountDownText());
             }
             @Override
@@ -114,8 +114,8 @@ public final class PatioActivity extends AppCompatActivity
             Log.d(TAG, "graphicOverlay is null");
         }
 
-        ToggleButton facingSwitch = (ToggleButton) findViewById(R.id.facingSwitch);
-        facingSwitch.setOnCheckedChangeListener(this);
+      /*  ToggleButton facingSwitch = (ToggleButton) findViewById(R.id.facingSwitch);
+        facingSwitch.setOnCheckedChangeListener(this);*/
 
         if (allPermissionsGranted()) {
             createCameraSource(selectedModel);
@@ -212,6 +212,7 @@ public final class PatioActivity extends AppCompatActivity
                 if (graphicOverlay == null) {
                     Log.d(TAG, "resume: graphOverlay is null");
                 }
+                cameraSource.setFacing(CameraSource.CAMERA_FACING_FRONT);
                 preview.start(cameraSource, graphicOverlay);
             } catch (IOException e) {
                 Log.e(TAG, "Unable to start camera source.", e);

@@ -95,12 +95,10 @@ public class FaceDetectionProcessor extends VisionProcessorBase<List<FirebaseVis
                     Bundle bundle = new Bundle();
                     bundle.putString("FEEDBACK", "Yey");
                     Singleton.getInstance().setFd(true);
-                    message.setData(bundle);
-                    PatioActivity.mHandler.sendMessage(message);
+                  //  message.setData(bundle);
+                   // PatioActivity.mHandler.sendMessage(message);
                 }
-                else{
-                    Singleton.getInstance().setFd(false);
-                }
+                Singleton.getInstance().setDelayTimer(0);
             }
             int cameraFacing =
                     frameMetadata != null ? frameMetadata.getCameraFacing() :
@@ -121,7 +119,6 @@ public class FaceDetectionProcessor extends VisionProcessorBase<List<FirebaseVis
         if (currentLeftEyeOpenProbability == -1.0 || currentRightEyeOpenProbability == -1.0) {
             return false;
         }
-
         if (leftEyeOpenProbability > 0.9 || rightEyeOpenProbability > 0.9) {
             boolean blinked = false;
             if (currentLeftEyeOpenProbability < 0.6 || rightEyeOpenProbability < 0.6) {
