@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "866756746766-l5npmv5dacomegpqjs7l1rovtdb21udq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.joaoparracho.peddypraxis",
+            "certificate_hash": "85aceac7f333b284a07778c633d4e38c8cad4f36"
+          }
+        },
+        {
           "client_id": "866756746766-dil5r76jhgeoij11va3k3n29jvdskff8.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "866756746766-dil5r76jhgeoij11va3k3n29jvdskff8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2
