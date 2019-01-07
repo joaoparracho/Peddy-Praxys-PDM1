@@ -3,7 +3,7 @@ package com.example.joaoparracho.peddypraxis.model;
 public class Singleton {
     private static final Singleton ourInstance = new Singleton();
     private Manager manager;
-    private boolean fd=true;
+    private boolean fd=false;
     private int delayTimer;
 
     public int getDelayTimer() {

@@ -52,9 +52,6 @@ public class GameScreenActivity extends AppCompatActivity {
             public void onLongClick(View view, int position) { mCurrentItemPosition = position; }
         }));
         registerForContextMenu(recyclerView);
-
-
-
     }
 
     public void onClickReturn(MenuItem item) {
