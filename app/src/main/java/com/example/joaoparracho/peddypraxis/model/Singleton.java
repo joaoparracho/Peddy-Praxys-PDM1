@@ -3,8 +3,16 @@ package com.example.joaoparracho.peddypraxis.model;
 public class Singleton {
     private static final Singleton ourInstance = new Singleton();
     private Manager manager;
-    private boolean fd;
+    private boolean fd=false;
+    private int delayTimer;
 
+    public int getDelayTimer() {
+        return delayTimer;
+    }
+
+    public void setDelayTimer(int delayTimer) {
+        this.delayTimer = delayTimer;
+    }
     public boolean getFd() {
         return fd;
     }

@@ -89,17 +89,9 @@ public class FaceDetectionProcessor extends VisionProcessorBase<List<FirebaseVis
         for (int i = 0; i < faces.size(); ++i) {
             FirebaseVisionFace face = faces.get(i);
             // TODO: Communicate with the UI thread
-            if (face.getTrackingId() >= 0) {
+            if (face.getTrackingId() >= 0 && !Singleton.getInstance().getFd()) {
                 if(isEyeBlinked(face.getLeftEyeOpenProbability(),face.getRightEyeOpenProbability()) && face.getSmilingProbability()>0.5){
-                    Message message = PatioActivity.mHandler.obtainMessage();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("FEEDBACK", "Yey");
                     Singleton.getInstance().setFd(true);
-                    message.setData(bundle);
-                    PatioActivity.mHandler.sendMessage(message);
-                }
-                else{
-                    Singleton.getInstance().setFd(false);
                 }
             }
             int cameraFacing =
@@ -121,7 +113,6 @@ public class FaceDetectionProcessor extends VisionProcessorBase<List<FirebaseVis
         if (currentLeftEyeOpenProbability == -1.0 || currentRightEyeOpenProbability == -1.0) {
             return false;
         }
-
         if (leftEyeOpenProbability > 0.9 || rightEyeOpenProbability > 0.9) {
             boolean blinked = false;
             if (currentLeftEyeOpenProbability < 0.6 || rightEyeOpenProbability < 0.6) {
