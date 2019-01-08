@@ -5,14 +5,29 @@ public class Singleton {
     private Manager manager;
     private boolean fd=false;
     private int delayTimer;
+    private boolean fenceBool;
+    private boolean notWalkinBool;
 
     public int getDelayTimer() {
         return delayTimer;
     }
-
     public void setDelayTimer(int delayTimer) {
         this.delayTimer = delayTimer;
     }
+
+    public boolean isFenceBool() {
+        return fenceBool;
+    }
+    public void setFenceBool(boolean fenceBool) {
+        this.fenceBool = fenceBool;
+    }
+    public boolean isNotWalkinBool() {
+        return notWalkinBool;
+    }
+    public void setNotWalkinBool(boolean notWalkinBool) {
+        this.notWalkinBool = notWalkinBool;
+    }
+
     public boolean getFd() {
         return fd;
     }
@@ -27,15 +42,12 @@ public class Singleton {
     public static Singleton getInstance() {
         return ourInstance;
     }
-
     public Manager getManager() {
         return manager;
     }
-
     public void setManager(Manager manager) {
         this.manager = manager;
     }
-
     public boolean isNumeric(String input) {
         try {
             Integer.parseInt(input);

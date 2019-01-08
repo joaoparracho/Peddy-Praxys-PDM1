@@ -9,11 +9,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -34,6 +36,7 @@ import com.example.joaoparracho.peddypraxis.common.CameraSourcePreview;
 import com.example.joaoparracho.peddypraxis.common.GraphicOverlay;
 import com.example.joaoparracho.peddypraxis.facedetection.FaceDetectionProcessor;
 import com.example.joaoparracho.peddypraxis.model.CountDownTimer2;
+import com.example.joaoparracho.peddypraxis.model.FenceReceiver;
 import com.example.joaoparracho.peddypraxis.model.Singleton;
 import com.google.android.gms.awareness.Awareness;
 import com.google.android.gms.awareness.fence.AwarenessFence;
@@ -42,10 +45,14 @@ import com.google.android.gms.awareness.fence.FenceState;
 import com.google.android.gms.awareness.fence.FenceUpdateRequest;
 import com.google.android.gms.awareness.fence.HeadphoneFence;
 import com.google.android.gms.awareness.fence.LocationFence;
+import com.google.android.gms.awareness.snapshot.DetectedActivityResponse;
+import com.google.android.gms.awareness.snapshot.LocationResponse;
 import com.google.android.gms.awareness.state.HeadphoneState;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.annotation.KeepName;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.ActivityRecognitionResult;
+import com.google.android.gms.location.DetectedActivity;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -56,8 +63,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/** Demo app showing the various features of ML Kit for Firebase. This class is used to
- * set up continuous frame processing on frames from a camera source. */
+/**
+ * Demo app showing the various features of ML Kit for Firebase. This class is used to
+ * set up continuous frame processing on frames from a camera source.
+ */
 @KeepName
 public final class PatioActivity extends AppCompatActivity
         implements OnRequestPermissionsResultCallback,
@@ -77,9 +86,10 @@ public final class PatioActivity extends AppCompatActivity
     public static final String TAG_SNAPSHOT = "snapshot";
     private static final int REQUEST_CODE_FLPERMISSION = 42;
     private GoogleApiClient mGoogleApiClient;
+    AwarenessFence inLocationFence;
     private FenceReceiver fenceReceiver;
     private PendingIntent myPendingIntent;
-    private boolean fenceBool;
+
     public static final String TAG_FENCES = "fences";
     private static final String FENCE_RECEIVER_ACTION = "FENCE_RECEIVER_ACTION";
 
@@ -112,7 +122,9 @@ public final class PatioActivity extends AppCompatActivity
         mTextViewCountDown = (TextView) findViewById(R.id.tVInfo);
         m1 = new CountDownTimer2(mTimeInMillis, 1000) {
             public void onTick(long millisUntilFinished) {
-                if (Singleton.getInstance().getFd() && fenceBool) {
+                if (Singleton.getInstance().getFd() && Singleton.getInstance().isFenceBool() && !Singleton.getInstance().isNotWalkinBool()) {
+               // if (Singleton.getInstance().getFd()) {
+                   // startActivity(new Intent(PatioActivity.this, BibliotecaActivity.class));
                     if (m1.ismPaused()) {
                         m1.resume();
                     }
@@ -135,7 +147,7 @@ public final class PatioActivity extends AppCompatActivity
             @Override
             public void onFinish() {
                 mTextViewCountDown.setText("Finish");
-                startActivity(new Intent(PatioActivity.this, EdificioActivity.class));
+                startActivity(new Intent(PatioActivity.this, BibliotecaActivity.class));
             }
         }.start();
 
@@ -172,26 +184,36 @@ public final class PatioActivity extends AppCompatActivity
         int hours = (int) (mTimeInMillis / 1000) / 3600;
         int minutes = (int) ((mTimeInMillis / 1000) % 3600) / 60;
         int seconds = (int) (mTimeInMillis / 1000) % 60;
+        int a, b;
 
+        if (Singleton.getInstance().isFenceBool()) {
+            a = 1;
+        } else {
+            a = 0;
+        }
+        if (!Singleton.getInstance().isNotWalkinBool()) {
+            b = 1;
+        } else {
+            b = 0;
+        }
 
         if (hours > 0) {
             if (Singleton.getInstance().getFd()) {
                 timeLeftFormatted = String.format(Locale.getDefault(),
-                        "%d:%02d:%02d---TRUE %d", hours, minutes, seconds, counterDelay);
+                        "%d:%02d:%02d---TRUIE %d %d %d", hours, minutes, seconds, counterDelay, a, b);
             } else {
                 timeLeftFormatted = String.format(Locale.getDefault(),
-                        "%d:%02d:%02d--FALSE %d", hours, minutes, seconds, counterDelay);
+                        "%d:%02d:%02d--FAILSE %d %d %d", hours, minutes, seconds, counterDelay, a, b);
             }
         } else {
             if (Singleton.getInstance().getFd()) {
                 timeLeftFormatted = String.format(Locale.getDefault(),
-                        "%02d:%02d---TRUE %d", minutes, seconds, counterDelay);
+                        "%02d:%02d---TRUIE %d %d %d", minutes, seconds, counterDelay, a, b);
             } else {
                 timeLeftFormatted = String.format(Locale.getDefault(),
-                        "%02d:%02d--FALSE %d", minutes, seconds, counterDelay);
+                        "%02d:%02d--FAILSE %d %d %d", minutes, seconds, counterDelay, a, b);
             }
         }
-
         return timeLeftFormatted;
     }
 
@@ -204,15 +226,17 @@ public final class PatioActivity extends AppCompatActivity
         preview.stop();
         if (allPermissionsGranted()) {
             createCameraSource(selectedModel);
-            startCameraSource();
+            startCameraSource(CameraSource.CAMERA_FACING_FRONT);
         } else {
             getRuntimePermissions();
         }
     }
+
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         // Do nothing.
     }
+
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         Log.d(TAG, "Set facing");
@@ -224,8 +248,9 @@ public final class PatioActivity extends AppCompatActivity
             }
         }
         preview.stop();
-        startCameraSource();
+        startCameraSource(CameraSource.CAMERA_FACING_FRONT);
     }
+
     private void createCameraSource(String model) {
         // If there's no existing cameraSource, create one.
         if (cameraSource == null) {
@@ -240,7 +265,7 @@ public final class PatioActivity extends AppCompatActivity
      * (e.g., because onResume was called before the camera source was created), this will be called
      * again when the camera source is created.
      */
-    private void startCameraSource() {
+    private void startCameraSource(int facingStartCamera) {
         if (cameraSource != null) {
             try {
                 if (preview == null) {
@@ -249,7 +274,8 @@ public final class PatioActivity extends AppCompatActivity
                 if (graphicOverlay == null) {
                     Log.d(TAG, "resume: graphOverlay is null");
                 }
-                cameraSource.setFacing(CameraSource.CAMERA_FACING_FRONT);
+
+                cameraSource.setFacing(facingStartCamera);
                 preview.start(cameraSource, graphicOverlay);
             } catch (IOException e) {
                 Log.e(TAG, "Unable to start camera source.", e);
@@ -264,10 +290,12 @@ public final class PatioActivity extends AppCompatActivity
         super.onResume();
         setupFences();
         Log.d(TAG, "onResume");
-        startCameraSource();
+        startCameraSource(CameraSource.CAMERA_FACING_FRONT);
     }
 
-    /** Stops the camera. */
+    /**
+     * Stops the camera.
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -331,6 +359,35 @@ public final class PatioActivity extends AppCompatActivity
         }
     }
 
+    private void checkFineLocationPermission() {
+        if (ContextCompat.checkSelfPermission(
+                PatioActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    PatioActivity.this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_CODE_FLPERMISSION // todo: declare this constant
+            );
+        }
+        try {
+            int locationMode = Settings.Secure.getInt(getContentResolver(),
+                    Settings.Secure.LOCATION_MODE);
+            if (locationMode != Settings.Secure.LOCATION_MODE_HIGH_ACCURACY) {
+                Toast.makeText(this,
+                        "Error: high accuracy location mode must be enabled in the device.",
+                        Toast.LENGTH_LONG).show();
+                return;
+
+            }
+        } catch (Settings.SettingNotFoundException e) {
+            Toast.makeText(this, "Error: could not access location mode.",
+                    Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+            return;
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(
             int requestCode, String[] permissions, int[] grantResults) {
@@ -351,70 +408,75 @@ public final class PatioActivity extends AppCompatActivity
         return false;
     }
 
-
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Toast.makeText(this, connectionResult.getErrorMessage(), Toast.LENGTH_SHORT).show();
     }
 
     private void setupFences() {
-        AwarenessFence walkingFence = AwarenessFence.or(
-                DetectedActivityFence.during(DetectedActivityFence.ON_FOOT),
-                DetectedActivityFence.during(DetectedActivityFence.WALKING),
-                DetectedActivityFence.during(DetectedActivityFence.RUNNING));
-
-
+        AwarenessFence notWalkingFence = AwarenessFence.or(
+                DetectedActivityFence.during(DetectedActivityFence.ON_BICYCLE),
+                DetectedActivityFence.during(DetectedActivityFence.IN_VEHICLE));
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
+            // TODO: Consider calling.
             return;
         }
-       // AwarenessFence inLocationFence = LocationFence.in(39.735243, -8.8207012, 5, 1);
-        //AwarenessFence walkingInPatioFence = AwarenessFence.and(inLocationFence,walkingFence);
+        AwarenessFence inLocationFence = LocationFence.in(39.73565192930836, -8.820967774868791, 65, 0L);
+        addFence("locationFenceKey", inLocationFence);
+        addFence("notWalkingFenceKey", notWalkingFence);
 
-        // Now that we have an interesting, complex condition, register the fence to receive
-        // callbacks.
-        // Register the fence to receive callbacks.
+        // AwarenessFence walkinInLocation = AwarenessFence.and(inLocationFence, walkingFence);
+
+    }
+
+    private void addFence(final String fenceKey, final AwarenessFence fence) {
         Awareness.getFenceClient(this).updateFences(new FenceUpdateRequest.Builder()
-                .addFence("locationFence", walkingFence, myPendingIntent)
+                .addFence(fenceKey, fence, myPendingIntent)
                 .build())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.i(TAG, "Fence was successfully registered.");
+                        Snackbar.make(findViewById(android.R.id.content), "Sucess", Snackbar.LENGTH_LONG).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.e(TAG, "Fence could not be registered: " + e);
+                        Snackbar.make(findViewById(android.R.id.content), "Noo...", Snackbar.LENGTH_LONG).show();
                     }
                 });
     }
-    private class FenceReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (!intent.getAction().equals(FENCE_RECEIVER_ACTION)) {
-                Log.e(TAG_FENCES, "Received an unsupported action in FenceReceiver: action="
-                        + intent.getAction());
-                return;
-            }
-            FenceState fenceState = FenceState.extract(intent);
-            switch (fenceState.getFenceKey()) {
-                case "locationFence":
-                    switch (fenceState.getCurrentState()) {
-                        case FenceState.TRUE:
-                            fenceBool = true;
-                            Snackbar.make(findViewById(android.R.id.content), "HEYY", Snackbar.LENGTH_LONG).show();
-                            break;
-                        case FenceState.FALSE:
-                        case FenceState.UNKNOWN:
-                            fenceBool = false;
-                            break;
-                    }
-                    break;
-            }
 
-        }
+    private void printLocation() {
+        checkFineLocationPermission();
+
+        Awareness.getSnapshotClient(this).getLocation()
+                .addOnSuccessListener(new OnSuccessListener<LocationResponse>() {
+                    @Override
+                    public void onSuccess(LocationResponse locationResponse) {
+                        Location location = locationResponse.getLocation();
+
+                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                        String text = "Lat:" + location.getLatitude() + ", Lng:" + location.getLongitude()
+                                + "  39.7352267" + "-8.820709";
+                        Snackbar.make(findViewById(android.R.id.content), text, Snackbar.LENGTH_LONG).show();
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG_SNAPSHOT, "Could not get Location: " + e);
+                        Snackbar.make(findViewById(android.R.id.content), "Noo", Snackbar.LENGTH_LONG).show();
+
+                    }
+                });
     }
+
+    public void onClickActivity(View view) {
+        printLocation();
+    }
+
+
 }
