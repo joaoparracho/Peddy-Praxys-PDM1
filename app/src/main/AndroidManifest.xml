@@ -9,10 +9,14 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
     <uses-feature android:name="android.hardware.camera2" />
-
+    <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -30,7 +34,8 @@
             android:value="AIzaSyDY13BM4cqHGsbaiZke55XGbIBLqOkCm40" />
         <meta-data
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"
-            android:value="face" />
+            android:value="barcode,face,ocr,ica" />
+
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -53,6 +58,9 @@
         <activity
             android:name=".EdificioActivity"
             android:label="Edificio"
+            android:windowSoftInputMode="stateHidden" />
+        <activity android:name=".BibliotecaActivity"
+            android:label="Biblioteca"
             android:windowSoftInputMode="stateHidden" />
     </application>
 
