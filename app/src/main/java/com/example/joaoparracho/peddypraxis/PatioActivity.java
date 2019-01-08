@@ -122,9 +122,9 @@ public final class PatioActivity extends AppCompatActivity
         mTextViewCountDown = (TextView) findViewById(R.id.tVInfo);
         m1 = new CountDownTimer2(mTimeInMillis, 1000) {
             public void onTick(long millisUntilFinished) {
-                if (Singleton.getInstance().getFd() && Singleton.getInstance().isFenceBool() && !Singleton.getInstance().isNotWalkinBool()) {
-               // if (Singleton.getInstance().getFd()) {
-                   // startActivity(new Intent(PatioActivity.this, BibliotecaActivity.class));
+                //if (Singleton.getInstance().getFd() && Singleton.getInstance().isFenceBool() && !Singleton.getInstance().isNotWalkinBool()) {
+                if (Singleton.getInstance().getFd()) {
+                   startActivity(new Intent(PatioActivity.this, BibliotecaActivity.class));
                     if (m1.ismPaused()) {
                         m1.resume();
                     }
