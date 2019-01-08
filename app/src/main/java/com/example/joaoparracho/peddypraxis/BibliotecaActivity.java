@@ -22,7 +22,9 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 
 import com.example.joaoparracho.peddypraxis.cloudtextrecognition.CloudTextRecognitionProcessor;
+import com.example.joaoparracho.peddypraxis.common.GraphicOverlay;
 import com.example.joaoparracho.peddypraxis.common.VisionImageProcessor;
+import com.example.joaoparracho.peddypraxis.model.Singleton;
 
 import java.io.IOException;
 
@@ -50,6 +52,7 @@ public class BibliotecaActivity extends AppCompatActivity {
     boolean isLandScape;
     private ImageView preview;
 
+    private GraphicOverlay graphicOverlay;
     private Uri imageUri;
     // Max width (portrait mode)
     private Integer imageMaxWidth;
@@ -69,32 +72,19 @@ public class BibliotecaActivity extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        // Menu for selecting either: a) take new photo b) select from existing
-                        PopupMenu popup = new PopupMenu(BibliotecaActivity.this, view);
-                        popup.setOnMenuItemClickListener(
-                                new PopupMenu.OnMenuItemClickListener() {
-                                    @Override
-                                    public boolean onMenuItemClick(MenuItem menuItem) {
-                                        switch (menuItem.getItemId()) {
-                                            case R.id.select_images_from_local:
-                                                startChooseImageIntentForResult();
-                                                return true;
-                                            case R.id.take_photo_using_camera:
-                                                startCameraIntentForResult();
-                                                return true;
-                                            default:
-                                                return false;
-                                        }
-                                    }
-                                });
-
-                        MenuInflater inflater = popup.getMenuInflater();
-                        inflater.inflate(R.menu.camera_button_menu, popup.getMenu());
-                        popup.show();
+                        startCameraIntentForResult();
                     }
                 });
 
         createImageProcessor();
+        preview = (ImageView) findViewById(R.id.previewPane);
+        if (preview == null) {
+            Log.d(TAG, "Preview is null");
+        }
+        graphicOverlay = (GraphicOverlay) findViewById(R.id.previewOverlay);
+        if (graphicOverlay == null) {
+            Log.d(TAG, "graphicOverlay is null");
+        }
 
         // TODO: Communicate with the UI thread
         mHandler = new Handler(Looper.getMainLooper()) {
@@ -104,6 +94,9 @@ public class BibliotecaActivity extends AppCompatActivity {
                 String feedback = msg.getData().getString("FEEDBACK");
                 if (feedback != null) {
                     Snackbar.make(findViewById(android.R.id.content), feedback, Snackbar.LENGTH_LONG).show();
+                    if (Singleton.getInstance().isShowFinishBtn()) {
+                        startActivity(new Intent(BibliotecaActivity.this, EdificioActivity.class));
+                    }
                 }
             }
         };
@@ -122,6 +115,20 @@ public class BibliotecaActivity extends AppCompatActivity {
             }
         }
     }
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable(KEY_IMAGE_URI, imageUri);
+        if (imageMaxWidth != null) {
+            outState.putInt(KEY_IMAGE_MAX_WIDTH, imageMaxWidth);
+        }
+        if (imageMaxHeight != null) {
+            outState.putInt(KEY_IMAGE_MAX_HEIGHT, imageMaxHeight);
+        }
+        outState.putString(KEY_SELECTED_SIZE, selectedSize);
+    }
+
     private void startCameraIntentForResult() {
         // Clean up last time's image
         imageUri = null;
@@ -137,23 +144,13 @@ public class BibliotecaActivity extends AppCompatActivity {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
     }
-
-    private void startChooseImageIntentForResult() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_CHOOSE_IMAGE);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             tryReloadAndDetectInImage();
-        } else if (requestCode == REQUEST_CHOOSE_IMAGE && resultCode == RESULT_OK) {
-            // In this case, imageUri is returned by the chooser, save it.
-            imageUri = data.getData();
-            tryReloadAndDetectInImage();
+
         }
+
     }
 
     private void tryReloadAndDetectInImage() {
@@ -161,9 +158,8 @@ public class BibliotecaActivity extends AppCompatActivity {
             if (imageUri == null) {
                 return;
             }
-
             // Clear the overlay first
-           // graphicOverlay.clear();
+            graphicOverlay.clear();
 
             Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
 
@@ -189,46 +185,11 @@ public class BibliotecaActivity extends AppCompatActivity {
             preview.setImageBitmap(resizedBitmap);
             bitmapForDetection = resizedBitmap;
 
-            //imageProcessor.process(bitmapForDetection, graphicOverlay);
+            imageProcessor.process(bitmapForDetection, graphicOverlay);
         } catch (IOException e) {
             Log.e(TAG, "Error retrieving saved image");
         }
     }
-
-    // Returns max image width, always for portrait mode. Caller needs to swap width / height for
-    // landscape mode.
-  /*  private Integer getImageMaxWidth() {
-        if (imageMaxWidth == null) {
-            // Calculate the max width in portrait mode. This is done lazily since we need to wait for
-            // a UI layout pass to get the right values. So delay it to first time image rendering time.
-            if (isLandScape) {
-                imageMaxWidth =
-                        ((View) preview.getParent()).getHeight() - findViewById(R.id.controlPanel).getHeight();
-            } else {
-                imageMaxWidth = ((View) preview.getParent()).getWidth();
-            }
-        }
-
-        return imageMaxWidth;
-    }*/
-
-    // Returns max image height, always for portrait mode. Caller needs to swap width / height for
-    // landscape mode.
-  /*  private Integer getImageMaxHeight() {
-        if (imageMaxHeight == null) {
-            // Calculate the max width in portrait mode. This is done lazily since we need to wait for
-            // a UI layout pass to get the right values. So delay it to first time image rendering time.
-            if (isLandScape) {
-                imageMaxHeight = ((View) preview.getParent()).getWidth();
-            } else {
-                imageMaxHeight =
-                        ((View) preview.getParent()).getHeight() - findViewById(R.id.controlPanel).getHeight();
-            }
-        }
-
-        return imageMaxHeight;
-    }*/
-
     // Gets the targeted width / height.
     private Pair<Integer, Integer> getTargetedWidthHeight() {
         int targetWidth;
@@ -242,10 +203,8 @@ public class BibliotecaActivity extends AppCompatActivity {
             default:
                 throw new IllegalStateException("Unknown size");
         }
-
         return new Pair<>(targetWidth, targetHeight);
     }
-
     private void createImageProcessor() {
         switch (selectedMode) {
             case CLOUD_TEXT_DETECTION:
@@ -255,4 +214,5 @@ public class BibliotecaActivity extends AppCompatActivity {
                 throw new IllegalStateException("Unknown selectedMode: " + selectedMode);
         }
     }
+
 }

@@ -3,16 +3,16 @@ package com.example.joaoparracho.peddypraxis.model;
 public class Singleton {
     private static final Singleton ourInstance = new Singleton();
     private Manager manager;
-    private boolean fd=false;
-    private int delayTimer;
+    private boolean showFinishBtn;
+    private boolean fd;
     private boolean fenceBool;
     private boolean notWalkinBool;
 
-    public int getDelayTimer() {
-        return delayTimer;
+    public boolean isShowFinishBtn() {
+        return showFinishBtn;
     }
-    public void setDelayTimer(int delayTimer) {
-        this.delayTimer = delayTimer;
+    public void setShowFinishBtn(boolean showFinishBtn) {
+        this.showFinishBtn = showFinishBtn;
     }
 
     public boolean isFenceBool() {

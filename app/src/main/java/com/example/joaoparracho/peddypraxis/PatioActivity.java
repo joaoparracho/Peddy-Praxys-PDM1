@@ -124,7 +124,6 @@ public final class PatioActivity extends AppCompatActivity
             public void onTick(long millisUntilFinished) {
                 //if (Singleton.getInstance().getFd() && Singleton.getInstance().isFenceBool() && !Singleton.getInstance().isNotWalkinBool()) {
                 if (Singleton.getInstance().getFd()) {
-                   startActivity(new Intent(PatioActivity.this, BibliotecaActivity.class));
                     if (m1.ismPaused()) {
                         m1.resume();
                     }
@@ -138,6 +137,7 @@ public final class PatioActivity extends AppCompatActivity
                     }
                 } else if (!pauseCounterOnce) {
                     m1.pause();
+                    startActivity(new Intent(PatioActivity.this, BibliotecaActivity.class));
                     pauseCounterOnce = true;
                     counterDelay = 0;
                 }
