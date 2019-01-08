@@ -62,7 +62,7 @@ public class BibliotecaActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_gamescreen);
+        setContentView(R.layout.activity_biblioteca);
 
         getImageButton = (Button) findViewById(R.id.getImageButton);
         getImageButton.setOnClickListener(
