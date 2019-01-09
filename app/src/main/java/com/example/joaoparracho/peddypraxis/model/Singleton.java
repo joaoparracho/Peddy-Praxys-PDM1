@@ -3,17 +3,33 @@ package com.example.joaoparracho.peddypraxis.model;
 public class Singleton {
     private static final Singleton ourInstance = new Singleton();
     private Manager manager;
-    private boolean fd=false;
-    private int delayTimer;
+    private boolean showFinishBtn;
+    private boolean fd;
     private boolean fenceBool;
     private boolean notWalkinBool;
+    private boolean bLibLoc;
+    private boolean bInPatio;
     private boolean[] faltaEdificios = {true, true, true, true, true}; // A, B, C, D, E
 
-    public int getDelayTimer() {
-        return delayTimer;
+    public boolean isbInPatio() {
+        return bInPatio;
     }
-    public void setDelayTimer(int delayTimer) {
-        this.delayTimer = delayTimer;
+    public void setbInPatio(boolean bInPatio) {
+        this.bInPatio = bInPatio;
+    }
+
+    public boolean isbLibLoc() {
+        return bLibLoc;
+    }
+    public void setbLibLoc(boolean bLibLoc) {
+        this.bLibLoc = bLibLoc;
+    }
+
+    public boolean isShowFinishBtn() {
+        return showFinishBtn;
+    }
+    public void setShowFinishBtn(boolean showFinishBtn) {
+        this.showFinishBtn = showFinishBtn;
     }
 
     public boolean isFenceBool() {

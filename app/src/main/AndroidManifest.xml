@@ -62,6 +62,7 @@
         <activity android:name=".BibliotecaActivity"
             android:label="Biblioteca"
             android:windowSoftInputMode="stateHidden" />
+        <activity android:name=".DescompressaoActivity" />
     </application>
 
 </manifest>
