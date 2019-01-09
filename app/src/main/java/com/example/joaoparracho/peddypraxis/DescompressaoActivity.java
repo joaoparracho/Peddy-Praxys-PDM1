@@ -12,6 +12,9 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -56,6 +59,8 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
     private GoogleApiClient mGoogleApiClient;
     public static final String TAG_FENCES = "fences";
     private static final String FENCE_RECEIVER_ACTION = "FENCE_RECEIVER_ACTION";
+
+    public static Handler mHandler;
 
     private TextView timeTextView;
 
@@ -138,9 +143,21 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
             @Override
             public void onFinish() {
                 timeTextView.setText("Finish");
-                //startActivity(new Intent(PatioActivity.this, BibliotecaActivity.class));
+                startActivity(new Intent(DescompressaoActivity.this, LoginActivity.class));
             }
         }.start();
+
+        // TODO: Communicate with the UI thread
+        mHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                String feedback = msg.getData().getString("FEEDBACK");
+                if (feedback != null) {
+                    Snackbar.make(findViewById(android.R.id.content), feedback, Snackbar.LENGTH_LONG).show();
+                }
+            }
+        };
 
         showDescription();
     }

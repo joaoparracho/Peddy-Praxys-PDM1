@@ -336,9 +336,9 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
                     }
                 });
     }
-    protected void removeFences() {
+    protected void removeFences(String unique_key) {
         Awareness.getFenceClient(this).updateFences(new FenceUpdateRequest.Builder()
-                .removeFence(myPendingIntent)
+                .removeFence(unique_key)
                 .build())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -373,7 +373,7 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
     }
     @Override public void onDestroy() {
         super.onDestroy();
-        removeFences();
+        removeFences("libLocationFenceKey");
     }
     @Override public void onStop() {
         queryFences();

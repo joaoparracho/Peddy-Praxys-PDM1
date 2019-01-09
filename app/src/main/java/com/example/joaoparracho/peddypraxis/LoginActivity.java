@@ -34,10 +34,12 @@ public class LoginActivity extends AppCompatActivity {
     }
     public void onClickLogin(View v){
         if(validate()){
-            validate(email,password);
-            /*Intent i = new Intent(LoginActivity.this, GameScreenActivity.class);
-            startActivity(i);*/
+            //validate(email,password);
+            Intent i = new Intent(LoginActivity.this, GameScreenActivity.class);
+            startActivity(i);
         }
+        Intent i = new Intent(LoginActivity.this, GameScreenActivity.class);
+        startActivity(i);
 
     }
     public void onCLickSignUp(View v){
