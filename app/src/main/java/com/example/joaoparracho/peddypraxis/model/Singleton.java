@@ -8,6 +8,14 @@ public class Singleton {
     private boolean fenceBool;
     private boolean notWalkinBool;
     private boolean bLibLoc;
+    private boolean bInPatio;
+
+    public boolean isbInPatio() {
+        return bInPatio;
+    }
+    public void setbInPatio(boolean bInPatio) {
+        this.bInPatio = bInPatio;
+    }
 
     public boolean isbLibLoc() {
         return bLibLoc;

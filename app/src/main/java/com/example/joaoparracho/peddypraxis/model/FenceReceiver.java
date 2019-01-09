@@ -26,10 +26,13 @@ public class FenceReceiver extends BroadcastReceiver {
                 switch (fenceState.getCurrentState()) {
                     case FenceState.TRUE:
                         Singleton.getInstance().setFenceBool(true);
+                        Log.d("xxxfences", "locationFenceKey " + fenceState.getCurrentState());
                         break;
                     case FenceState.FALSE:
-                    case FenceState.UNKNOWN:
                         Singleton.getInstance().setFenceBool(false);
+                        Log.d("xxxfences", "locationFenceKey " + fenceState.getCurrentState());
+                        break;
+                    case FenceState.UNKNOWN:
                         break;
                 }
                 break;
@@ -39,8 +42,9 @@ public class FenceReceiver extends BroadcastReceiver {
                         Singleton.getInstance().setbLibLoc(true);
                         break;
                     case FenceState.FALSE:
-                    case FenceState.UNKNOWN:
                         Singleton.getInstance().setbLibLoc(false);
+                        break;
+                    case FenceState.UNKNOWN:
                         break;
                 }
                 break;
@@ -51,7 +55,6 @@ public class FenceReceiver extends BroadcastReceiver {
                         break;
                     case FenceState.FALSE:
                         Singleton.getInstance().setNotWalkinBool(false);
-                        // Snackbar.make(findViewById(android.R.id.content), "Good Job", Snackbar.LENGTH_LONG).show();
                         break;
                 }
                 break;

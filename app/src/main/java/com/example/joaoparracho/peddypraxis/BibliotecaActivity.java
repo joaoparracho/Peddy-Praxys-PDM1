@@ -3,6 +3,7 @@ package com.example.joaoparracho.peddypraxis;
 import android.Manifest;
 import android.app.PendingIntent;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -17,9 +18,11 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Pair;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,6 +39,10 @@ import com.example.joaoparracho.peddypraxis.model.Singleton;
 import com.google.android.gms.awareness.Awareness;
 import com.google.android.gms.awareness.fence.AwarenessFence;
 import com.google.android.gms.awareness.fence.DetectedActivityFence;
+import com.google.android.gms.awareness.fence.FenceQueryRequest;
+import com.google.android.gms.awareness.fence.FenceQueryResponse;
+import com.google.android.gms.awareness.fence.FenceState;
+import com.google.android.gms.awareness.fence.FenceStateMap;
 import com.google.android.gms.awareness.fence.FenceUpdateRequest;
 import com.google.android.gms.awareness.fence.LocationFence;
 import com.google.android.gms.common.ConnectionResult;
@@ -45,6 +52,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 
 public class BibliotecaActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "BibliotecaActivity";
@@ -107,12 +115,13 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                       // if(Singleton.getInstance().isbLibLoc()){
+                        queryFences();
+                        if(Singleton.getInstance().isbLibLoc()){
                             startCameraIntentForResult();
-                       // }
-                        //else{
-                           // Snackbar.make(findViewById(android.R.id.content), "You must be inside library dummie", Snackbar.LENGTH_LONG).show();
-                        //}
+                       }
+                        else{
+                            Snackbar.make(findViewById(android.R.id.content), "You must be inside library dummie", Snackbar.LENGTH_LONG).show();
+                        }
                     }
                 });
         createImageProcessor();
@@ -153,9 +162,30 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
                 tryReloadAndDetectInImage();
             }
         }
+        setupFences();
+        showDescription();
     }
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
+
+    public void onCLickShowPreamb(MenuItem item) {showDescription();}
+    public void showDescription(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("A Biblioteca");
+        alert.setMessage("A Biblioteca José Saramago é um espaço de Cultura, Conhecimento e ...? " +
+                "Para concluir esta tarefa deve de retirar uma foto da resposta que se encontra algures na Biblioteca");
+        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        alert.create().show();
+    }
+    @Override public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.menu_preamb, menu);
+        return true;
+    }
+
+    @Override public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putParcelable(KEY_IMAGE_URI, imageUri);
@@ -182,8 +212,7 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
     }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             tryReloadAndDetectInImage();
         }
@@ -255,8 +284,7 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
             // TODO: Consider calling.
             return;
         }
-        //Parracho Casa
-        AwarenessFence libraryLocationFence = LocationFence.in(39.864042, -8.8983833, 65, 0L);
+        AwarenessFence libraryLocationFence = LocationFence.in(39.7331653,-8.8204611, 30, 0L);
         addFence("libLocationFenceKey", libraryLocationFence);
     }
     private void addFence(final String fenceKey, final AwarenessFence fence) {
@@ -276,23 +304,82 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
                     }
                 });
     }
+    protected void queryFences() {
+        Awareness.getFenceClient(this).queryFences(FenceQueryRequest.all())
+                .addOnSuccessListener(new OnSuccessListener<FenceQueryResponse>() {
+                    @Override
+                    public void onSuccess(FenceQueryResponse fenceQueryResponse) {
+                        String fenceInfo = "";
+                        FenceStateMap fenceStateMap = fenceQueryResponse.getFenceStateMap();
+                        for (String fenceKey : fenceStateMap.getFenceKeys()) {
+                            int state = fenceStateMap.getFenceState(fenceKey).getCurrentState();
+                            fenceInfo += fenceKey + ": "
+                                    + (state == FenceState.TRUE ? "TRUE" :
+                                    state == FenceState.FALSE ? "FALSE" : "UNKNOWN") + "\n";
+                            if(fenceKey.equals("libLocationFenceKey") &&state == FenceState.TRUE)
+                                Singleton.getInstance().setbLibLoc(true);
+                        }
+                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                        String text = "\n\n[Fences @ " + timestamp + "]\n"
+                                + "> Fences' states:\n" + (fenceInfo.equals("") ?
+                                "No registered fences." : fenceInfo);
+                        Log.d("xxxfences" , text);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                        String text = "\n\n[Fences @ " + timestamp + "]\n"
+                                + "Fences could not be queried: " + e.getMessage();
+                        Log.d("xxxfences" , text);
+                    }
+                });
+    }
+    protected void removeFences() {
+        Awareness.getFenceClient(this).updateFences(new FenceUpdateRequest.Builder()
+                .removeFence(myPendingIntent)
+                .build())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                        String text = "\n\n[Fences @ " + timestamp + "]\n"
+                                + "Fences were successfully removed.";
+                        Log.d("xxxfences" , text);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-    @Override
-    public void onResume() {
+                        String text = "\n\n[Fences @ " + timestamp + "]\n"
+                                + "Fences could not be removed: " + e.getMessage();
+                        Log.d("xxxfences" , text);
+                    }
+                });
+    }
+
+    @Override public void onResume() {
         super.onResume();
-        setupFences();
+        queryFences();
+        //setupFences();
         Log.d(TAG, "onResume");
     }
-    @Override
-    public void onStop() {
-        if (fenceReceiver != null) {
-            unregisterReceiver(fenceReceiver);
-            fenceReceiver = null;
-        }
+    @Override protected void onPause() {
+        super.onPause();
+        queryFences();
+    }
+    @Override public void onDestroy() {
+        super.onDestroy();
+        removeFences();
+    }
+    @Override public void onStop() {
+        queryFences();
         super.onStop();
     }
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+    @Override public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Toast.makeText(this, connectionResult.getErrorMessage(), Toast.LENGTH_SHORT).show();
     }
 }
