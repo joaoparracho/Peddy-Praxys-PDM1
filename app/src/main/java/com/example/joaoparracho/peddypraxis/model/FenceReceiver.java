@@ -3,6 +3,7 @@ package com.example.joaoparracho.peddypraxis.model;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 
 import com.google.android.gms.awareness.fence.FenceState;
@@ -24,16 +25,22 @@ public class FenceReceiver extends BroadcastReceiver {
             case "locationFenceKey":
                 switch (fenceState.getCurrentState()) {
                     case FenceState.TRUE:
-                        Singleton.getInstance().setFenceBool( true);
-                        //Snackbar.make(findViewById(android.R.id.content), "HEYY", Snackbar.LENGTH_LONG).show();
+                        Singleton.getInstance().setFenceBool(true);
                         break;
                     case FenceState.FALSE:
-                        Singleton.getInstance().setFenceBool( false);
-                        //Snackbar.make(findViewById(android.R.id.content), "HOOO", Snackbar.LENGTH_LONG).show();
-                        break;
                     case FenceState.UNKNOWN:
-                        Singleton.getInstance().setFenceBool( false);
-                        //Snackbar.make(findViewById(android.R.id.content), "Unk", Snackbar.LENGTH_LONG).show();
+                        Singleton.getInstance().setFenceBool(false);
+                        break;
+                }
+                break;
+            case "libLocationFenceKey":
+                switch (fenceState.getCurrentState()) {
+                    case FenceState.TRUE:
+                        Singleton.getInstance().setbLibLoc(true);
+                        break;
+                    case FenceState.FALSE:
+                    case FenceState.UNKNOWN:
+                        Singleton.getInstance().setbLibLoc(false);
                         break;
                 }
                 break;
@@ -41,7 +48,6 @@ public class FenceReceiver extends BroadcastReceiver {
                 switch (fenceState.getCurrentState()) {
                     case FenceState.TRUE:
                         Singleton.getInstance().setNotWalkinBool(true);
-                        //Snackbar.make(findViewById(android.R.id.content), "Walk Bitch", Snackbar.LENGTH_LONG).show();
                         break;
                     case FenceState.FALSE:
                         Singleton.getInstance().setNotWalkinBool(false);

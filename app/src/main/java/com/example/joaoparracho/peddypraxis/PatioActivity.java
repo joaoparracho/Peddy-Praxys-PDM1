@@ -137,7 +137,7 @@ public final class PatioActivity extends AppCompatActivity
                     }
                 } else if (!pauseCounterOnce) {
                     m1.pause();
-                    startActivity(new Intent(PatioActivity.this, BibliotecaActivity.class));
+                   // startActivity(new Intent(PatioActivity.this, DescompressaoActivity.class));
                     pauseCounterOnce = true;
                     counterDelay = 0;
                 }
@@ -335,7 +335,6 @@ public final class PatioActivity extends AppCompatActivity
             return new String[0];
         }
     }
-
     private boolean allPermissionsGranted() {
         for (String permission : getRequiredPermissions()) {
             if (!isPermissionGranted(this, permission)) {
@@ -344,7 +343,6 @@ public final class PatioActivity extends AppCompatActivity
         }
         return true;
     }
-
     private void getRuntimePermissions() {
         List<String> allNeededPermissions = new ArrayList<>();
         for (String permission : getRequiredPermissions()) {
@@ -358,7 +356,6 @@ public final class PatioActivity extends AppCompatActivity
                     this, allNeededPermissions.toArray(new String[0]), PERMISSION_REQUESTS);
         }
     }
-
     private void checkFineLocationPermission() {
         if (ContextCompat.checkSelfPermission(
                 PatioActivity.this,
@@ -437,13 +434,13 @@ public final class PatioActivity extends AppCompatActivity
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Snackbar.make(findViewById(android.R.id.content), "Sucess", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(android.R.id.content), "Sucess to add Fence", Snackbar.LENGTH_LONG).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Snackbar.make(findViewById(android.R.id.content), "Noo...", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(android.R.id.content), "Failed to add Fence", Snackbar.LENGTH_LONG).show();
                     }
                 });
     }

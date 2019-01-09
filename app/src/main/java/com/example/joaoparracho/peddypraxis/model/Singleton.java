@@ -7,6 +7,14 @@ public class Singleton {
     private boolean fd;
     private boolean fenceBool;
     private boolean notWalkinBool;
+    private boolean bLibLoc;
+
+    public boolean isbLibLoc() {
+        return bLibLoc;
+    }
+    public void setbLibLoc(boolean bLibLoc) {
+        this.bLibLoc = bLibLoc;
+    }
 
     public boolean isShowFinishBtn() {
         return showFinishBtn;
