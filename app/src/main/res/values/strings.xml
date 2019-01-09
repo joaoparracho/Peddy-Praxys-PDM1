@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">PeddyPraxis</string>
+    <string name="prembuloEdificios">O campus 2 tem vários edifícios, cada um deles identificado por uma letra
+(A, B, C, D). \nHá quem esteja há vários de anos a estudar (ou a trabalhar...) no IPL e
+tenha dificuldade em lembrar-se da letra que identifica determinado edifício. \nCaloiro,
+por obséquio, dirija-se para a rotunda ao pé da Entrada do Ed. A!</string>
+    <string name="imHere">Já cá estou!</string>
 </resources>

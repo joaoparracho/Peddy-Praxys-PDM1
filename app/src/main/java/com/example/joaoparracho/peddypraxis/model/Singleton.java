@@ -7,6 +7,7 @@ public class Singleton {
     private int delayTimer;
     private boolean fenceBool;
     private boolean notWalkinBool;
+    private boolean[] faltaEdificios = {true, true, true, true, true}; // A, B, C, D, E
 
     public int getDelayTimer() {
         return delayTimer;
@@ -56,5 +57,14 @@ public class Singleton {
             // s is not numeric
             return false;
         }
+    }
+
+
+    public boolean getFaltaEdificios(int i) {
+        return faltaEdificios[i];
+    }
+
+    public void setFaltaEdificios(int i, boolean bool) {
+        this.faltaEdificios[i] = bool;
     }
 }
