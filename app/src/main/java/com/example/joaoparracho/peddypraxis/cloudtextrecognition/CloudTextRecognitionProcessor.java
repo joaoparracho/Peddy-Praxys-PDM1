@@ -63,6 +63,7 @@ public class CloudTextRecognitionProcessor extends VisionProcessorBase<FirebaseV
         if (text == null) {
             return; // TODO: investigate why this is needed
         }
+        Log.d(TAG, "detected text is: " + text.getText());
         List<FirebaseVisionText.TextBlock> blocks = text.getTextBlocks();
         for (int i = 0; i < blocks.size(); i++) {
             List<FirebaseVisionText.Line> lines = blocks.get(i).getLines();

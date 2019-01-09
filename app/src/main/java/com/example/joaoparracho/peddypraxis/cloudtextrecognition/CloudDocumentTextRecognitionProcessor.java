@@ -56,6 +56,9 @@ public class CloudDocumentTextRecognitionProcessor
             @NonNull FrameMetadata frameMetadata,
             @NonNull GraphicOverlay graphicOverlay) {
         graphicOverlay.clear();
+        if (text == null) {
+            return; // TODO: investigate why this is needed
+        }
         Log.d(TAG, "detected text is: " + text.getText());
         List<FirebaseVisionDocumentText.Block> blocks = text.getBlocks();
         for (int i = 0; i < blocks.size(); i++) {

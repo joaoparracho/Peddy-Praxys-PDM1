@@ -9,6 +9,7 @@ public class Singleton {
     private boolean notWalkinBool;
     private boolean bLibLoc;
     private boolean bInPatio;
+    private boolean[] faltaEdificios = {true, true, true, true, true}; // A, B, C, D, E
 
     public boolean isbInPatio() {
         return bInPatio;
@@ -72,5 +73,14 @@ public class Singleton {
             // s is not numeric
             return false;
         }
+    }
+
+
+    public boolean getFaltaEdificios(int i) {
+        return faltaEdificios[i];
+    }
+
+    public void setFaltaEdificios(int i, boolean bool) {
+        this.faltaEdificios[i] = bool;
     }
 }

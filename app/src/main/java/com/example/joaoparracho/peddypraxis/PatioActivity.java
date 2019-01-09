@@ -3,7 +3,6 @@ package com.example.joaoparracho.peddypraxis;
 
 import android.Manifest;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,7 +12,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -40,7 +38,6 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import com.example.joaoparracho.peddypraxis.common.CameraSource;
 import com.example.joaoparracho.peddypraxis.common.CameraSourcePreview;
@@ -57,17 +54,13 @@ import com.google.android.gms.awareness.fence.FenceQueryResponse;
 import com.google.android.gms.awareness.fence.FenceState;
 import com.google.android.gms.awareness.fence.FenceStateMap;
 import com.google.android.gms.awareness.fence.FenceUpdateRequest;
-import com.google.android.gms.awareness.fence.HeadphoneFence;
 import com.google.android.gms.awareness.fence.LocationFence;
 import com.google.android.gms.awareness.fence.TimeFence;
 import com.google.android.gms.awareness.snapshot.DetectedActivityResponse;
 import com.google.android.gms.awareness.snapshot.LocationResponse;
-import com.google.android.gms.awareness.state.HeadphoneState;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.annotation.KeepName;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.ActivityRecognitionResult;
-import com.google.android.gms.location.DetectedActivity;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -108,7 +101,7 @@ public final class PatioActivity extends AppCompatActivity
     public static final String TAG_FENCES = "fences";
     private static final String FENCE_RECEIVER_ACTION = "FENCE_RECEIVER_ACTION";
 
-    private long mTimeInMillis = 60 * 100;
+    private long mTimeInMillis = 10 * 1000;
     CountDownTimer2 m1;
     private boolean pauseCounterOnce;
     private int counterDelay;
@@ -230,18 +223,18 @@ public final class PatioActivity extends AppCompatActivity
         if (hours > 0) {
             if (Singleton.getInstance().getFd()) {
                 timeLeftFormatted = String.format(Locale.getDefault(),
-                        "%d:%02d:%02d-TRUIE %d %d %d", hours, minutes, seconds, counterDelay, a, b);
+                        "%d:%02d:%02d-TRUE %d %d %d", hours, minutes, seconds, counterDelay, a, b);
             } else {
                 timeLeftFormatted = String.format(Locale.getDefault(),
-                        "%d:%02d:%02d--FAILSE %d %d %d", hours, minutes, seconds, counterDelay, a, b);
+                        "%d:%02d:%02d--FALSE %d %d %d", hours, minutes, seconds, counterDelay, a, b);
             }
         } else {
             if (Singleton.getInstance().getFd()) {
                 timeLeftFormatted = String.format(Locale.getDefault(),
-                        "%02d:%02d---TRUIE %d %d %d", minutes, seconds, counterDelay, a, b);
+                        "%02d:%02d---TRUE %d %d %d", minutes, seconds, counterDelay, a, b);
             } else {
                 timeLeftFormatted = String.format(Locale.getDefault(),
-                        "%02d:%02d--FAILSE %d %d %d", minutes, seconds, counterDelay, a, b);
+                        "%02d:%02d--FALSE %d %d %d", minutes, seconds, counterDelay, a, b);
             }
         }
         return timeLeftFormatted;
@@ -564,7 +557,7 @@ public final class PatioActivity extends AppCompatActivity
 
                         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
                         String text = "Lat:" + location.getLatitude() + ", Lng:" + location.getLongitude()
-                                + "  39.7352267" + "-8.820709";
+                                + "  39.7356519" + "-8.8209677";
                         Snackbar.make(findViewById(android.R.id.content), text, Snackbar.LENGTH_LONG).show();
 
                     }

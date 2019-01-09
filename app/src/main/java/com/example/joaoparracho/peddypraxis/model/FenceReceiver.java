@@ -31,6 +31,7 @@ public class FenceReceiver extends BroadcastReceiver {
             return;
         }
         FenceState fenceState = FenceState.extract(intent);
+        Log.i(TAG_FENCES, "fences " + fenceState);
         switch (fenceState.getFenceKey()) {
             case "locationFenceKey":
                 switch (fenceState.getCurrentState()) {
