@@ -32,7 +32,6 @@ public class GameScreenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_gamescreen);
 
         firebaseAuth = FirebaseAuth.getInstance();
-
         Game g1= new Game("PeddyPraxis","Melhor jogo de Sempre", "Parracho & Xavi",60);
         Singleton.getInstance().getManager().addGame(g1);
         recyclerView = findViewById(R.id.recycleView_games);
@@ -45,7 +44,7 @@ public class GameScreenActivity extends AppCompatActivity {
             @Override
             public void onClick(View view, int position) {
                     Game g = adapter_rec.getPosition(position);
-                    Intent intent = new Intent(GameScreenActivity.this, PatioActivity.class);
+                    Intent intent = new Intent(GameScreenActivity.this, PreambuloActivity.class);
                     startActivity(intent);
             }
             @Override
@@ -84,6 +83,9 @@ public class GameScreenActivity extends AppCompatActivity {
         });
         alert.create().show();
     }
+
+
+
 
 
 }

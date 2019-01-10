@@ -28,6 +28,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -101,7 +102,6 @@ public final class PatioActivity extends AppCompatActivity
     public static final String TAG_SNAPSHOT = "snapshot";
     private static final int REQUEST_CODE_FLPERMISSION = 42;
     private GoogleApiClient mGoogleApiClient;
-    AwarenessFence inLocationFence;
     private FenceReceiver fenceReceiver;
     private PendingIntent myPendingIntent;
 
@@ -116,7 +116,7 @@ public final class PatioActivity extends AppCompatActivity
     private String text2 = "";
     private String stringKey = "";
     public static Handler mHandler;
-    private boolean checkDescr;
+    private boolean checkWaring;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,7 +142,7 @@ public final class PatioActivity extends AppCompatActivity
                 if (Singleton.getInstance().getFd()
                         && Singleton.getInstance().isFenceBool()
                         && !Singleton.getInstance().isNotWalkinBool()
-                        && checkDescr) {
+                        && !checkWaring) {
                     if (m1.ismPaused()) {
                         m1.resume();
                     }
@@ -165,7 +165,9 @@ public final class PatioActivity extends AppCompatActivity
             @Override
             public void onFinish() {
                 mTextViewCountDown.setText("Finish");
-                startActivity(new Intent(PatioActivity.this, BibliotecaActivity.class));
+                Singleton.getInstance().setActivityKey("bibliotecaKey");
+                startActivity(new Intent(PatioActivity.this, PreambuloActivity.class));
+                finish();
             }
         }.start();
 
@@ -205,8 +207,8 @@ public final class PatioActivity extends AppCompatActivity
                 }
             }
         };
-        showDescription();
-        setupFences();
+        //showDescription();
+        //setupFences();
     }
 
     private String updateCountDownText() {
@@ -261,11 +263,9 @@ public final class PatioActivity extends AppCompatActivity
         alert.create().show();
         // Snackbar.make(findViewById(android.R.id.content), text2, Snackbar.LENGTH_LONG).show();
     }
-
     public void onCLickShowPreamb(MenuItem item) {
         showDescription();
     }
-
     public void showDescription() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("O Pátio");
@@ -274,28 +274,14 @@ public final class PatioActivity extends AppCompatActivity
         alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                checkDescr = true;
+                //checkDescr = true;
             }
         });
         alert.create().show();
     }
 
-    public void showPreambtDialog() {
-        ContextThemeWrapper ctw = new ContextThemeWrapper(this, R.style.Theme_AppCompat_Light_DarkActionBar);
-        AlertDialog.Builder alert = new AlertDialog.Builder(ctw);
-        alert.setTitle("O Pátio");
-        alert.setMessage("Caloiro, por obséquio, dirija-se para o pátio em frente ao bar do Edifício A!");
-        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                checkDescr = true;
-            }
-        });
-        alert.create().show();
-    }
 
-    @Override
-    public synchronized void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+    @Override public synchronized void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
         // An item was selected. You can retrieve the selected item using
         // parent.getItemAtPosition(pos)
         selectedModel = parent.getItemAtPosition(pos).toString();
@@ -308,14 +294,10 @@ public final class PatioActivity extends AppCompatActivity
             getRuntimePermissions();
         }
     }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
+    @Override public void onNothingSelected(AdapterView<?> parent) {
         // Do nothing.
     }
-
-    @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+    @Override public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         Log.d(TAG, "Set facing");
         if (cameraSource != null) {
             if (isChecked) {
@@ -336,7 +318,6 @@ public final class PatioActivity extends AppCompatActivity
         Log.i(TAG, "Using Face Detector Processor");
         cameraSource.setMachineLearningFrameProcessor(new FaceDetectionProcessor());
     }
-
     private void startCameraSource(int facingStartCamera) {
         if (cameraSource != null) {
             try {
@@ -372,7 +353,6 @@ public final class PatioActivity extends AppCompatActivity
             return new String[0];
         }
     }
-
     private boolean allPermissionsGranted() {
         for (String permission : getRequiredPermissions()) {
             if (!isPermissionGranted(this, permission)) {
@@ -381,7 +361,6 @@ public final class PatioActivity extends AppCompatActivity
         }
         return true;
     }
-
     private void getRuntimePermissions() {
         List<String> allNeededPermissions = new ArrayList<>();
         for (String permission : getRequiredPermissions()) {
@@ -395,7 +374,6 @@ public final class PatioActivity extends AppCompatActivity
                     this, allNeededPermissions.toArray(new String[0]), PERMISSION_REQUESTS);
         }
     }
-
     private void checkFineLocationPermission() {
         if (ContextCompat.checkSelfPermission(
                 PatioActivity.this,
@@ -424,16 +402,13 @@ public final class PatioActivity extends AppCompatActivity
             return;
         }
     }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    @Override public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         Log.i(TAG, "Permission granted!");
         if (allPermissionsGranted()) {
             createCameraSource(selectedModel);
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
-
     private static boolean isPermissionGranted(Context context, String permission) {
         if (ContextCompat.checkSelfPermission(context, permission)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -443,9 +418,7 @@ public final class PatioActivity extends AppCompatActivity
         Log.i(TAG, "Permission NOT granted: " + permission);
         return false;
     }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+    @Override public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Toast.makeText(this, connectionResult.getErrorMessage(), Toast.LENGTH_SHORT).show();
     }
 
@@ -509,51 +482,6 @@ public final class PatioActivity extends AppCompatActivity
                 });
     }
 
-    private void setupFences() {
-        long nowMillis = System.currentTimeMillis();
-        AwarenessFence notWalkingFence = AwarenessFence.or(
-                DetectedActivityFence.during(DetectedActivityFence.ON_BICYCLE),
-                DetectedActivityFence.during(DetectedActivityFence.IN_VEHICLE));
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling.
-            return;
-        }
-        AwarenessFence inLocationFence = LocationFence.in(39.73565192930836, -8.820967774868791, 80, 0L);
-
-        AwarenessFence timeFence100 = TimeFence.inInterval(nowMillis,nowMillis+60*60000); // one minute starting in thirty seconds
-        AwarenessFence timeFence50 = TimeFence.inInterval(nowMillis,nowMillis+ 60*30000); // one minute starting in thirty seconds
-        AwarenessFence timeFence90 = TimeFence.inInterval(nowMillis,nowMillis+60*54000); // one minute starting in thirty seconds
-
-        addFence("timeFence50Key", timeFence50);
-        addFence("timeFence90Key", timeFence90);
-        addFence("timeFence100Key", timeFence100);
-
-        addFence("locationFenceKey", inLocationFence);
-        addFence("notWalkingFenceKey", notWalkingFence);
-    }
-
-    private void addFence(final String fenceKey, final AwarenessFence fence) {
-        Awareness.getFenceClient(this).updateFences(new FenceUpdateRequest.Builder()
-                .addFence(fenceKey, fence, myPendingIntent)
-                .build())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("fence", "addFence success");
-
-                        Snackbar.make(findViewById(android.R.id.content), "Success to add Fence", Snackbar.LENGTH_LONG).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Snackbar.make(findViewById(android.R.id.content), "Failed to add Fence", Snackbar.LENGTH_LONG).show();
-
-                        Log.d("fence", "addFence failure");
-                    }
-                });
-    }
     private void printLocation() {
         checkFineLocationPermission();
         Awareness.getSnapshotClient(this).getLocation()
@@ -579,39 +507,62 @@ public final class PatioActivity extends AppCompatActivity
                 });
     }
 
-    @Override
-    public void onResume() {
+    @Override public void onBackPressed() {
+        Log.d("xxxfences", "back button pressed");
+        checkWaring=true;
+        m1.pause();
+        showDialogWaring();
+    }
+    public void showDialogWaring() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Sair Tarefa");
+        alert.setMessage("Caloiro tem a certeza que pretende sair!\n Qualquer progresso que tenha feito ira ser perdido");
+        alert.setPositiveButton("Terminar Tarefa", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                checkWaring=false;
+                m1.cancel();
+                Singleton.getInstance().setFd(false);
+                finish();
+
+            }
+        });
+        alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                checkWaring=false;
+                m1.resume();
+            }
+        });
+        alert.create().show();
+    }
+
+    @Override public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
         startCameraSource(CameraSource.CAMERA_FACING_FRONT);
         queryFences();
     }
-    @Override
-    protected void onPause() {
+    @Override protected void onPause() {
         super.onPause();
         queryFences();
         preview.stop();
     }
-    @Override
-    public void onDestroy() {
+    @Override public void onDestroy() {
         super.onDestroy();
+        Log.d("xxxfences", "onResume");
         removeFences("locationFenceKey");
-        removeFences("notWalkingFenceKey");
         if (cameraSource != null) {
             cameraSource.release();
         }
     }
-    @Override
-    public void onStop() {
+    @Override public void onStop() {
         super.onStop();
         queryFences();
     }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    @Override public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.menu_preamb, menu);
         return true;
     }
-
-
 }

@@ -81,7 +81,7 @@ public class CloudTextRecognitionProcessor extends VisionProcessorBase<FirebaseV
 
         Message message = BibliotecaActivity.mHandler.obtainMessage();
         Bundle bundle = new Bundle();
-        bundle.putString("FEEDBACK",text.getText() + " Yey");
+        bundle.putString("FEEDBACK",text.getText());
         message.setData(bundle);
         BibliotecaActivity.mHandler.sendMessage(message);
         graphicOverlay.postInvalidate();

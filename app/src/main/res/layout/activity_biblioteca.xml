@@ -38,10 +38,10 @@
 
         <Button
             android:id="@+id/getImageButton"
-            android:text="Take photo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"/>
+            android:layout_width="match_parent"
+            android:layout_height="61dp"
+            android:layout_gravity="left"
+            android:text="Take photo" />
     </FrameLayout>
 
 </RelativeLayout>

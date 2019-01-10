@@ -22,6 +22,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Pair;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -94,8 +95,7 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
     private static final String FENCE_RECEIVER_ACTION = "FENCE_RECEIVER_ACTION";
     private GoogleApiClient mGoogleApiClient;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_biblioteca);
         mGoogleApiClient = new GoogleApiClient
@@ -143,7 +143,8 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
                 if (feedback != null) {
                     Snackbar.make(findViewById(android.R.id.content), feedback, Snackbar.LENGTH_LONG).show();
                     if (Singleton.getInstance().isShowFinishBtn()) {
-                        startActivity(new Intent(BibliotecaActivity.this, DescompressaoActivity.class));
+                        Singleton.getInstance().setActivityKey("descompressaoKey");
+                        startActivity(new Intent(BibliotecaActivity.this, PreambuloActivity.class));
                     }
                 }
             }
@@ -162,7 +163,7 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
                 tryReloadAndDetectInImage();
             }
         }
-        setupFences();
+        //setupFences();
         showDescription();
     }
 
@@ -279,7 +280,7 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
         }
     }
 
-    private void setupFences() {
+   /* private void setupFences() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling.
             return;
@@ -303,7 +304,7 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
                         Snackbar.make(findViewById(android.R.id.content), "Failed to add Fence", Snackbar.LENGTH_LONG).show();
                     }
                 });
-    }
+    }*/
     protected void queryFences() {
         Awareness.getFenceClient(this).queryFences(FenceQueryRequest.all())
                 .addOnSuccessListener(new OnSuccessListener<FenceQueryResponse>() {
@@ -361,10 +362,31 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
                 });
     }
 
+    @Override public void onBackPressed() {
+        Log.d("xxxfences", "back button pressed");
+        showDialogWaring();
+    }
+    public void showDialogWaring() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Sair Tarefa");
+        alert.setMessage("Caloiro tem a certeza que pretende sair!\n Qualquer progresso que tenha feito ira ser perdido");
+        alert.setPositiveButton("Terminar Tarefa", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+        alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        alert.create().show();
+    }
+
     @Override public void onResume() {
         super.onResume();
         queryFences();
-        //setupFences();
         Log.d(TAG, "onResume");
     }
     @Override protected void onPause() {

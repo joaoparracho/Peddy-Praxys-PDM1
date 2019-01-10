@@ -9,6 +9,11 @@ public class Singleton {
     private boolean notWalkinBool;
     private boolean bLibLoc;
     private boolean bInPatio;
+    private boolean bCreateFenceTime;
+    private String activityKey="patioKey";
+
+
+
 
     public boolean isbInPatio() {
         return bInPatio;
@@ -72,5 +77,20 @@ public class Singleton {
             // s is not numeric
             return false;
         }
+    }
+
+    public String getActivityKey() {
+        return activityKey;
+    }
+    public void setActivityKey(String activityKey) {
+        this.activityKey = activityKey;
+    }
+
+    public boolean isbCreateFenceTime() {
+        return bCreateFenceTime;
+    }
+
+    public void setbCreateFenceTime(boolean bCreateFenceTime) {
+        this.bCreateFenceTime = bCreateFenceTime;
     }
 }

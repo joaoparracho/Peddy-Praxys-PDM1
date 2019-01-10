@@ -143,7 +143,8 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
             @Override
             public void onFinish() {
                 timeTextView.setText("Finish");
-                startActivity(new Intent(DescompressaoActivity.this, LoginActivity.class));
+                Singleton.getInstance().setActivityKey("patioKey");
+                startActivity(new Intent(DescompressaoActivity.this, GameScreenActivity.class));
             }
         }.start();
 
@@ -221,9 +222,9 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
                 Toast.LENGTH_SHORT).show();
     }
 
-    protected void removeFences() {
+    protected void removeFences(String fenceKey) {
         Awareness.getFenceClient(this).updateFences(new FenceUpdateRequest.Builder()
-                .removeFence(myPendingIntent)
+                .removeFence(fenceKey)
                 .build())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -278,6 +279,29 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
                 });
     }
 
+    @Override public void onBackPressed() {
+        Log.d("xxxfences", "back button pressed");
+        showDialogWaring();
+    }
+    public void showDialogWaring() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Sair Tarefa");
+        alert.setMessage("Caloiro tem a certeza que pretende sair!\n Qualquer progresso que tenha feito ira ser perdido");
+        alert.setPositiveButton("Terminar Tarefa", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                m2.cancel();
+                finish();
+            }
+        });
+        alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        alert.create().show();
+    }
+
     @Override protected void onPause() {
         super.onPause();
         mSensorManager.unregisterListener(this);
@@ -291,7 +315,7 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
     }
     @Override public void onDestroy() {
         super.onDestroy();
-        removeFences();
+        removeFences("locationFenceKey");
     }
     @Override public void onStop() {
         queryFences();
