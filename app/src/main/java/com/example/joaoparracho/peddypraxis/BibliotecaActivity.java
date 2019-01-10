@@ -284,7 +284,7 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
             // TODO: Consider calling.
             return;
         }
-        AwarenessFence libraryLocationFence = LocationFence.in(39.7331653,-8.8204611, 30, 0L);
+        AwarenessFence libraryLocationFence = LocationFence.in(39.733873,-8.821877, 30, 0L);
         addFence("libLocationFenceKey", libraryLocationFence);
     }
     private void addFence(final String fenceKey, final AwarenessFence fence) {

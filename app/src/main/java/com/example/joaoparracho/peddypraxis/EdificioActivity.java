@@ -91,7 +91,8 @@ public class EdificioActivity extends AppCompatActivity
 
         textViewEdificio = (TextView) findViewById(R.id.tVInfo);
         tempString = " ";
-        for (int i = 0; i < 5; i++) if (Singleton.getInstance().getFaltaEdificios(i)) tempString += ((char) (65 + i)) + " ";
+        for (int i = 0; i < 5; i++)
+            if (Singleton.getInstance().getFaltaEdificios(i)) tempString += ((char) (65 + i)) + " ";
         textViewEdificio.setText(edificios + tempString);
 
         preview = (CameraSourcePreview) findViewById(R.id.firePreview);
@@ -100,7 +101,8 @@ public class EdificioActivity extends AppCompatActivity
         graphicOverlay = (GraphicOverlay) findViewById(R.id.fireFaceOverlay);
         if (graphicOverlay == null) Log.d(TAG, "graphicOverlay is null");
 
-        if (allPermissionsGranted()) createCameraSource(selectedModel); else getRuntimePermissions();
+        if (allPermissionsGranted()) createCameraSource(selectedModel);
+        else getRuntimePermissions();
 
         // TODO: Communicate with the UI thread
         mHandler = new Handler(Looper.getMainLooper()) {
@@ -113,7 +115,9 @@ public class EdificioActivity extends AppCompatActivity
                     Snackbar.make(findViewById(android.R.id.content), "Encontrou o ediífio " + feedback + "!", Snackbar.LENGTH_SHORT).show();
                     Singleton.getInstance().setFaltaEdificios(feedback.charAt(0) - 65, false);
                     tempString = " ";
-                    for (int i = 0; i < 5; i++) if (Singleton.getInstance().getFaltaEdificios(i)) tempString += ((char) (65 + i)) + " ";
+                    for (int i = 0; i < 5; i++)
+                        if (Singleton.getInstance().getFaltaEdificios(i))
+                            tempString += ((char) (65 + i)) + " ";
                     textViewEdificio.setText(edificios + tempString);
                 }
             }
@@ -171,13 +175,10 @@ public class EdificioActivity extends AppCompatActivity
     private void startCameraSource(int facingStartCamera) {
         if (cameraSource != null) {
             try {
-                if (preview == null) {
+                if (preview == null)
                     Log.d(TAG, "resume: Preview is null");
-                }
-                if (graphicOverlay == null) {
+                if (graphicOverlay == null)
                     Log.d(TAG, "resume: graphOverlay is null");
-                }
-
                 cameraSource.setFacing(facingStartCamera);
                 preview.start(cameraSource, graphicOverlay);
             } catch (IOException e) {
@@ -378,7 +379,10 @@ public class EdificioActivity extends AppCompatActivity
     public void onClickActivity(View view) {
 //        printLocation();
         tempString = " ";
-        for (int i = 0; i < 5; i++) { Singleton.getInstance().setFaltaEdificios(i, true); tempString += ((char) (65 + i)) + " "; }
+        for (int i = 0; i < 5; i++) {
+            Singleton.getInstance().setFaltaEdificios(i, true);
+            tempString += ((char) (65 + i)) + " ";
+        }
         textViewEdificio.setText(edificios + tempString);
 
     }

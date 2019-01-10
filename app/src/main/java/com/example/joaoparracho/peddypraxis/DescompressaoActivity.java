@@ -23,7 +23,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,25 +30,20 @@ import com.example.joaoparracho.peddypraxis.model.CountDownTimer2;
 import com.example.joaoparracho.peddypraxis.model.FenceReceiver;
 import com.example.joaoparracho.peddypraxis.model.Singleton;
 import com.google.android.gms.awareness.Awareness;
-import com.google.android.gms.awareness.fence.AwarenessFence;
-import com.google.android.gms.awareness.fence.DetectedActivityFence;
 import com.google.android.gms.awareness.fence.FenceQueryRequest;
 import com.google.android.gms.awareness.fence.FenceQueryResponse;
 import com.google.android.gms.awareness.fence.FenceState;
 import com.google.android.gms.awareness.fence.FenceStateMap;
 import com.google.android.gms.awareness.fence.FenceUpdateRequest;
-import com.google.android.gms.awareness.fence.LocationFence;
 import com.google.android.gms.awareness.snapshot.WeatherResponse;
 import com.google.android.gms.awareness.state.Weather;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.DetectedActivity;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.sql.Timestamp;
-import java.util.Arrays;
 import java.util.Locale;
 
 public class DescompressaoActivity extends AppCompatActivity implements SensorEventListener, GoogleApiClient.OnConnectionFailedListener {
@@ -64,7 +58,8 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
 
     private TextView timeTextView;
 
-    private long mTimeInMillis = 60 * 10000;
+//    private long mTimeInMillis = 60 * 10000;
+    private long mTimeInMillis = 10000;
     private CountDownTimer2 m2;
     private boolean pauseCounterOnce;
 
@@ -76,7 +71,8 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
     private boolean bRain;
     private Weather weather;
 
-    @Override protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_descompressao);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -106,7 +102,7 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
                         .addOnSuccessListener(new OnSuccessListener<WeatherResponse>() {
                             @Override
                             public void onSuccess(WeatherResponse weatherResponse) {
-                                 weather = weatherResponse.getWeather();
+                                weather = weatherResponse.getWeather();
                                 for (int condition : weather.getConditions()) {
                                     switch (condition) {
                                         case Weather.CONDITION_RAINY:
@@ -126,16 +122,16 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
                             }
                         });
 
-                    if (!bRain && bFaceDown && Singleton.getInstance().isFenceBool() && bCheck) {
-                        if (m2.ismPaused()) {
-                            m2.resume();
-                        }
-                        mTimeInMillis = millisUntilFinished;
-                        pauseCounterOnce = false;
-                    } else if (!pauseCounterOnce) {
-                        m2.pause();
-                        pauseCounterOnce = true;
+                if (!bRain && bFaceDown && Singleton.getInstance().isFenceBool() && bCheck) {
+                    if (m2.ismPaused()) {
+                        m2.resume();
                     }
+                    mTimeInMillis = millisUntilFinished;
+                    pauseCounterOnce = false;
+                } else if (!pauseCounterOnce) {
+                    m2.pause();
+                    pauseCounterOnce = true;
+                }
 
                 timeTextView.setText(updateCountDownText());
             }
@@ -162,8 +158,11 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
         showDescription();
     }
 
-    public void onCLickShowPreamb(MenuItem item) {showDescription();}
-    public void showDescription(){
+    public void onCLickShowPreamb(MenuItem item) {
+        showDescription();
+    }
+
+    public void showDescription() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Descompressão");
         alert.setMessage(": O caloiro tem de estar sentado durante 10 minutos, no pátio do ed. A, com o " +
@@ -171,12 +170,14 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
         alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                bCheck=true;
+                bCheck = true;
             }
         });
         alert.create().show();
     }
-    @Override public boolean onCreateOptionsMenu(Menu menu) {
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.menu_preamb, menu);
         return true;
@@ -188,37 +189,27 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
         int minutes = (int) ((mTimeInMillis / 1000) % 3600) / 60;
         int seconds = (int) (mTimeInMillis / 1000) % 60;
         if (hours > 0) {
-            if (Singleton.getInstance().isFenceBool()) {
-                timeLeftFormatted = String.format(Locale.getDefault(),
-                        "%d:%02d:%02d", hours, minutes, seconds);
-            } else {
-                timeLeftFormatted = String.format(Locale.getDefault(),
-                        "%d:%02d:%02d", hours, minutes, seconds);
-            }
+            if (Singleton.getInstance().isFenceBool())
+                timeLeftFormatted = String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes, seconds);
+            else
+                timeLeftFormatted = String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes, seconds);
         } else {
-            if (Singleton.getInstance().isFenceBool()) {
-                timeLeftFormatted = String.format(Locale.getDefault(),
-                        "%02d:%02d -- TRUE", minutes, seconds);
-            } else {
-                timeLeftFormatted = String.format(Locale.getDefault(),
-                        "%02d:%02d --FALSE", minutes, seconds);
-            }
+            if (Singleton.getInstance().isFenceBool())
+                timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d -- TRUE", minutes, seconds);
+            else
+                timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d --FALSE", minutes, seconds);
         }
         return timeLeftFormatted;
     }
-    @Override public void onSensorChanged(SensorEvent sensorEvent) {
-        float x = sensorEvent.values[0];
-        float y = sensorEvent.values[1];
-        float z = sensorEvent.values[2];
 
-        if(z<0)
-            bFaceDown=true;
-        else
-            bFaceDown=false;
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        bFaceDown = sensorEvent.values[2] < 0;
     }
-    @Override public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        Toast.makeText(DescompressaoActivity.this, sensor.getName() + "accuracy changed to " + accuracy,
-                Toast.LENGTH_SHORT).show();
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        Toast.makeText(DescompressaoActivity.this, sensor.getName() + "accuracy changed to " + accuracy, Toast.LENGTH_SHORT).show();
     }
 
     protected void removeFences() {
@@ -229,22 +220,20 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
                     @Override
                     public void onSuccess(Void aVoid) {
                         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                        String text = "\n\n[Fences @ " + timestamp + "]\n"
-                                + "Fences were successfully removed.";
-                        Log.d("xxxfences" , text);
+                        String text = "\n\n[Fences @ " + timestamp + "]\n" + "Fences were successfully removed.";
+                        Log.d("xxxfences", text);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-
-                        String text = "\n\n[Fences @ " + timestamp + "]\n"
-                                + "Fences could not be removed: " + e.getMessage();
-                        Log.d("xxxfences" , text);
+                        String text = "\n\n[Fences @ " + timestamp + "]\n" + "Fences could not be removed: " + e.getMessage();
+                        Log.d("xxxfences", text);
                     }
                 });
     }
+
     protected void queryFences() {
         Awareness.getFenceClient(this).queryFences(FenceQueryRequest.all())
                 .addOnSuccessListener(new OnSuccessListener<FenceQueryResponse>() {
@@ -254,50 +243,54 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
                         FenceStateMap fenceStateMap = fenceQueryResponse.getFenceStateMap();
                         for (String fenceKey : fenceStateMap.getFenceKeys()) {
                             int state = fenceStateMap.getFenceState(fenceKey).getCurrentState();
-                            fenceInfo += fenceKey + ": "
-                                    + (state == FenceState.TRUE ? "TRUE" :
-                                    state == FenceState.FALSE ? "FALSE" : "UNKNOWN") + "\n";
-                            if(fenceKey.equals("locationFenceKey") &&state == FenceState.TRUE)
+                            fenceInfo += fenceKey + ": " + (state == FenceState.TRUE ? "TRUE" : state == FenceState.FALSE ? "FALSE" : "UNKNOWN") + "\n";
+                            if (fenceKey.equals("locationFenceKey") && state == FenceState.TRUE)
                                 Singleton.getInstance().setFenceBool(true);
                         }
                         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                        String text = "\n\n[Fences @ " + timestamp + "]\n"
-                                + "> Fences' states:\n" + (fenceInfo.equals("") ?
-                                "No registered fences." : fenceInfo);
-                        Log.d("xxxfences" , text);
+                        String text = "\n\n[Fences @ " + timestamp + "]\n" + "> Fences' states:\n" + (fenceInfo.equals("") ? "No registered fences." : fenceInfo);
+                        Log.d("xxxfences", text);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                        String text = "\n\n[Fences @ " + timestamp + "]\n"
-                                + "Fences could not be queried: " + e.getMessage();
-                        Log.d("xxxfences" , text);
+                        String text = "\n\n[Fences @ " + timestamp + "]\n" + "Fences could not be queried: " + e.getMessage();
+                        Log.d("xxxfences", text);
                     }
                 });
     }
 
-    @Override protected void onPause() {
+    @Override
+    protected void onPause() {
         super.onPause();
         mSensorManager.unregisterListener(this);
         queryFences();
     }
-    @Override public void onResume() {
+
+    @Override
+    public void onResume() {
         super.onResume();
-        mSensorManager.registerListener( this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
         queryFences();
         Log.d(TAG, "onResume");
     }
-    @Override public void onDestroy() {
+
+    @Override
+    public void onDestroy() {
         super.onDestroy();
         removeFences();
     }
-    @Override public void onStop() {
+
+    @Override
+    public void onStop() {
         queryFences();
         super.onStop();
     }
-    @Override public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Toast.makeText(this, connectionResult.getErrorMessage(), Toast.LENGTH_SHORT).show();
     }
 }
