@@ -110,7 +110,7 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
         fenceReceiver = new FenceReceiver();
         registerReceiver(fenceReceiver, new IntentFilter(FENCE_RECEIVER_ACTION));
 
-        getImageButton = (Button) findViewById(R.id.getImageButton);
+        getImageButton = findViewById(R.id.getImageButton);
         getImageButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -125,11 +125,11 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
                     }
                 });
         createImageProcessor();
-        preview = (ImageView) findViewById(R.id.previewPane);
+        preview = findViewById(R.id.previewPane);
         if (preview == null) {
             Log.d(TAG, "Preview is null");
         }
-        graphicOverlay = (GraphicOverlay) findViewById(R.id.previewOverlay);
+        graphicOverlay = findViewById(R.id.previewOverlay);
         if (graphicOverlay == null) {
             Log.d(TAG, "graphicOverlay is null");
         }

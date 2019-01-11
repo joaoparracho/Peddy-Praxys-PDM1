@@ -89,16 +89,16 @@ public class EdificioActivity extends AppCompatActivity
         fenceReceiver = new FenceReceiver();
         registerReceiver(fenceReceiver, new IntentFilter(FENCE_RECEIVER_ACTION));
 
-        textViewEdificio = (TextView) findViewById(R.id.tVInfo);
+        textViewEdificio = findViewById(R.id.tVInfo);
         tempString = " ";
         for (int i = 0; i < 5; i++)
             if (Singleton.getInstance().getFaltaEdificios(i)) tempString += ((char) (65 + i)) + " ";
         textViewEdificio.setText(edificios + tempString);
 
-        preview = (CameraSourcePreview) findViewById(R.id.firePreview);
+        preview = findViewById(R.id.firePreview);
         if (preview == null) Log.d(TAG, "Preview is null");
 
-        graphicOverlay = (GraphicOverlay) findViewById(R.id.fireFaceOverlay);
+        graphicOverlay = findViewById(R.id.fireFaceOverlay);
         if (graphicOverlay == null) Log.d(TAG, "graphicOverlay is null");
 
         if (allPermissionsGranted()) createCameraSource(selectedModel);

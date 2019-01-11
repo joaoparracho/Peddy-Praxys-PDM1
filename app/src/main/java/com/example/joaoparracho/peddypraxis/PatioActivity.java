@@ -129,7 +129,7 @@ public final class PatioActivity extends AppCompatActivity
         fenceReceiver = new FenceReceiver();
         registerReceiver(fenceReceiver, new IntentFilter(FENCE_RECEIVER_ACTION));
 
-        mTextViewCountDown = (TextView) findViewById(R.id.tVInfo);
+        mTextViewCountDown = findViewById(R.id.tVInfo);
         m1 = new CountDownTimer2(mTimeInMillis, 1000) {
             public void onTick(long millisUntilFinished) {
                 if (Singleton.getInstance().getFd()
@@ -164,11 +164,11 @@ public final class PatioActivity extends AppCompatActivity
             }
         }.start();
 
-        preview = (CameraSourcePreview) findViewById(R.id.firePreview);
+        preview = findViewById(R.id.firePreview);
         if (preview == null) {
             Log.d(TAG, "Preview is null");
         }
-        graphicOverlay = (GraphicOverlay) findViewById(R.id.fireFaceOverlay);
+        graphicOverlay = findViewById(R.id.fireFaceOverlay);
         if (graphicOverlay == null) {
             Log.d(TAG, "graphicOverlay is null");
         }

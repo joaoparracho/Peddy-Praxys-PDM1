@@ -90,7 +90,7 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
         fenceReceiver = new FenceReceiver();
         registerReceiver(fenceReceiver, new IntentFilter(FENCE_RECEIVER_ACTION));
 
-        timeTextView = (TextView) findViewById(R.id.tvTime);
+        timeTextView = findViewById(R.id.tvTime);
 
         m2 = new CountDownTimer2(mTimeInMillis, 1000) {
             public void onTick(long millisUntilFinished) {

@@ -44,8 +44,8 @@ public class GameScreenActivity extends AppCompatActivity {
             @Override
             public void onClick(View view, int position) {
                     Game g = adapter_rec.getPosition(position);
-//                    Intent intent = new Intent(GameScreenActivity.this, PreambuloActivity.class);
-                    Intent intent = new Intent(GameScreenActivity.this, EdificioActivity.class);
+                    Intent intent = new Intent(GameScreenActivity.this, PreambuloActivity.class);
+//                    Intent intent = new Intent(GameScreenActivity.this, EdificioActivity.class);
                     startActivity(intent);
             }
             @Override
