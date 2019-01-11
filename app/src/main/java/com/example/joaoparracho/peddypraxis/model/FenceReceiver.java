@@ -14,6 +14,7 @@ import com.example.joaoparracho.peddypraxis.DescompressaoActivity;
 import com.example.joaoparracho.peddypraxis.GameScreenActivity;
 import com.example.joaoparracho.peddypraxis.LoginActivity;
 import com.example.joaoparracho.peddypraxis.PatioActivity;
+import com.example.joaoparracho.peddypraxis.PreambuloActivity;
 import com.google.android.gms.awareness.fence.FenceState;
 
 public class FenceReceiver extends BroadcastReceiver {
@@ -73,7 +74,8 @@ public class FenceReceiver extends BroadcastReceiver {
                         Log.d("xxxfences", "timefence100 " + fenceState.getCurrentState());
                         break;
                     case FenceState.FALSE:
-                        context.startActivity(new Intent(context,GameScreenActivity.class));
+                        Singleton.getInstance().setActivityKey("finishGameKey");
+                        context.startActivity(new Intent(context,PreambuloActivity.class));
                         Log.d("xxxfences", "timefence100 " + fenceState.getCurrentState());
                         break;
                 }

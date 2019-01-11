@@ -1,5 +1,7 @@
 package com.example.joaoparracho.peddypraxis.model;
 
+import android.util.Log;
+
 public class Singleton {
     private static final Singleton ourInstance = new Singleton();
     private Manager manager;
@@ -10,8 +12,8 @@ public class Singleton {
     private boolean bLibLoc;
     private boolean bInPatio;
     private boolean bCreateFenceTime;
+    private int numTasksComplete;
     private String activityKey="patioKey";
-
 
 
 
@@ -79,6 +81,13 @@ public class Singleton {
         }
     }
 
+    public void restartVariables(){
+        Log.d("xxxfences","Reset variables");
+        Singleton.getInstance().setFd(false);
+        Singleton.getInstance().setShowFinishBtn(false);
+        Singleton.getInstance().setbCreateFenceTime(false);
+        Singleton.getInstance().setNumTasksComplete(0);
+    }
     public String getActivityKey() {
         return activityKey;
     }
@@ -92,5 +101,12 @@ public class Singleton {
 
     public void setbCreateFenceTime(boolean bCreateFenceTime) {
         this.bCreateFenceTime = bCreateFenceTime;
+    }
+
+    public int getNumTasksComplete() {
+        return numTasksComplete;
+    }
+    public void setNumTasksComplete(int numTasksComplete) {
+        this.numTasksComplete = numTasksComplete;
     }
 }

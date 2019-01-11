@@ -64,14 +64,14 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
 
     private TextView timeTextView;
 
-    private long mTimeInMillis = 60 * 10000;
+    private long mTimeInMillis = 60 * 500;
     private CountDownTimer2 m2;
     private boolean pauseCounterOnce;
 
     private SensorManager mSensorManager;
     private Sensor mSensor;
 
-    private boolean bCheck;
+    private boolean bCheck=true;
     private boolean bFaceDown;
     private boolean bRain;
     private Weather weather;
@@ -126,7 +126,7 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
                             }
                         });
 
-                    if (!bRain && bFaceDown && Singleton.getInstance().isFenceBool() && bCheck) {
+                    if (!bRain && bFaceDown && Singleton.getInstance().isFenceBool()&& bCheck ) {
                         if (m2.ismPaused()) {
                             m2.resume();
                         }
@@ -136,15 +136,15 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
                         m2.pause();
                         pauseCounterOnce = true;
                     }
-
                 timeTextView.setText(updateCountDownText());
             }
 
             @Override
             public void onFinish() {
                 timeTextView.setText("Finish");
-                Singleton.getInstance().setActivityKey("patioKey");
-                startActivity(new Intent(DescompressaoActivity.this, GameScreenActivity.class));
+                Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete()+1);
+                Singleton.getInstance().setActivityKey("finishGameKey");
+                startActivity(new Intent(DescompressaoActivity.this, PreambuloActivity.class));
             }
         }.start();
 
@@ -163,7 +163,7 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
         showDescription();
     }
 
-    public void onCLickShowPreamb(MenuItem item) {showDescription();}
+    public void onCLickShowPreamb(MenuItem item) {bCheck=false;showDescription();}
     public void showDescription(){
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Descompressão");

@@ -15,6 +15,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.joaoparracho.peddypraxis.model.FenceReceiver;
@@ -41,6 +43,10 @@ public class PreambuloActivity extends AppCompatActivity implements  GoogleApiCl
 
     private TextView preambTextV;
     private TextView titlePreamTextV;
+    private Button btnPream;
+    private ProgressBar gameProgress;
+
+    private static final int numTask=3;
 
     private GoogleApiClient mGoogleApiClient;
     private FenceReceiver fenceReceiver;
@@ -51,6 +57,8 @@ public class PreambuloActivity extends AppCompatActivity implements  GoogleApiCl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preambulo);
 
+        gameProgress=findViewById(R.id.gameProgressBar);
+        gameProgress.setMax(numTask);
         mGoogleApiClient = new GoogleApiClient
                 .Builder(this)
                 .addApi(Places.GEO_DATA_API)
@@ -63,9 +71,13 @@ public class PreambuloActivity extends AppCompatActivity implements  GoogleApiCl
         fenceReceiver = new FenceReceiver();
         registerReceiver(fenceReceiver, new IntentFilter(FENCE_RECEIVER_ACTION));
 
-        setupFences();
+
+       if(!Singleton.getInstance().getActivityKey().equals("finishGameKey")){setupFences();}
+       else{removeFences();}
+
         preambTextV=findViewById(R.id.tvPreambulo);
         titlePreamTextV=findViewById(R.id.tvPreambTitle);
+        btnPream=findViewById(R.id.btnPlayTask);
         updatePreambuloText();
     }
 
@@ -86,6 +98,17 @@ public class PreambuloActivity extends AppCompatActivity implements  GoogleApiCl
             case "descompressaoKey":
                 titlePreamTextV.setText(getString(R.string.descompressap));
                 preambTextV.setText(getString(R.string.preambDescompressao));
+                break;
+            case "finishGameKey":
+                titlePreamTextV.setText("Game Finished");
+                if(Singleton.getInstance().getNumTasksComplete()==numTask) {
+                    preambTextV.setText("BEM CARALHO!\n Conseguiste concluir tudo");
+                }
+                else{
+                    preambTextV.setText("BELA MERDA CARALHO!\nSo conseguiste completar " +Singleton.getInstance().getNumTasksComplete()
+                    + " numero de tarefas");
+                }
+                btnPream.setText("Voltar Menu de Jogo");
                 break;
         }
     }
@@ -117,17 +140,18 @@ public class PreambuloActivity extends AppCompatActivity implements  GoogleApiCl
                     Snackbar.make(findViewById(android.R.id.content), "Caloiro dirija-se para o pátio do A", Snackbar.LENGTH_LONG).show();
                 }
                 break;
+            case "finishGameKey":
+                showDialogExit();
+                break;
         }
     }
-
-
 
     private void setupFences() {
         long nowMillis = System.currentTimeMillis();
 
         if (!Singleton.getInstance().isbCreateFenceTime()) {
             Singleton.getInstance().setbCreateFenceTime(true);
-            AwarenessFence timeFence100 = TimeFence.inInterval(nowMillis, nowMillis + 60 * 60000); // one minute starting in thirty seconds
+            AwarenessFence timeFence100 = TimeFence.inInterval(nowMillis,nowMillis + 60 * 60000); // one minute starting in thirty seconds
             AwarenessFence timeFence50 = TimeFence.inInterval(nowMillis, nowMillis + 60 * 30000); // one minute starting in thirty seconds
             AwarenessFence timeFence90 = TimeFence.inInterval(nowMillis, nowMillis + 60 * 54000); // one minute starting in thirty seconds
 
@@ -210,7 +234,28 @@ public class PreambuloActivity extends AppCompatActivity implements  GoogleApiCl
     @Override public void onBackPressed() {
         queryFences();
         Log.d("xxxfences", "back button pressed");
-        showDialogWaring();
+        if(!Singleton.getInstance().getActivityKey().equals("finishGameKey")){showDialogWaring();}
+        else{showDialogExit();}
+    }
+    public void showDialogExit() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Exit Game");
+        alert.setMessage("Caloiro pretende voltar ao menu de jogos?");
+        alert.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Singleton.getInstance().restartVariables();
+                Singleton.getInstance().setActivityKey("patioKey");
+                startActivity(new Intent(PreambuloActivity.this, GameScreenActivity.class));
+                finish();
+            }
+        });
+        alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        alert.create().show();
     }
     public void showDialogWaring() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
@@ -219,9 +264,9 @@ public class PreambuloActivity extends AppCompatActivity implements  GoogleApiCl
         alert.setPositiveButton("Terminar Jogo", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Singleton.getInstance().setbCreateFenceTime(false);
-                Singleton.getInstance().setActivityKey("patioKey");
+                Singleton.getInstance().restartVariables();
                 removeFences();
+                Singleton.getInstance().setActivityKey("patioKey");
                 startActivity(new Intent(PreambuloActivity.this, GameScreenActivity.class));
                 finish();
             }
@@ -236,6 +281,7 @@ public class PreambuloActivity extends AppCompatActivity implements  GoogleApiCl
 
     @Override public void onResume() {
         super.onResume();
+        gameProgress.setProgress(Singleton.getInstance().getNumTasksComplete());
         queryFences();
     }
     @Override protected void onPause() {
