@@ -159,6 +159,7 @@ public final class PatioActivity extends AppCompatActivity
             public void onFinish() {
                 mTextViewCountDown.setText("Finish");
                 Singleton.getInstance().setActivityKey("bibliotecaKey");
+                Singleton.getInstance().setNumTasksComplete( Singleton.getInstance().getNumTasksComplete()+1);
                 startActivity(new Intent(PatioActivity.this, PreambuloActivity.class));
                 finish();
             }
@@ -272,7 +273,6 @@ public final class PatioActivity extends AppCompatActivity
         });
         alert.create().show();
     }
-
 
     @Override public synchronized void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
         // An item was selected. You can retrieve the selected item using

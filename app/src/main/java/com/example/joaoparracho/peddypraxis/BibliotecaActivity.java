@@ -142,14 +142,16 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
                 String feedback = msg.getData().getString("FEEDBACK");
                 if (feedback != null) {
                     Snackbar.make(findViewById(android.R.id.content), feedback, Snackbar.LENGTH_LONG).show();
+                    //alterar o nome desta variavel. Nao esta explicita inicialmente era usar para mudar a visibilidade de um botao
                     if (Singleton.getInstance().isShowFinishBtn()) {
+                        Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete()+1);
                         Singleton.getInstance().setActivityKey("descompressaoKey");
                         startActivity(new Intent(BibliotecaActivity.this, PreambuloActivity.class));
+                        finish();
                     }
                 }
             }
         };
-
         isLandScape =
                 (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
 
@@ -163,8 +165,6 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
                 tryReloadAndDetectInImage();
             }
         }
-        //setupFences();
-        showDescription();
     }
 
     public void onCLickShowPreamb(MenuItem item) {showDescription();}
@@ -280,31 +280,6 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
         }
     }
 
-   /* private void setupFences() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling.
-            return;
-        }
-        AwarenessFence libraryLocationFence = LocationFence.in(39.733873,-8.821877, 30, 0L);
-        addFence("libLocationFenceKey", libraryLocationFence);
-    }
-    private void addFence(final String fenceKey, final AwarenessFence fence) {
-        Awareness.getFenceClient(this).updateFences(new FenceUpdateRequest.Builder()
-                .addFence(fenceKey, fence, myPendingIntent)
-                .build())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Snackbar.make(findViewById(android.R.id.content), "Sucess to add Fence", Snackbar.LENGTH_LONG).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Snackbar.make(findViewById(android.R.id.content), "Failed to add Fence", Snackbar.LENGTH_LONG).show();
-                    }
-                });
-    }*/
     protected void queryFences() {
         Awareness.getFenceClient(this).queryFences(FenceQueryRequest.all())
                 .addOnSuccessListener(new OnSuccessListener<FenceQueryResponse>() {
