@@ -58,16 +58,10 @@ public class TextRecognitionProcessor extends VisionProcessorBase<FirebaseVision
     }
 
     @Override
-    protected void onSuccess(
-            @Nullable Bitmap originalCameraImage,
-            @NonNull FirebaseVisionText results,
-            @NonNull FrameMetadata frameMetadata,
-            @NonNull GraphicOverlay graphicOverlay) {
+    protected void onSuccess( @Nullable Bitmap originalCameraImage, @NonNull FirebaseVisionText results, @NonNull FrameMetadata frameMetadata, @NonNull GraphicOverlay graphicOverlay) {
         graphicOverlay.clear();
         graphicOverlay.clear();
-        if (originalCameraImage != null) {
-            graphicOverlay.add(new CameraImageGraphic(graphicOverlay, originalCameraImage));
-        }
+        if (originalCameraImage != null) graphicOverlay.add(new CameraImageGraphic(graphicOverlay, originalCameraImage));
         String texto = results.getText();
         Message message = EdificioActivity.mHandler.obtainMessage();
         Bundle bundle = new Bundle();
@@ -83,15 +77,8 @@ public class TextRecognitionProcessor extends VisionProcessorBase<FirebaseVision
             }
         }
         if ((this.letra == 'A' || this.letra == 'B' || this.letra == 'C' || this.letra == 'D' || this.letra == 'E') && this.letra != this.lastLetra) {
-            String str = TAG;
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("Estou no ");
-            stringBuilder.append(this.letra);
-            Log.d(str, stringBuilder.toString());
-            stringBuilder = new StringBuilder();
-            stringBuilder.append("");
-            stringBuilder.append(this.letra);
-            bundle.putString("FEEDBACK", stringBuilder.toString());
+            Log.d(TAG, "Estou no " + this.letra);
+            bundle.putString("FEEDBACK", "" + this.letra);
             message.setData(bundle);
             EdificioActivity.mHandler.sendMessage(message);
             this.lastLetra = this.letra;

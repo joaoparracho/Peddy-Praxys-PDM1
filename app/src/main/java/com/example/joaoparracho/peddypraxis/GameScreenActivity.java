@@ -23,33 +23,34 @@ import com.google.firebase.auth.FirebaseAuth;
 public class GameScreenActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
 
-    private int mCurrentItemPosition;
     private RecyclerView recyclerView;
     private Game_adapter_rec adapter_rec;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gamescreen);
 
         firebaseAuth = FirebaseAuth.getInstance();
-        Game g1= new Game("PeddyPraxis","Melhor jogo de Sempre", "Parracho & Xavi",60);
-        Singleton.getInstance().getManager().addGame(g1);
+        if(Singleton.getInstance().getManager().getGames().size()==0) Singleton.getInstance().getManager().addGame(new Game("PeddyPraxis", "Melhor jogo de Sempre", "Parracho & Xavi", 60));
         recyclerView = findViewById(R.id.recycleView_games);
         adapter_rec = new Game_adapter_rec(this, Singleton.getInstance().getManager().getGames());
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
-        recyclerView.setItemAnimator(new DefaultItemAnimator());recyclerView.setAdapter(adapter_rec);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(adapter_rec);
         adapter_rec.notifyDataSetChanged();
 
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                    Game g = adapter_rec.getPosition(position);
-                    Intent intent = new Intent(GameScreenActivity.this, PreambuloActivity.class);
+                Intent intent = new Intent(GameScreenActivity.this, PreambuloActivity.class);
 //                    Intent intent = new Intent(GameScreenActivity.this, EdificioActivity.class);
-                    startActivity(intent);
+                startActivity(intent);
             }
+
             @Override
-            public void onLongClick(View view, int position) { mCurrentItemPosition = position; }
+            public void onLongClick(View view, int position) {
+            }
         }));
         registerForContextMenu(recyclerView);
     }
@@ -57,6 +58,7 @@ public class GameScreenActivity extends AppCompatActivity {
     public void onClickReturn(MenuItem item) {
         showLogoutDialog();
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -64,25 +66,25 @@ public class GameScreenActivity extends AppCompatActivity {
         return true;
     }
 
-    public void showLogoutDialog(){
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("Logout");
-        alert.setMessage("Do you really want to logout from your account?");
-        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                firebaseAuth.signOut();
-                finish();
-                startActivity(new Intent(GameScreenActivity.this, LoginActivity.class));
-            }
-        });
-        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(GameScreenActivity.this,"So, let´s PLAAAYYYYYYYY",Toast.LENGTH_SHORT).show();
-            }
-        });
-        alert.create().show();
+    public void showLogoutDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Logout")
+                .setMessage("Do you really want to logout from your account?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        firebaseAuth.signOut();
+                        finish();
+                        startActivity(new Intent(GameScreenActivity.this, LoginActivity.class));
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(GameScreenActivity.this, "So, let´s PLAAAYYYYYYYY", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .create().show();
     }
 
 

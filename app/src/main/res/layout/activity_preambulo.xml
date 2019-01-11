@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <ProgressBar
         android:id="@+id/gameProgressBar"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="33dp"
+        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="0dp"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-        android:max="3"/>
+        android:max="4" />
 
     <TextView
         android:id="@+id/tvPreambTitle"
@@ -37,13 +36,9 @@
         android:id="@+id/btnPlayTask"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="130dp"
-        android:layout_marginTop="0dp"
+        android:layout_centerHorizontal="true"
         android:layout_marginBottom="37dp"
-        android:text="Jogar Tarefa"
         android:onClick="oncLickPreamb"
-        tools:layout_editor_absoluteX="148dp"
-        tools:layout_editor_absoluteY="404dp" />
+        android:text="Jogar Tarefa" />
 </RelativeLayout>
