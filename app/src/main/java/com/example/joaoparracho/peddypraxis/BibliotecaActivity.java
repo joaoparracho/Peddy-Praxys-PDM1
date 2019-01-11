@@ -98,17 +98,8 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_biblioteca);
-        mGoogleApiClient = new GoogleApiClient
-                .Builder(this)
-                .addApi(Places.GEO_DATA_API)
-                .addApi(Places.PLACE_DETECTION_API)
-                .enableAutoManage(this, this)
-                .build();
 
-        Intent intent = new Intent(FENCE_RECEIVER_ACTION);
-        myPendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-        fenceReceiver = new FenceReceiver();
-        registerReceiver(fenceReceiver, new IntentFilter(FENCE_RECEIVER_ACTION));
+        Log.d("biblio","1 " +Singleton.getInstance().getNumTasksComplete());
 
         getImageButton = (Button) findViewById(R.id.getImageButton);
         getImageButton.setOnClickListener(
@@ -144,6 +135,7 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
                     Snackbar.make(findViewById(android.R.id.content), feedback, Snackbar.LENGTH_LONG).show();
                     //alterar o nome desta variavel. Nao esta explicita inicialmente era usar para mudar a visibilidade de um botao
                     if (Singleton.getInstance().isShowFinishBtn()) {
+                        Log.d("biblio","2 " +Singleton.getInstance().getNumTasksComplete());
                         Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete()+1);
                         Singleton.getInstance().setActivityKey("descompressaoKey");
                         startActivity(new Intent(BibliotecaActivity.this, PreambuloActivity.class));
@@ -189,6 +181,7 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
     @Override public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
+        outState.putString("numTask", Integer.toString(Singleton.getInstance().getNumTasksComplete()));
         outState.putParcelable(KEY_IMAGE_URI, imageUri);
         if (imageMaxWidth != null) {
             outState.putInt(KEY_IMAGE_MAX_WIDTH, imageMaxWidth);
@@ -198,6 +191,17 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
         }
         outState.putString(KEY_SELECTED_SIZE, selectedSize);
     }
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        // TODO Auto-generated method stub
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey("numTask")) {
+                Singleton.getInstance().setNumTasksComplete(Integer.parseInt(savedInstanceState.getString("numTask")));
+            }
+        }
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
     private void startCameraIntentForResult() {
         // Clean up last time's image
         imageUri = null;
@@ -279,7 +283,6 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
                 throw new IllegalStateException("Unknown selectedMode: " + selectedMode);
         }
     }
-
     protected void queryFences() {
         Awareness.getFenceClient(this).queryFences(FenceQueryRequest.all())
                 .addOnSuccessListener(new OnSuccessListener<FenceQueryResponse>() {

@@ -159,8 +159,6 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
                 }
             }
         };
-
-        showDescription();
     }
 
     public void onCLickShowPreamb(MenuItem item) {bCheck=false;showDescription();}
@@ -189,21 +187,11 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
         int minutes = (int) ((mTimeInMillis / 1000) % 3600) / 60;
         int seconds = (int) (mTimeInMillis / 1000) % 60;
         if (hours > 0) {
-            if (Singleton.getInstance().isFenceBool()) {
                 timeLeftFormatted = String.format(Locale.getDefault(),
                         "%d:%02d:%02d", hours, minutes, seconds);
-            } else {
-                timeLeftFormatted = String.format(Locale.getDefault(),
-                        "%d:%02d:%02d", hours, minutes, seconds);
-            }
         } else {
-            if (Singleton.getInstance().isFenceBool()) {
                 timeLeftFormatted = String.format(Locale.getDefault(),
-                        "%02d:%02d -- TRUE", minutes, seconds);
-            } else {
-                timeLeftFormatted = String.format(Locale.getDefault(),
-                        "%02d:%02d --FALSE", minutes, seconds);
-            }
+                        "%02d:%02d", minutes, seconds);
         }
         return timeLeftFormatted;
     }

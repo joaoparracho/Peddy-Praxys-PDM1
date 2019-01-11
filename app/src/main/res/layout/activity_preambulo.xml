@@ -7,12 +7,12 @@
 
     <ProgressBar
         android:id="@+id/gameProgressBar"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="match_parent"
-        android:layout_height="33dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="0dp"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-        android:max="3"/>
+        android:max="3" />
 
     <TextView
         android:id="@+id/tvPreambTitle"
@@ -20,30 +20,44 @@
         android:layout_height="50dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="31dp"
         android:textAlignment="center"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tvPreambulo"
         android:layout_width="match_parent"
-        android:layout_height="267dp"
+        android:layout_height="220dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="0dp"
-        android:layout_marginTop="120dp" />
+        android:layout_marginTop="103dp" />
 
     <Button
         android:id="@+id/btnPlayTask"
+        android:layout_width="188dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="91dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="46dp"
+        android:onClick="oncLickPreamb"
+        android:text="Jogar Tarefa"
+        tools:layout_editor_absoluteX="148dp"
+        tools:layout_editor_absoluteY="404dp" />
+
+    <EditText
+        android:id="@+id/editTextResposta"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="130dp"
-        android:layout_marginTop="0dp"
-        android:layout_marginBottom="37dp"
-        android:text="Jogar Tarefa"
-        android:onClick="oncLickPreamb"
-        tools:layout_editor_absoluteX="148dp"
-        tools:layout_editor_absoluteY="404dp" />
+        android:layout_marginStart="13dp"
+        android:layout_marginBottom="123dp"
+        android:visibility="invisible"
+        android:ems="10"
+        android:hint="Insira a Resposta"
+        android:inputType="textUri|textPersonName" />
+
 </RelativeLayout>

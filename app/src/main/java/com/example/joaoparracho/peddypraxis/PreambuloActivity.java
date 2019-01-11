@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -43,10 +44,13 @@ public class PreambuloActivity extends AppCompatActivity implements  GoogleApiCl
 
     private TextView preambTextV;
     private TextView titlePreamTextV;
+    private EditText respostaEdtT;
     private Button btnPream;
     private ProgressBar gameProgress;
 
     private static final int numTask=3;
+
+    private long finishTime;
 
     private GoogleApiClient mGoogleApiClient;
     private FenceReceiver fenceReceiver;
@@ -58,6 +62,11 @@ public class PreambuloActivity extends AppCompatActivity implements  GoogleApiCl
         setContentView(R.layout.activity_preambulo);
 
         gameProgress=findViewById(R.id.gameProgressBar);
+        respostaEdtT=findViewById(R.id.editTextResposta);
+        preambTextV=findViewById(R.id.tvPreambulo);
+        titlePreamTextV=findViewById(R.id.tvPreambTitle);
+        btnPream=findViewById(R.id.btnPlayTask);
+
         gameProgress.setMax(numTask);
         mGoogleApiClient = new GoogleApiClient
                 .Builder(this)
@@ -71,13 +80,15 @@ public class PreambuloActivity extends AppCompatActivity implements  GoogleApiCl
         fenceReceiver = new FenceReceiver();
         registerReceiver(fenceReceiver, new IntentFilter(FENCE_RECEIVER_ACTION));
 
+        if(Singleton.getInstance().getStartTime()==-1){Singleton.getInstance().setStartTime(System.currentTimeMillis());}
 
-       if(!Singleton.getInstance().getActivityKey().equals("finishGameKey")){setupFences();}
+       if(!Singleton.getInstance().getActivityKey().equals("finishGameKey")){
+           setupFences();
+           if(Singleton.getInstance().getActivityKey().equals("bibliotecaKey")){
+               respostaEdtT.setVisibility(View.VISIBLE);
+           }
+       }
        else{removeFences();}
-
-        preambTextV=findViewById(R.id.tvPreambulo);
-        titlePreamTextV=findViewById(R.id.tvPreambTitle);
-        btnPream=findViewById(R.id.btnPlayTask);
         updatePreambuloText();
     }
 
@@ -101,8 +112,17 @@ public class PreambuloActivity extends AppCompatActivity implements  GoogleApiCl
                 break;
             case "finishGameKey":
                 titlePreamTextV.setText("Game Finished");
+                finishTime=System.currentTimeMillis()-Singleton.getInstance().getStartTime();
+                int min =(int) (((finishTime) / 1000) % 3600) / 60;
+                int sec = (int) (finishTime / 1000) % 60;
+
                 if(Singleton.getInstance().getNumTasksComplete()==numTask) {
-                    preambTextV.setText("BEM CARALHO!\n Conseguiste concluir tudo");
+                    if((int) ((finishTime/ 1000) / 3600)>0){
+                        preambTextV.setText("BEM CARALHO!\n Conseguiste concluir tudo em 1 hora mesmo por pouco");
+                    }
+                    else{
+                        preambTextV.setText("BEM CARALHO!\n Conseguiste concluir tudo em "+min+" minutos e "+sec +" segundos");
+                    }
                 }
                 else{
                     preambTextV.setText("BELA MERDA CARALHO!\nSo conseguiste completar " +Singleton.getInstance().getNumTasksComplete()
@@ -125,11 +145,16 @@ public class PreambuloActivity extends AppCompatActivity implements  GoogleApiCl
             case "edificiosKey":
                 break;
             case "bibliotecaKey":
-                if(Singleton.getInstance().isbLibLoc()){
+                if(Singleton.getInstance().isbLibLoc() && respostaEdtT.getText().toString().equalsIgnoreCase("criatividade")){
                     startActivity(new Intent(PreambuloActivity.this, BibliotecaActivity.class));
                 }
                 else{
-                    Snackbar.make(findViewById(android.R.id.content), "Caloiro dirija-se para a Biblioteca", Snackbar.LENGTH_LONG).show();
+                    if(!Singleton.getInstance().isbLibLoc()) {
+                        Snackbar.make(findViewById(android.R.id.content), "Caloiro dirija-se para a Biblioteca", Snackbar.LENGTH_LONG).show();
+                    }
+                    else{
+                        Snackbar.make(findViewById(android.R.id.content), "Introduza a resposta correta!", Snackbar.LENGTH_LONG).show();
+                    }
                 }
                 break;
             case "descompressaoKey":

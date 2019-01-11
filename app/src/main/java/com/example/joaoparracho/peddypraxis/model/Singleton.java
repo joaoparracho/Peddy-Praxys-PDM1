@@ -13,6 +13,7 @@ public class Singleton {
     private boolean bInPatio;
     private boolean bCreateFenceTime;
     private int numTasksComplete;
+    private long startTime=-1;
     private String activityKey="patioKey";
 
 
@@ -87,6 +88,7 @@ public class Singleton {
         Singleton.getInstance().setShowFinishBtn(false);
         Singleton.getInstance().setbCreateFenceTime(false);
         Singleton.getInstance().setNumTasksComplete(0);
+        Singleton.getInstance().setStartTime(-1);
     }
     public String getActivityKey() {
         return activityKey;
@@ -108,5 +110,13 @@ public class Singleton {
     }
     public void setNumTasksComplete(int numTasksComplete) {
         this.numTasksComplete = numTasksComplete;
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
     }
 }
