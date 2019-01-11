@@ -63,6 +63,7 @@
             android:label="Biblioteca"
             android:windowSoftInputMode="stateHidden" />
         <activity android:name=".DescompressaoActivity" />
+        <activity android:name=".PreambuloActivity" />
     </application>
 
 </manifest>

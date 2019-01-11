@@ -20,9 +20,7 @@ public class FenceReceiver extends BroadcastReceiver {
 
     public static final String TAG_FENCES = "fences";
     private static final String FENCE_RECEIVER_ACTION = "FENCE_RECEIVER_ACTION";
-   /* Message message = PatioActivity.mHandler.obtainMessage();
-    Message message2 = BibliotecaActivity.mHandler.obtainMessage();
-    Message message3 = DescompressaoActivity.mHandler.obtainMessage();*/
+
     @Override
     public void onReceive(Context context, Intent intent) {
         if (!intent.getAction().equals(FENCE_RECEIVER_ACTION)) {

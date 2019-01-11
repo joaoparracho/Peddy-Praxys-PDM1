@@ -114,7 +114,6 @@ public class LoginActivity extends AppCompatActivity {
         });
 
     }
-
     public void onClickResetPassword(View view) {
         startActivity(new Intent(LoginActivity.this, PasswordActivity.class));
     }
