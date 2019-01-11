@@ -136,10 +136,11 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
                     //alterar o nome desta variavel. Nao esta explicita inicialmente era usar para mudar a visibilidade de um botao
                     if (Singleton.getInstance().isShowFinishBtn()) {
                         Log.d("biblio","2 " +Singleton.getInstance().getNumTasksComplete());
-                        Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete()+1);
+                        Singleton.getInstance().setNumTasksComplete(2);
                         Singleton.getInstance().setActivityKey("descompressaoKey");
-                        startActivity(new Intent(BibliotecaActivity.this, PreambuloActivity.class));
                         finish();
+                        startActivity(new Intent(BibliotecaActivity.this, PreambuloActivity.class));
+
                     }
                 }
             }
@@ -201,7 +202,6 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
         }
         super.onRestoreInstanceState(savedInstanceState);
     }
-
     private void startCameraIntentForResult() {
         // Clean up last time's image
         imageUri = null;

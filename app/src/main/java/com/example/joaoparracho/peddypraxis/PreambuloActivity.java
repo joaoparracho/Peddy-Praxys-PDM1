@@ -40,7 +40,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.sql.Timestamp;
 
-public class PreambuloActivity extends AppCompatActivity implements  GoogleApiClient.OnConnectionFailedListener {
+public class PreambuloActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     private TextView preambTextV;
     private TextView titlePreamTextV;
@@ -48,7 +48,7 @@ public class PreambuloActivity extends AppCompatActivity implements  GoogleApiCl
     private Button btnPream;
     private ProgressBar gameProgress;
 
-    private static final int numTask=3;
+    private static final int numTask = 5;
 
     private long finishTime;
 
@@ -56,16 +56,17 @@ public class PreambuloActivity extends AppCompatActivity implements  GoogleApiCl
     private FenceReceiver fenceReceiver;
     private PendingIntent myPendingIntent;
     private static final String FENCE_RECEIVER_ACTION = "FENCE_RECEIVER_ACTION";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preambulo);
 
-        gameProgress=findViewById(R.id.gameProgressBar);
-        respostaEdtT=findViewById(R.id.editTextResposta);
-        preambTextV=findViewById(R.id.tvPreambulo);
-        titlePreamTextV=findViewById(R.id.tvPreambTitle);
-        btnPream=findViewById(R.id.btnPlayTask);
+        gameProgress = findViewById(R.id.gameProgressBar);
+        respostaEdtT = findViewById(R.id.editTextResposta);
+        preambTextV = findViewById(R.id.tvPreambulo);
+        titlePreamTextV = findViewById(R.id.tvPreambTitle);
+        btnPream = findViewById(R.id.btnPlayTask);
 
         gameProgress.setMax(numTask);
         mGoogleApiClient = new GoogleApiClient
@@ -80,20 +81,23 @@ public class PreambuloActivity extends AppCompatActivity implements  GoogleApiCl
         fenceReceiver = new FenceReceiver();
         registerReceiver(fenceReceiver, new IntentFilter(FENCE_RECEIVER_ACTION));
 
-        if(Singleton.getInstance().getStartTime()==-1){Singleton.getInstance().setStartTime(System.currentTimeMillis());}
+        if (Singleton.getInstance().getStartTime() == -1) {
+            Singleton.getInstance().setStartTime(System.currentTimeMillis());
+        }
 
-       if(!Singleton.getInstance().getActivityKey().equals("finishGameKey")){
-           setupFences();
-           if(Singleton.getInstance().getActivityKey().equals("bibliotecaKey")){
-               respostaEdtT.setVisibility(View.VISIBLE);
-           }
-       }
-       else{removeFences();}
+        if (!Singleton.getInstance().getActivityKey().equals("finishGameKey")) {
+            setupFences();
+            if (Singleton.getInstance().getActivityKey().equals("bibliotecaKey")) {
+                respostaEdtT.setVisibility(View.VISIBLE);
+            }
+        } else {
+            removeFences();
+        }
         updatePreambuloText();
     }
 
-    private void updatePreambuloText(){
-        switch (Singleton.getInstance().getActivityKey()){
+    private void updatePreambuloText() {
+        switch (Singleton.getInstance().getActivityKey()) {
             case "patioKey":
                 titlePreamTextV.setText(getString(R.string.patio));
                 preambTextV.setText(getString(R.string.preambPatio));
@@ -110,58 +114,66 @@ public class PreambuloActivity extends AppCompatActivity implements  GoogleApiCl
                 titlePreamTextV.setText(getString(R.string.descompressap));
                 preambTextV.setText(getString(R.string.preambDescompressao));
                 break;
+            case "corridaKey":
+                titlePreamTextV.setText("Corrida");
+                preambTextV.setText("O caloiro tem 30 segundos para se deslocar ate a esslei +" +
+                        "Comece no patio do A.");
+                break;
             case "finishGameKey":
                 titlePreamTextV.setText("Game Finished");
-                finishTime=System.currentTimeMillis()-Singleton.getInstance().getStartTime();
-                int min =(int) (((finishTime) / 1000) % 3600) / 60;
+                finishTime = System.currentTimeMillis() - Singleton.getInstance().getStartTime();
+                int min = (int) (((finishTime) / 1000) % 3600) / 60;
                 int sec = (int) (finishTime / 1000) % 60;
 
-                if(Singleton.getInstance().getNumTasksComplete()==numTask) {
-                    if((int) ((finishTime/ 1000) / 3600)>0){
+                if (Singleton.getInstance().getNumTasksComplete() >= numTask) {
+                    if ((int) ((finishTime / 1000) / 3600) > 0) {
                         preambTextV.setText("BEM CARALHO!\n Conseguiste concluir tudo em 1 hora mesmo por pouco");
+                    } else {
+                        preambTextV.setText("BEM CARALHO!\n Conseguiste concluir tudo em " + min + " minutos e " + sec + " segundos");
                     }
-                    else{
-                        preambTextV.setText("BEM CARALHO!\n Conseguiste concluir tudo em "+min+" minutos e "+sec +" segundos");
-                    }
-                }
-                else{
-                    preambTextV.setText("BELA MERDA CARALHO!\nSo conseguiste completar " +Singleton.getInstance().getNumTasksComplete()
-                    + " numero de tarefas");
+                } else {
+                    preambTextV.setText("BELA MERDA CARALHO!\nSo conseguiste completar " + Singleton.getInstance().getNumTasksComplete()
+                            + " numero de tarefas");
                 }
                 btnPream.setText("Voltar Menu de Jogo");
                 break;
         }
     }
+
     public void oncLickPreamb(View view) {
-        switch (Singleton.getInstance().getActivityKey()){
+        switch (Singleton.getInstance().getActivityKey()) {
             case "patioKey":
-                if(Singleton.getInstance().isFenceBool()){
+                if (Singleton.getInstance().isFenceBool()) {
                     startActivity(new Intent(PreambuloActivity.this, PatioActivity.class));
-                }
-                else{
+                } else {
                     Snackbar.make(findViewById(android.R.id.content), "Caloiro dirija-se para o pátio do A", Snackbar.LENGTH_LONG).show();
                 }
                 break;
             case "edificiosKey":
                 break;
             case "bibliotecaKey":
-                if(Singleton.getInstance().isbLibLoc() && respostaEdtT.getText().toString().equalsIgnoreCase("criatividade")){
+                if (Singleton.getInstance().isbLibLoc() && respostaEdtT.getText().toString().equalsIgnoreCase("criatividade")) {
                     startActivity(new Intent(PreambuloActivity.this, BibliotecaActivity.class));
-                }
-                else{
-                    if(!Singleton.getInstance().isbLibLoc()) {
+                } else {
+                    if (!Singleton.getInstance().isbLibLoc()) {
                         Snackbar.make(findViewById(android.R.id.content), "Caloiro dirija-se para a Biblioteca", Snackbar.LENGTH_LONG).show();
-                    }
-                    else{
+                    } else {
                         Snackbar.make(findViewById(android.R.id.content), "Introduza a resposta correta!", Snackbar.LENGTH_LONG).show();
                     }
                 }
                 break;
             case "descompressaoKey":
-                if(Singleton.getInstance().isFenceBool()){
+                if (Singleton.getInstance().isFenceBool()) {
                     startActivity(new Intent(PreambuloActivity.this, DescompressaoActivity.class));
+                } else {
+                    Snackbar.make(findViewById(android.R.id.content), "Caloiro dirija-se para o pátio do A", Snackbar.LENGTH_LONG).show();
                 }
-                else{
+                break;
+            case "corridaKey":
+                if (Singleton.getInstance().isFenceBool()) {
+
+                    startActivity(new Intent(PreambuloActivity.this, CorridaActivity.class));
+                } else {
                     Snackbar.make(findViewById(android.R.id.content), "Caloiro dirija-se para o pátio do A", Snackbar.LENGTH_LONG).show();
                 }
                 break;
@@ -176,7 +188,7 @@ public class PreambuloActivity extends AppCompatActivity implements  GoogleApiCl
 
         if (!Singleton.getInstance().isbCreateFenceTime()) {
             Singleton.getInstance().setbCreateFenceTime(true);
-            AwarenessFence timeFence100 = TimeFence.inInterval(nowMillis,nowMillis + 60 * 60000); // one minute starting in thirty seconds
+            AwarenessFence timeFence100 = TimeFence.inInterval(nowMillis, nowMillis + 60 * 60000); // one minute starting in thirty seconds
             AwarenessFence timeFence50 = TimeFence.inInterval(nowMillis, nowMillis + 60 * 30000); // one minute starting in thirty seconds
             AwarenessFence timeFence90 = TimeFence.inInterval(nowMillis, nowMillis + 60 * 54000); // one minute starting in thirty seconds
 
@@ -190,9 +202,14 @@ public class PreambuloActivity extends AppCompatActivity implements  GoogleApiCl
 
             addFence("notWalkingFenceKey", notWalkingFence);
         }
-        Log.d("xxxfences", "Olha a string"+Singleton.getInstance().getActivityKey());
-        switch (Singleton.getInstance().getActivityKey()){
-
+        Log.d("xxxfences", "Olha a string" + Singleton.getInstance().getActivityKey());
+        switch (Singleton.getInstance().getActivityKey()) {
+            case "corridaKey":
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {// TODO: Consider calling
+                    return;
+                }
+                AwarenessFence essleiLocationFence = LocationFence.entering(39.732766, -8.820643, 30);
+                addFence("essleiFenceKey", essleiLocationFence);
             case "patioKey":
             case "descompressaoKey":
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

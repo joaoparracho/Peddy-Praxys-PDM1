@@ -11,6 +11,7 @@ public class Singleton {
     private boolean notWalkinBool;
     private boolean bLibLoc;
     private boolean bInPatio;
+    private boolean bInEsslei;
     private boolean bCreateFenceTime;
     private int numTasksComplete;
     private long startTime=-1;
@@ -118,5 +119,13 @@ public class Singleton {
 
     public void setStartTime(long startTime) {
         this.startTime = startTime;
+    }
+
+    public boolean isbInEsslei() {
+        return bInEsslei;
+    }
+
+    public void setbInEsslei(boolean bInEsslei) {
+        this.bInEsslei = bInEsslei;
     }
 }

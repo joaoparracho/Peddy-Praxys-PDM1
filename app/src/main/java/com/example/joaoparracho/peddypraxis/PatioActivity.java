@@ -167,8 +167,9 @@ public final class PatioActivity extends AppCompatActivity
                 mTextViewCountDown.setText("Finish");
                 Singleton.getInstance().setActivityKey("bibliotecaKey");
                 Singleton.getInstance().setNumTasksComplete( Singleton.getInstance().getNumTasksComplete()+1);
-                startActivity(new Intent(PatioActivity.this, PreambuloActivity.class));
                 finish();
+                startActivity(new Intent(PatioActivity.this, PreambuloActivity.class));
+
             }
         }.start();
 

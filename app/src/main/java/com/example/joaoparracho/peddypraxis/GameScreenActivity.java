@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -65,6 +66,11 @@ public class GameScreenActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override public void onBackPressed() {
+        Log.d("xxxfences", "back button pressed");
+        showLogoutDialog();
+    }
+
     public void showLogoutDialog(){
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Logout");
@@ -74,7 +80,9 @@ public class GameScreenActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 firebaseAuth.signOut();
                 finish();
-                startActivity(new Intent(GameScreenActivity.this, LoginActivity.class));
+                Intent i =new Intent(GameScreenActivity.this, LoginActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
             }
         });
         alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -85,9 +93,4 @@ public class GameScreenActivity extends AppCompatActivity {
         });
         alert.create().show();
     }
-
-
-
-
-
 }
