@@ -46,25 +46,18 @@ import android.os.Message;
  * compared to the countdown interval.
  */
 public abstract class CountDownTimer2 {
-
     /**
      * Millis since epoch when alarm should stop.
      */
     private final long mMillisInFuture;
-
     /**
      * The interval in millis that the user receives callbacks
      */
     private final long mCountdownInterval;
-
     private long mStopTimeInFuture;
-
     private long mPauseTime;
-
     private boolean mCancelled = false;
-
     private boolean mPaused = false;
-
     public boolean ismPaused() {
         return mPaused;
     }
@@ -90,7 +83,6 @@ public abstract class CountDownTimer2 {
         mHandler.removeMessages(MSG);
         mCancelled = true;
     }
-
     /**
      * Start the countdown.
      */
@@ -105,7 +97,6 @@ public abstract class CountDownTimer2 {
         mPaused = false;
         return this;
     }
-
     /**
      * Pause the countdown.
      */
@@ -114,17 +105,15 @@ public abstract class CountDownTimer2 {
         mPaused = true;
         return mPauseTime;
     }
-
     /**
      * Resume the countdown.
      */
     public long resume() {
         mStopTimeInFuture = mPauseTime + SystemClock.elapsedRealtime();
         mPaused = false;
-        mHandler.sendMessage(mHandler.obtainMessage(MSG));
+       // mHandler.sendMessage(mHandler.obtainMessage(MSG));
         return mPauseTime;
     }
-
     /**
      * Callback fired on regular interval.
      * @param millisUntilFinished The amount of time until finished.
@@ -135,8 +124,6 @@ public abstract class CountDownTimer2 {
      * Callback fired when the time is up.
      */
     public abstract void onFinish();
-
-
     private static final int MSG = 1;
 
 
@@ -154,8 +141,8 @@ public abstract class CountDownTimer2 {
                     millisLeft = mPauseTime;
                 }
                 else {
-                   millisLeft = mStopTimeInFuture - SystemClock.elapsedRealtime();
-                }
+                        millisLeft = mStopTimeInFuture - SystemClock.elapsedRealtime();
+                    }
 
                     if (millisLeft <= 0) {
                         onFinish();

@@ -33,11 +33,14 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
     }
     public void onClickLogin(View v){
-       /* if(validate()){
-            validate(email,password);
-        }*/
+        if(validate()){
+            //validate(email,password);
+            Intent i = new Intent(LoginActivity.this, GameScreenActivity.class);
+            startActivity(i);
+        }
         Intent i = new Intent(LoginActivity.this, GameScreenActivity.class);
         startActivity(i);
+
     }
     public void onCLickSignUp(View v){
         if(validate()) {
@@ -111,7 +114,6 @@ public class LoginActivity extends AppCompatActivity {
         });
 
     }
-
     public void onClickResetPassword(View view) {
         startActivity(new Intent(LoginActivity.this, PasswordActivity.class));
     }

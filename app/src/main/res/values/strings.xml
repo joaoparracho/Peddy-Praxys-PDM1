@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">PeddyPraxis</string>
+    <string name="preambPatio">Os caloiros são, por norma, tímidos... O objetivo da primeira tarefa é a de colocar o caloiro no estado de espírito correto para enfrentar os desafios que se avizinham! Caloiro, por obséquio, dirija-se para o pátio em frente ao bar do Edifício A!  Tarefa:O caloiro tem de andar, durante 5 minutos seguidos, às voltas pátio do ed. A, a piscar um olho e a sorrir com a câmara frontal do dispositivo móvel apontada para si</string>
+    <string name="patio">O Patio</string>
+    <string name="preambEdificios">O campus 2 tem vários edifícios, cada um deles identificado por uma letra (A, B, C, D). Há quem esteja há vários de anos a estudar (ou a trabalhar...) no IPL e tenha dificuldade em lembrar-se da letra que identifica determinado edifício. Caloiro, por obséquio, dirija-se para a rotunda ao pé da Entrada do Ed. A!  Tarefa: O caloiro tem de tirar uma foto à letra que identifica cada um dos quatro edifícios.</string>
+    <string name="edificios">Os Edifícios</string>
+    <string name="biblioteca">A Biblioteca</string>
+    <string name="preamBiblioteca">a Biblioteca José Saramago é talvez, o mais emblemático dos edifícios do Campus 2. Qualquer e-Padrinho que se preze deve motivar o seu caloiro a aclimatar-se a este templo de saber. Caloiro, por obséquio, dirija-se para a Biblioteca!   Tarefa: A Biblioteca José Saramago é um espaço de Cultura, Conhecimento e ...?</string>
+    <string name="descompressap">Descompressão</string>
+    <string name="preambDescompressao">Ser praxado é muito divertido mas, no fim, há que regressar ao mundo real... O caloiro deve levar a cabo uma sessão de meditação ao ar livre que lhe permita relaxar de forma a que possa regressar às aulas calmo e concentrado. Caloiro, por obséquio, dirija-se para o pátio em frente ao bar do Edifício A!  Tarefa:O caloiro tem de estar sentado durante 10 minutos, no pátio do ed. A, com o telemóvel pousado no colo com o ecrã virado para baixo (é para relaxar!). Se estiver a chover o caloiro pode cumprir esta tarefa num dos 3 pontos de interesse mais próximos do local onde se encontra.</string>
+    <string name="prembuloEdificios">O campus 2 tem vários edifícios, cada um deles identificado por uma letra (A, B, C, D). \nHá quem esteja há vários de anos a estudar (ou a trabalhar...) no IPL e tenha dificuldade em lembrar-se da letra que identifica determinado edifício. \nCaloiro, por obséquio, dirija-se para a rotunda ao pé da Entrada do Ed. A!  Tarefa:O caloiro tem ir junto de todos os edifícios e confirmar que se encontra perto deles ao mostrar com a câmara "Edifício X"</string>
+    <string name="imHere">Já cá estou!</string>
 </resources>

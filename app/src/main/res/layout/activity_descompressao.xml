@@ -3,13 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:gravity="center"
     android:orientation="vertical"
     android:padding="8dp"
-    tools:context=".GameScreenActivity">
+    tools:context=".DescompressaoActivity">
 
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycleView_games"
+    <TextView
+        android:id="@+id/tvTime"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="160dp"
+        android:gravity="center"
+        android:textSize="50dp" />
 </LinearLayout>
