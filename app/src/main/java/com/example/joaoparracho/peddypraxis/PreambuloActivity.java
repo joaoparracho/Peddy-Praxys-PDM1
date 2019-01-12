@@ -114,24 +114,16 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
                 finishTime = System.currentTimeMillis() - Singleton.getInstance().getStartTime();
                 int min = (int) (((finishTime) / 1000) % 3600) / 60;
                 int sec = (int) (finishTime / 1000) % 60;
-
                 if (Singleton.getInstance().getNumTasksComplete() >= numTask) {
-                    if ((int) ((finishTime / 1000) / 3600) > 0) {
-                        preambTextV.setText("BEM CARALHO!\n Conseguiste concluir tudo em 1 hora mesmo por pouco");
-                    } else {
-                        preambTextV.setText("BEM CARALHO!\n Conseguiste concluir tudo em " + min + " minutos e " + sec + " segundos");
-                    }
-                } else {
-                    preambTextV.setText("BELA MERDA CARALHO!\nSo conseguiste completar " + Singleton.getInstance().getNumTasksComplete()
-                            + " numero de tarefas");
-                }
+                    if ((int) ((finishTime / 1000) / 3600) > 0) preambTextV.setText("BEM CARALHO!\n Conseguiste concluir tudo em 1 hora mesmo por pouco");
+                    else preambTextV.setText("BEM CARALHO!\n Conseguiste concluir tudo em " + min + " minutos e " + sec + " segundos");
+                } else preambTextV.setText("BELA MERDA CARALHO!\nSo conseguiste completar " + Singleton.getInstance().getNumTasksComplete() + " numero de tarefas");
                 btnPream.setText("Voltar Menu de Jogo");
                 break;
         }
     }
 
     public void oncLickPreamb(View view) {
-        setupFences();
         queryFences();
         switch (Singleton.getInstance().getActivityKey()) {
             case "patioKey":
