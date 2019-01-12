@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,7 +33,9 @@ public class GameScreenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_gamescreen);
 
         firebaseAuth = FirebaseAuth.getInstance();
-        if(Singleton.getInstance().getManager().getGames().size()==0) Singleton.getInstance().getManager().addGame(new Game("PeddyPraxis", "Melhor jogo de Sempre", "Parracho & Xavi", 60));
+
+        if (Singleton.getInstance().getManager().getGames().size() == 0) Singleton.getInstance().getManager().addGame(new Game("PeddyPraxis", "Melhor jogo de Sempre", "Parracho & Xavi", 60));
+
         recyclerView = findViewById(R.id.recycleView_games);
         adapter_rec = new Game_adapter_rec(this, Singleton.getInstance().getManager().getGames());
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
@@ -43,9 +46,7 @@ public class GameScreenActivity extends AppCompatActivity {
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                Intent intent = new Intent(GameScreenActivity.this, PreambuloActivity.class);
-//                    Intent intent = new Intent(GameScreenActivity.this, EdificioActivity.class);
-                startActivity(intent);
+                startActivity(new Intent(GameScreenActivity.this, PreambuloActivity.class));
             }
 
             @Override
@@ -66,6 +67,12 @@ public class GameScreenActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    public void onBackPressed() {
+        Log.d("xxxfences", "back button pressed");
+        showLogoutDialog();
+    }
+
     public void showLogoutDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("Logout")
@@ -75,7 +82,9 @@ public class GameScreenActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         firebaseAuth.signOut();
                         finish();
-                        startActivity(new Intent(GameScreenActivity.this, LoginActivity.class));
+                        Intent i = new Intent(GameScreenActivity.this, LoginActivity.class);
+                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(i);
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -86,6 +95,4 @@ public class GameScreenActivity extends AppCompatActivity {
                 })
                 .create().show();
     }
-
-
 }

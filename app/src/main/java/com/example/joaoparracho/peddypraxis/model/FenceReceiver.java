@@ -32,8 +32,15 @@ public class FenceReceiver extends BroadcastReceiver {
             case "rotALocationFenceKey":
                 Singleton.getInstance().setbInRotA(fenceState.getCurrentState() == FenceState.TRUE);
                 break;
+            case "essleiFenceKey":
+                Singleton.getInstance().setbInEsslei(fenceState.getCurrentState() == FenceState.TRUE);
+                break;
             case "notWalkingFenceKey":
                 Singleton.getInstance().setNotWalkinBool(fenceState.getCurrentState() == FenceState.FALSE);
+                if (fenceState.getCurrentState() == FenceState.TRUE) {
+                    Singleton.getInstance().setActivityKey("finishGameKey");
+                    context.startActivity(new Intent(context, PreambuloActivity.class));
+                }
                 break;
             case "timeFence100Key":
                 if (fenceState.getCurrentState() == FenceState.TRUE) Log.d(TAG, "timefence100 " + fenceState.getCurrentState());

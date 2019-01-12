@@ -12,8 +12,10 @@ public class Singleton {
     private boolean bLibLoc;
     private boolean bInPatio;
     private boolean bInRotA;
+    private boolean bInEsslei;
     private boolean bCreateFenceTime;
     private int numTasksComplete;
+    private long startTime = -1;
     private String activityKey = "patioKey";
     private boolean[] faltaEdificios = {true, true, true, true, true}; // A, B, C, D, E
 
@@ -98,6 +100,7 @@ public class Singleton {
         this.bCreateFenceTime = false;
         this.numTasksComplete = 0;
         this.faltaEdificios = new boolean[]{true, true, true, true, true};
+        this.startTime = -1;
     }
 
     public String getActivityKey() {
@@ -131,6 +134,22 @@ public class Singleton {
 
     public void setNumTasksComplete(int numTasksComplete) {
         this.numTasksComplete = numTasksComplete;
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+
+    public boolean isbInEsslei() {
+        return bInEsslei;
+    }
+
+    public void setbInEsslei(boolean bInEsslei) {
+        this.bInEsslei = bInEsslei;
     }
 
     public boolean isbInRotA() {

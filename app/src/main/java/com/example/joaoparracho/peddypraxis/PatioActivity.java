@@ -85,7 +85,7 @@ public final class PatioActivity extends AppCompatActivity
     private GoogleApiClient mGoogleApiClient;
     private FenceReceiver fenceReceiver;
     private PendingIntent myPendingIntent;
-    private long mTimeInMillis = 10 * 1000;
+    private long mTimeInMillis = 60 * 100;
     private boolean pauseCounterOnce;
     private int counterDelay;
     private String text2 = "";
@@ -138,8 +138,9 @@ public final class PatioActivity extends AppCompatActivity
                 mTextViewCountDown.setText("Finish");
                 Singleton.getInstance().setActivityKey("edificiosKey");
                 Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete() + 1);
-                startActivity(new Intent(PatioActivity.this, PreambuloActivity.class));
                 finish();
+                startActivity(new Intent(PatioActivity.this, PreambuloActivity.class));
+
             }
         }.start();
 
@@ -151,7 +152,6 @@ public final class PatioActivity extends AppCompatActivity
         if (allPermissionsGranted()) createCameraSource(selectedModel);
         else getRuntimePermissions();
 
-        // TODO: Communicate with the UI thread
         mHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
