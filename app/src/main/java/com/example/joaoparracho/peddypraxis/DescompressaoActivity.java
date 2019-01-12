@@ -55,10 +55,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Locale;
 
-import static com.example.joaoparracho.peddypraxis.PatioActivity.TAG_SNAPSHOT;
-
 public class DescompressaoActivity extends AppCompatActivity implements SensorEventListener, GoogleApiClient.OnConnectionFailedListener {
-    private static final int REQUEST_CODE_FLPERMISSION = 42;
     private static final String TAG = "DescompressaoActivity";
     private static final String FENCE_RECEIVER_ACTION = "FENCE_RECEIVER_ACTION";
     public static Handler mHandler;
@@ -66,20 +63,18 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
     private PendingIntent myPendingIntent;
     private GoogleApiClient mGoogleApiClient;
     private TextView timeTextView;
-
-//    private long mTimeInMillis = 60 * 10000;
-    private long mTimeInMillis = 10000;
+    //    private long startMillis = 60 * 10000;
+    private long startMillis = 10000;
+    private long mTimeInMillis = startMillis;
     private CountDownTimer2 m2;
     private boolean pauseCounterOnce;
-
     private SensorManager mSensorManager;
     private Sensor mSensor;
-
     private boolean bCheck = true;
     private boolean bFaceDown;
     private boolean bRain;
     private Weather weather;
-    private  String plText;
+    private String plText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,12 +83,7 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-        mGoogleApiClient = new GoogleApiClient
-                .Builder(this)
-                .addApi(Places.GEO_DATA_API)
-                .addApi(Places.PLACE_DETECTION_API)
-                .enableAutoManage(this, this)
-                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(Places.GEO_DATA_API).addApi(Places.PLACE_DETECTION_API).enableAutoManage(this, this).build();
 
         Intent intent = new Intent(FENCE_RECEIVER_ACTION);
         myPendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
@@ -104,10 +94,7 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
 
         m2 = new CountDownTimer2(mTimeInMillis, 1000) {
             public void onTick(long millisUntilFinished) {
-                if (ActivityCompat.checkSelfPermission(DescompressaoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    return;
-                }
+                if (ActivityCompat.checkSelfPermission(DescompressaoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) return;
                 Awareness.getSnapshotClient(DescompressaoActivity.this).getWeather()
                         .addOnSuccessListener(new OnSuccessListener<WeatherResponse>() {
                             @Override
@@ -117,7 +104,7 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
                                     switch (condition) {
                                         case Weather.CONDITION_RAINY:
                                             bRain = true;
-                                            Log.e("weatherSnap", "Rainning");
+                                            Log.e(TAG, "weatherSnap: Rainning");
                                             break;
                                     }
                                 }
@@ -126,21 +113,19 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Log.e("weatherSnap", "Could not get Weather: " + e);
-                                Toast.makeText(DescompressaoActivity.this, "Could not get Weather: " + e,
-                                        Toast.LENGTH_SHORT).show();
+                                Log.e(TAG, "weatherSnap: Could not get Weather: " + e);
+                                Toast.makeText(DescompressaoActivity.this, "Could not get Weather: " + e, Toast.LENGTH_SHORT).show();
                             }
                         });
-
-                    if (!bRain && bFaceDown && Singleton.getInstance().isFenceBool()&& bCheck ) {
-                        if (m2.ismPaused()) m2.resume();
-                        mTimeInMillis = millisUntilFinished;
-                        pauseCounterOnce = false;
-                    } else if (!pauseCounterOnce) {
-                        if(!bRain) printNearbyPlaces();
-                        m2.pause();
-                        pauseCounterOnce = true;
-                    }
+                if (!bRain && bFaceDown && Singleton.getInstance().isFenceBool() && bCheck) {
+                    if (m2.ismPaused()) m2.resume();
+                    mTimeInMillis = millisUntilFinished;
+                    pauseCounterOnce = false;
+                } else if (!pauseCounterOnce) {
+                    if (!bRain) printNearbyPlaces();
+                    m2.pause();
+                    pauseCounterOnce = true;
+                }
                 timeTextView.setText(updateCountDownText());
             }
 
@@ -151,22 +136,18 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
                 else v.vibrate(500);
                 Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete() + 1);
-                Singleton.getInstance().setNumTasksComplete(4);
-//                Singleton.getInstance().setActivityKey("corridaKey");
+                Singleton.getInstance().setActivityKey("corridaKey");
                 finish();
                 startActivity(new Intent(DescompressaoActivity.this, PreambuloActivity.class));
             }
         }.start();
 
-        // TODO: Communicate with the UI thread
         mHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 String feedback = msg.getData().getString("FEEDBACK");
-                if (feedback != null) {
-                    Snackbar.make(findViewById(android.R.id.content), feedback, Snackbar.LENGTH_LONG).show();
-                }
+                if (feedback != null) Snackbar.make(findViewById(android.R.id.content), feedback, Snackbar.LENGTH_LONG).show();
             }
         };
     }
@@ -179,8 +160,7 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
     public void showDescription() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Descompressão");
-        alert.setMessage(": O caloiro tem de estar sentado durante 10 minutos, no pátio do ed. A, com o " +
-                "telemóvel pousado no colo com o ecrã virado para baixo (é para relaxar!).");
+        alert.setMessage(": O caloiro tem de estar sentado durante 10 minutos, no pátio do ed. A, com o telemóvel pousado no colo com o ecrã virado para baixo (é para relaxar!).");
         alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -189,40 +169,46 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
         });
         alert.create().show();
     }
-    public void showDialogNearbyLocation(){
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("Atenção!");
-        alert.setMessage("Foi detectado que não estao reunidas as melhores condições para terminares esta atividade no patio.\n" +
-                "Por favor dirija-se a um destes locais de interesse se assim quiser." +
-                plText);
-        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
-        });
-        alert.create().show();
-    }
-    private void printNearbyPlaces() {
-        checkFineLocationPermission();
 
+    public void showDialogNearbyLocation() {
+        new AlertDialog.Builder(this)
+                .setTitle("Atenção!")
+                .setMessage("Foi detectado que não estao reunidas as melhores condições para terminares esta atividade no patio.\n" +
+                        "Por favor dirija-se a um destes locais de interesse se assim quiser." +
+                        plText)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .create().show();
+    }
+
+    private void printNearbyPlaces() {
+        if (ContextCompat.checkSelfPermission(DescompressaoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ActivityCompat.requestPermissions(DescompressaoActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 42);
+        try {
+            int locationMode = Settings.Secure.getInt(getContentResolver(), Settings.Secure.LOCATION_MODE);
+            if (locationMode != Settings.Secure.LOCATION_MODE_HIGH_ACCURACY) Toast.makeText(this, "Error: high accuracy location mode must be enabled in the device.", Toast.LENGTH_LONG).show();
+        } catch (Settings.SettingNotFoundException e) {
+            Toast.makeText(this, "Error: could not access location mode.", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
         Awareness.getSnapshotClient(this).getPlaces()
                 .addOnSuccessListener(new OnSuccessListener<PlacesResponse>() {
                     @Override
                     public void onSuccess(PlacesResponse placesResponse) {
                         List<PlaceLikelihood> pll = placesResponse.getPlaceLikelihoods();
-
-                        // Show the top 5 possible location results.
-                         plText = "";
-                        for (int i = 0; i < (pll.size() < 3 ? pll.size() : 5); i++) {
+                        plText = "";
+                        for (int i = 0; i < (pll.size() < 3 ? pll.size() : 3); i++) {
                             PlaceLikelihood pl = pll.get(i);
-
-                            plText += "\t#" + i + ": " + pl.getPlace().getName().toString()
-                                    + "\n\tlikelihood: " + pl.getLikelihood()
-                                    + "\n\taddress: " + pl.getPlace().getAddress()
-                                    + "\n\tlocation: " + pl.getPlace().getLatLng()
-                                    + "\n\twebsite: " + pl.getPlace().getWebsiteUri()
-                                    + "\n\tplaceTypes: " + pl.getPlace().getPlaceTypes()
-                                    + "\t" + printPlaceTypes(pl.getPlace().getPlaceTypes()) + "\n";
+                            plText += "\t#" + i + ": " + pl.getPlace().toString() + "\t" + printPlaceTypes(pl.getPlace().getPlaceTypes()) + "\n";
+//                            plText += "\t#" + i + ": " + pl.getPlace().getName().toString()
+//                                    + "\n\tlikelihood: " + pl.getLikelihood()
+//                                    + "\n\taddress: " + pl.getPlace().getAddress()
+//                                    + "\n\tlocation: " + pl.getPlace().getLatLng()
+//                                    + "\n\twebsite: " + pl.getPlace().getWebsiteUri()
+//                                    + "\n\tplaceTypes: " + pl.getPlace().getPlaceTypes()
+//                                    + "\t" + printPlaceTypes(pl.getPlace().getPlaceTypes()) + "\n";
                         }
                         showDialogNearbyLocation();
                     }
@@ -230,16 +216,15 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.e(TAG_SNAPSHOT, "Could not get Places: " + e);
-                        Toast.makeText(DescompressaoActivity.this, "Could not get Places: " + e,Toast.LENGTH_SHORT).show(); }
+                        Log.e(TAG, "Could not get Places: " + e);
+                        Toast.makeText(DescompressaoActivity.this, "Could not get Places: " + e, Toast.LENGTH_SHORT).show();
+                    }
                 });
     }
+
     private String printPlaceTypes(List<Integer> placeTypes) {
         String res = "";
-
-        for (int placeType :
-                placeTypes) {
-
+        for (int placeType : placeTypes) {
             switch (placeType) {
                 case Place.TYPE_ACCOUNTING  :   res += "TYPE_ACCOUNTING"; break;
                 case Place.TYPE_ADMINISTRATIVE_AREA_LEVEL_1 : res += "TYPE_ADMINISTRATIVE_AREA_LEVEL_1"; break;
@@ -369,38 +354,9 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
                 case Place.TYPE_VETERINARY_CARE : res += "TYPE_VETERINARY_CARE"; break;
                 case Place.TYPE_ZOO : res += "TYPE_ZOO"; break;
             }
-
             res += "\t";
         }
         return res;
-    }
-    private void checkFineLocationPermission() {
-        if (ContextCompat.checkSelfPermission(
-                DescompressaoActivity.this,
-                Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                    DescompressaoActivity.this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    REQUEST_CODE_FLPERMISSION // todo: declare this constant
-            );
-        }
-        try {
-            int locationMode = Settings.Secure.getInt(getContentResolver(),
-                    Settings.Secure.LOCATION_MODE);
-            if (locationMode != Settings.Secure.LOCATION_MODE_HIGH_ACCURACY) {
-                Toast.makeText(this,
-                        "Error: high accuracy location mode must be enabled in the device.",
-                        Toast.LENGTH_LONG).show();
-                return;
-
-            }
-        } catch (Settings.SettingNotFoundException e) {
-            Toast.makeText(this, "Error: could not access location mode.",
-                    Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-            return;
-        }
     }
 
     @Override
@@ -422,7 +378,8 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        bFaceDown = sensorEvent.values[2] < 0;
+        bFaceDown = sensorEvent.values[2] < -9.5;
+        if (bFaceDown) mTimeInMillis = startMillis;
     }
 
     @Override
@@ -430,24 +387,20 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
         Toast.makeText(DescompressaoActivity.this, sensor.getName() + "accuracy changed to " + accuracy, Toast.LENGTH_SHORT).show();
     }
 
-    protected void removeFences(String fenceKey) {
+    protected void removeFences(String unique_key) {
         Awareness.getFenceClient(this).updateFences(new FenceUpdateRequest.Builder()
-                .removeFence(fenceKey)
+                .removeFence(unique_key)
                 .build())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                        String text = "\n\n[Fences @ " + timestamp + "]\n" + "Fences were successfully removed.";
-                        Log.d("xxxfences", text);
+                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\nFences were successfully removed.");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                        String text = "\n\n[Fences @ " + timestamp + "]\n" + "Fences could not be removed: " + e.getMessage();
-                        Log.d("xxxfences", text);
+                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\nFences could not be removed: " + e.getMessage());
                     }
                 });
     }
@@ -462,12 +415,11 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
                         for (String fenceKey : fenceStateMap.getFenceKeys()) {
                             int state = fenceStateMap.getFenceState(fenceKey).getCurrentState();
                             fenceInfo += fenceKey + ": " + (state == FenceState.TRUE ? "TRUE" : state == FenceState.FALSE ? "FALSE" : "UNKNOWN") + "\n";
-                            if (fenceKey.equals("locationFenceKey") && state == FenceState.TRUE)
-                                Singleton.getInstance().setFenceBool(true);
+                            if (fenceKey.equals("locationFenceKey") && state == FenceState.TRUE) Singleton.getInstance().setFenceBool(true);
                         }
                         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
                         String text = "\n\n[Fences @ " + timestamp + "]\n" + "> Fences' states:\n" + (fenceInfo.equals("") ? "No registered fences." : fenceInfo);
-                        Log.d("xxxfences", text);
+                        Log.d(TAG, text);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -475,61 +427,63 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
                     public void onFailure(@NonNull Exception e) {
                         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
                         String text = "\n\n[Fences @ " + timestamp + "]\n" + "Fences could not be queried: " + e.getMessage();
-                        Log.d("xxxfences", text);
+                        Log.d(TAG, text);
                     }
                 });
     }
 
     @Override
     public void onBackPressed() {
-        Log.d("xxxfences", "back button pressed");
+        Log.d(TAG, "back button pressed");
         showDialogWaring();
     }
 
     public void showDialogWaring() {
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("Sair Tarefa");
-        alert.setMessage("Caloiro tem a certeza que pretende sair!\n Qualquer progresso que tenha feito ira ser perdido");
-        alert.setPositiveButton("Terminar Tarefa", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                m2.cancel();
-                finish();
-            }
-        });
-        alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
-        });
-        alert.create().show();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mSensorManager.unregisterListener(this);
-        queryFences();
+        new AlertDialog.Builder(this)
+                .setTitle("Sair Tarefa")
+                .setMessage("Caloiro tem a certeza que pretende sair!\n Qualquer progresso que tenha feito ira ser perdido")
+                .setPositiveButton("Terminar Tarefa", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        m2.cancel();
+                        finish();
+                    }
+                })
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .create().show();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume");
         mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
         queryFences();
-        Log.d(TAG, "onResume");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause");
+        mSensorManager.unregisterListener(this);
+        queryFences();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        removeFences("locationFenceKey");
+        Log.d(TAG, "onDestroy");
     }
 
     @Override
     public void onStop() {
-        queryFences();
         super.onStop();
+        Log.d(TAG, "onStop");
+        queryFences();
     }
 
     @Override

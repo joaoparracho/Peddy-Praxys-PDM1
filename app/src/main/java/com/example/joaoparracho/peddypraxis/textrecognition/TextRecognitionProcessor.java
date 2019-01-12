@@ -25,6 +25,7 @@ import com.example.joaoparracho.peddypraxis.VisionProcessorBase;
 import com.example.joaoparracho.peddypraxis.common.CameraImageGraphic;
 import com.example.joaoparracho.peddypraxis.common.FrameMetadata;
 import com.example.joaoparracho.peddypraxis.common.GraphicOverlay;
+import com.example.joaoparracho.peddypraxis.model.Singleton;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
@@ -38,6 +39,7 @@ public class TextRecognitionProcessor extends VisionProcessorBase<FirebaseVision
     private final FirebaseVisionTextRecognizer detector;
     private char lastLetra = '0';
     private char letra = '0';
+    private boolean wrong = false;
 
     public TextRecognitionProcessor() {
         detector = FirebaseVision.getInstance().getOnDeviceTextRecognizer();
@@ -77,11 +79,21 @@ public class TextRecognitionProcessor extends VisionProcessorBase<FirebaseVision
             }
         }
         if ((this.letra == 'A' || this.letra == 'B' || this.letra == 'C' || this.letra == 'D' || this.letra == 'E') && this.letra != this.lastLetra) {
-            Log.d(TAG, "Estou no " + this.letra);
-            bundle.putString("FEEDBACK", "" + this.letra);
-            message.setData(bundle);
-            EdificioActivity.mHandler.sendMessage(message);
-            this.lastLetra = this.letra;
+            if (this.letra == Singleton.getInstance().getInEdidicio()) {
+                Log.d(TAG, "Estou no " + this.letra);
+                bundle.putString("FEEDBACK", "" + this.letra);
+                message.setData(bundle);
+                EdificioActivity.mHandler.sendMessage(message);
+                this.lastLetra = this.letra;
+                this.wrong = false;
+            } else if (!wrong){
+                Log.d(TAG, "False detection" + this.letra);
+                bundle.putString("FEEDBACK", "False");
+                message.setData(bundle);
+                EdificioActivity.mHandler.sendMessage(message);
+                this.lastLetra = this.letra = ' ';
+                this.wrong = true;
+            }
         }
     }
 

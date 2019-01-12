@@ -35,9 +35,9 @@ public class FenceReceiver extends BroadcastReceiver {
             case "essleiFenceKey":
                 Singleton.getInstance().setbInEsslei(fenceState.getCurrentState() == FenceState.TRUE);
                 break;
-            case "notWalkingFenceKey":
-                Singleton.getInstance().setNotWalkinBool(fenceState.getCurrentState() == FenceState.FALSE);
-                if (fenceState.getCurrentState() == FenceState.TRUE) {
+            case "walkingFenceKey":
+                Singleton.getInstance().setWalkingBool(fenceState.getCurrentState() != FenceState.FALSE);
+                if (fenceState.getCurrentState() == FenceState.FALSE) {
                     Singleton.getInstance().setActivityKey("finishGameKey");
                     context.startActivity(new Intent(context, PreambuloActivity.class));
                 }
@@ -55,6 +55,21 @@ public class FenceReceiver extends BroadcastReceiver {
                 break;
             case "timeFence90Key":
                 if (fenceState.getCurrentState() == FenceState.FALSE) Toast.makeText(context, "Ui UI que vai acabar!", Toast.LENGTH_LONG).show();
+                break;
+            case "ediA":
+                if (fenceState.getCurrentState() == FenceState.TRUE) Singleton.getInstance().setInEdidicio('A');
+                break;
+            case "ediB":
+                if (fenceState.getCurrentState() == FenceState.TRUE) Singleton.getInstance().setInEdidicio('B');
+                break;
+            case "ediC":
+                if (fenceState.getCurrentState() == FenceState.TRUE) Singleton.getInstance().setInEdidicio('C');
+                break;
+            case "ediD":
+                if (fenceState.getCurrentState() == FenceState.TRUE) Singleton.getInstance().setInEdidicio('D');
+                break;
+            case "ediE":
+                if (fenceState.getCurrentState() == FenceState.TRUE) Singleton.getInstance().setInEdidicio('E');
                 break;
         }
     }

@@ -15,20 +15,15 @@ package com.example.joaoparracho.peddypraxis.facedetection;
 
 import android.graphics.Bitmap;
 import android.hardware.Camera;
-import android.os.Bundle;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.util.SparseArray;
 
-import com.example.joaoparracho.peddypraxis.PatioActivity;
 import com.example.joaoparracho.peddypraxis.VisionProcessorBase;
 import com.example.joaoparracho.peddypraxis.common.CameraImageGraphic;
 import com.example.joaoparracho.peddypraxis.common.FrameMetadata;
 import com.example.joaoparracho.peddypraxis.model.Singleton;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.vision.face.Face;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.face.FirebaseVisionFace;
@@ -45,9 +40,9 @@ import java.util.List;
 public class FaceDetectionProcessor extends VisionProcessorBase<List<FirebaseVisionFace>> {
 
     private static final String TAG = "FaceDetectionProcessor";
+    private final FirebaseVisionFaceDetector detector;
     private double leftEyeOpenProbability = -1.0;
     private double rightEyeOpenProbability = -1.0;
-    private final FirebaseVisionFaceDetector detector;
 
     public FaceDetectionProcessor() {
         FirebaseVisionFaceDetectorOptions options =
@@ -88,9 +83,8 @@ public class FaceDetectionProcessor extends VisionProcessorBase<List<FirebaseVis
 
         for (int i = 0; i < faces.size(); ++i) {
             FirebaseVisionFace face = faces.get(i);
-            // TODO: Communicate with the UI thread
             if (face.getTrackingId() >= 0 && !Singleton.getInstance().getFd()) {
-                if(isEyeBlinked(face.getLeftEyeOpenProbability(),face.getRightEyeOpenProbability()) && face.getSmilingProbability()>0.5){
+                if (isEyeBlinked(face.getLeftEyeOpenProbability(), face.getRightEyeOpenProbability()) && face.getSmilingProbability() > 0.5) {
                     Singleton.getInstance().setFd(true);
                 }
             }
@@ -107,8 +101,9 @@ public class FaceDetectionProcessor extends VisionProcessorBase<List<FirebaseVis
     protected void onFailure(@NonNull Exception e) {
         Log.e(TAG, "Face detection failed " + e);
     }
+
     // https://github.com/murali129/Eye-blink-detector/blob/master/app/src/main/java/com/murali129/theeyegame/theeyegame/FaceOverlayView.java
-    private boolean isEyeBlinked(float currentLeftEyeOpenProbability,float currentRightEyeOpenProbability) {
+    private boolean isEyeBlinked(float currentLeftEyeOpenProbability, float currentRightEyeOpenProbability) {
 
         if (currentLeftEyeOpenProbability == -1.0 || currentRightEyeOpenProbability == -1.0) {
             return false;

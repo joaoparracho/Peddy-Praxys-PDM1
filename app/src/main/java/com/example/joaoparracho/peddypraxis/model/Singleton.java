@@ -8,12 +8,12 @@ public class Singleton {
     private boolean showFinishBtn;
     private boolean fd;
     private boolean fenceBool;
-    private boolean notWalkinBool;
+    private boolean walkingBool;
     private boolean bLibLoc;
-    private boolean bInPatio;
     private boolean bInRotA;
     private boolean bInEsslei;
     private boolean bCreateFenceTime;
+    private char inEdidicio = ' ';
     private int numTasksComplete;
     private long startTime = -1;
     private String activityKey = "patioKey";
@@ -25,14 +25,6 @@ public class Singleton {
 
     public static Singleton getInstance() {
         return ourInstance;
-    }
-
-    public boolean isbInPatio() {
-        return bInPatio;
-    }
-
-    public void setbInPatio(boolean bInPatio) {
-        this.bInPatio = bInPatio;
     }
 
     public boolean isbLibLoc() {
@@ -59,12 +51,12 @@ public class Singleton {
         this.fenceBool = fenceBool;
     }
 
-    public boolean isNotWalkinBool() {
-        return notWalkinBool;
+    public boolean isWalkingBool() {
+        return walkingBool;
     }
 
-    public void setNotWalkinBool(boolean notWalkinBool) {
-        this.notWalkinBool = notWalkinBool;
+    public void setWalkingBool(boolean walkingBool) {
+        this.walkingBool = walkingBool;
     }
 
     public boolean getFd() {
@@ -81,16 +73,6 @@ public class Singleton {
 
     public void setManager(Manager manager) {
         this.manager = manager;
-    }
-
-    public boolean isNumeric(String input) {
-        try {
-            Integer.parseInt(input);
-            return true;
-        } catch (NumberFormatException e) {
-            // s is not numeric
-            return false;
-        }
     }
 
     public void restartVariables() {
@@ -118,7 +100,6 @@ public class Singleton {
     public void setbCreateFenceTime(boolean bCreateFenceTime) {
         this.bCreateFenceTime = bCreateFenceTime;
     }
-
 
     public boolean getFaltaEdificios(int i) {
         return faltaEdificios[i];
@@ -158,5 +139,13 @@ public class Singleton {
 
     public void setbInRotA(boolean bInRotA) {
         this.bInRotA = bInRotA;
+    }
+
+    public char getInEdidicio() {
+        return inEdidicio;
+    }
+
+    public void setInEdidicio(char inEdidicio) {
+        this.inEdidicio = inEdidicio;
     }
 }

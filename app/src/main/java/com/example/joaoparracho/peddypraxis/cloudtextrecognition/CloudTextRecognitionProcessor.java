@@ -20,6 +20,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.example.joaoparracho.peddypraxis.BibliotecaActivity;
+import com.example.joaoparracho.peddypraxis.VisionProcessorBase;
+import com.example.joaoparracho.peddypraxis.common.FrameMetadata;
+import com.example.joaoparracho.peddypraxis.common.GraphicOverlay;
 import com.example.joaoparracho.peddypraxis.model.Singleton;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.ml.vision.FirebaseVision;
@@ -28,11 +32,6 @@ import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 
 import java.util.List;
-
-import com.example.joaoparracho.peddypraxis.BibliotecaActivity;
-import com.example.joaoparracho.peddypraxis.VisionProcessorBase;
-import com.example.joaoparracho.peddypraxis.common.FrameMetadata;
-import com.example.joaoparracho.peddypraxis.common.GraphicOverlay;
 
 /**
  * Processor for the cloud text detector demo.
@@ -60,9 +59,7 @@ public class CloudTextRecognitionProcessor extends VisionProcessorBase<FirebaseV
             @NonNull FrameMetadata frameMetadata,
             @NonNull GraphicOverlay graphicOverlay) {
         graphicOverlay.clear();
-        if (text == null) {
-            return; // TODO: investigate why this is needed
-        }
+        if (text == null) return;
         Log.d(TAG, "detected text is: " + text.getText());
         List<FirebaseVisionText.TextBlock> blocks = text.getTextBlocks();
         for (int i = 0; i < blocks.size(); i++) {
@@ -70,9 +67,9 @@ public class CloudTextRecognitionProcessor extends VisionProcessorBase<FirebaseV
             for (int j = 0; j < lines.size(); j++) {
                 List<FirebaseVisionText.Element> elements = lines.get(j).getElements();
                 for (int l = 0; l < elements.size(); l++) {
-                    if(elements.get(l).getText().equals("CRIATIVIDADE")||elements.get(l).getText().equals("CRIATIVIDADE!")) {
+                    if (elements.get(l).getText().equals("CRIATIVIDADE") || elements.get(l).getText().equals("CRIATIVIDADE!")) {
                         Singleton.getInstance().setShowFinishBtn(true);
-                        if(Singleton.getInstance().isShowFinishBtn()){
+                        if (Singleton.getInstance().isShowFinishBtn()) {
                             Message message = BibliotecaActivity.mHandler.obtainMessage();
                             Bundle bundle = new Bundle();
                             bundle.putString("FEEDBACK", text.getText());
@@ -80,8 +77,7 @@ public class CloudTextRecognitionProcessor extends VisionProcessorBase<FirebaseV
                             BibliotecaActivity.mHandler.sendMessage(message);
                         }
                     }
-                    CloudTextGraphic cloudTextGraphic = new CloudTextGraphic(graphicOverlay,
-                            elements.get(l));
+                    CloudTextGraphic cloudTextGraphic = new CloudTextGraphic(graphicOverlay, elements.get(l));
                     graphicOverlay.add(cloudTextGraphic);
                 }
             }
