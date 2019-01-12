@@ -44,9 +44,9 @@ import java.sql.Timestamp;
 
 public class PreambuloActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
-    private static final int numTask = 4;
+    private static final int numTask = 5;
     private static final String FENCE_RECEIVER_ACTION = "FENCE_RECEIVER_ACTION";
-    private static final String TAG = "xxxfences";
+    private static final String TAG = "PreambuloActivity";
     private TextView preambTextV;
     private TextView titlePreamTextV;
     private EditText respostaEdtT;
@@ -165,29 +165,23 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
 
         if (!Singleton.getInstance().isbCreateFenceTime()) {
             Singleton.getInstance().setbCreateFenceTime(true);
-            AwarenessFence timeFence100 = TimeFence.inInterval(nowMillis, nowMillis + 60 * 60000); // one minute starting in thirty seconds
-            AwarenessFence timeFence50 = TimeFence.inInterval(nowMillis, nowMillis + 60 * 30000); // one minute starting in thirty seconds
-            AwarenessFence timeFence90 = TimeFence.inInterval(nowMillis, nowMillis + 60 * 54000); // one minute starting in thirty seconds
-
-            addFence("timeFence50Key", timeFence50);
-            addFence("timeFence90Key", timeFence90);
-            addFence("timeFence100Key", timeFence100);
-
-            AwarenessFence notWalkingFence = AwarenessFence.or(
-                    DetectedActivityFence.during(DetectedActivityFence.ON_BICYCLE),
-                    DetectedActivityFence.during(DetectedActivityFence.IN_VEHICLE));
-
-            addFence("notWalkingFenceKey", notWalkingFence);
+            addFence("timeFence50Key", TimeFence.inInterval(nowMillis, nowMillis + 60 * 30000));
+            addFence("timeFence90Key", TimeFence.inInterval(nowMillis, nowMillis + 60 * 54000));
+            addFence("timeFence100Key", TimeFence.inInterval(nowMillis, nowMillis + 60 * 60000));
+            addFence("walkingFenceKey", AwarenessFence.not(AwarenessFence.or(DetectedActivityFence.during(DetectedActivityFence.ON_BICYCLE), DetectedActivityFence.during(DetectedActivityFence.IN_VEHICLE))));
         }
-        Log.d(TAG, "Olha a string" + Singleton.getInstance().getActivityKey());
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) return;
+//        addFence("essleiFenceKey", LocationFence.entering(39.732766, -8.820643, 30));
+//        addFence("locationFenceKey", LocationFence.in(39.735667, -8.820923, 80, 0L));
+//        addFence("rotALocationFenceKey", LocationFence.in(39.734801, -8.820879, 20, 0L));
+//        addFence("libLocationFenceKey", LocationFence.in(39.733381, -8.820621, 50, 0L));
+        Log.d(TAG, "Olha a string " + Singleton.getInstance().getActivityKey());
         switch (Singleton.getInstance().getActivityKey()) {
             case "corridaKey":
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) return;
                 AwarenessFence essleiLocationFence = LocationFence.entering(39.732766, -8.820643, 30);
                 addFence("essleiFenceKey", essleiLocationFence);
             case "patioKey":
             case "descompressaoKey":
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) return;
                 AwarenessFence inLocationFence = LocationFence.in(39.735667, -8.820923, 80, 0L);
                 addFence("locationFenceKey", inLocationFence);
                 break;
@@ -209,14 +203,14 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "addFence success");
+                        Log.d(TAG, "addFence success " + fenceKey);
 //                        Snackbar.make(findViewById(android.R.id.content), "Success to add Fence", Snackbar.LENGTH_LONG).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "addFence failure");
+                        Log.d(TAG, "addFence failure " + fenceKey);
 //                        Snackbar.make(findViewById(android.R.id.content), "Failed to add Fence", Snackbar.LENGTH_LONG).show();
                     }
                 });
@@ -262,6 +256,7 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
                         Singleton.getInstance().restartVariables();
                         Singleton.getInstance().setActivityKey("patioKey");
                         startActivity(new Intent(PreambuloActivity.this, GameScreenActivity.class));
+                        removeFences();
                         finish();
                     }
                 })
@@ -348,9 +343,10 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
                             fenceInfo += fenceKey + ": " + (state == FenceState.TRUE ? "TRUE" : state == FenceState.FALSE ? "FALSE" : "UNKNOWN") + "\n";
                             if (fenceKey.equals("libLocationFenceKey") && state == FenceState.TRUE) Singleton.getInstance().setbLibLoc(true);
                             if (fenceKey.equals("locationFenceKey") && state == FenceState.TRUE) Singleton.getInstance().setFenceBool(true);
+                            if (fenceKey.equals("walkingFenceKey") && state == FenceState.TRUE) Singleton.getInstance().setWalkingBool(true);
                             if (fenceKey.equals("rotALocationFenceKey") && state == FenceState.TRUE) Singleton.getInstance().setbInRotA(true);
                         }
-                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\n> Fences' states:\n" + (fenceInfo.equals("") ? "No registered fences." : fenceInfo));
+                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\n> Fences states:\n" + (fenceInfo.equals("") ? "No registered fences." : fenceInfo));
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

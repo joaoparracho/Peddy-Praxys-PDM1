@@ -1,6 +1,5 @@
 package com.example.joaoparracho.peddypraxis;
 
-import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -32,9 +31,7 @@ import com.example.joaoparracho.peddypraxis.model.FenceReceiver;
 import com.example.joaoparracho.peddypraxis.model.Singleton;
 import com.example.joaoparracho.peddypraxis.textrecognition.TextRecognitionProcessor;
 import com.google.android.gms.awareness.Awareness;
-import com.google.android.gms.awareness.fence.AwarenessFence;
 import com.google.android.gms.awareness.fence.FenceUpdateRequest;
-import com.google.android.gms.awareness.fence.LocationFence;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Places;
@@ -42,13 +39,13 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EdificioActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = "EdificioActivity";
-    private static final int PERMISSION_REQUESTS = 1;
     private static final String FEEDBACK = "FEEDBACK";
     private static final String FENCE_RECEIVER_ACTION = "FENCE_RECEIVER_ACTION";
     public static Handler mHandler;
@@ -89,14 +86,12 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
 
         preview = findViewById(R.id.firePreview);
         if (preview == null) Log.d(TAG, "Preview is null");
-
         graphicOverlay = findViewById(R.id.fireFaceOverlay);
         if (graphicOverlay == null) Log.d(TAG, "graphicOverlay is null");
 
         if (allPermissionsGranted()) createCameraSource();
         else getRuntimePermissions();
 
-        // TODO: Communicate with the UI thread
         mHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
@@ -107,13 +102,17 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
                     Snackbar.make(findViewById(android.R.id.content), "Encontrou o ediífio " + feedback + "!", Snackbar.LENGTH_SHORT).show();
                     Singleton.getInstance().setFaltaEdificios(feedback.charAt(0) - 65, false);
                     tempString = " ";
-                    for (int i = 0; i < 5; i++) if (Singleton.getInstance().getFaltaEdificios(i)) { tempString += ((char) (65 + i)) + " "; completa = completa & !Singleton.getInstance().getFaltaEdificios(i); }
+                    for (int i = 0; i < 5; i++)
+                        if (Singleton.getInstance().getFaltaEdificios(i)) {
+                            tempString += ((char) (65 + i)) + " ";
+                            completa = completa & !Singleton.getInstance().getFaltaEdificios(i);
+                        }
                     if (completa) {
                         textViewEdificio.setText("Finish");
                         Singleton.getInstance().setActivityKey("bibliotecaKey");
                         Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete() + 1);
-                        startActivity(new Intent(EdificioActivity.this, PreambuloActivity.class));
                         finish();
+                        startActivity(new Intent(EdificioActivity.this, PreambuloActivity.class));
                     } else completa = true;
                     textViewEdificio.setText(edificios + tempString);
                 }
@@ -144,7 +143,6 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
                 })
                 .create().show();
     }
-
 
     private void createCameraSource() {
         if (cameraSource == null) cameraSource = new CameraSource(this, graphicOverlay);
@@ -184,7 +182,7 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
     private void getRuntimePermissions() {
         List<String> allNeededPermissions = new ArrayList<>();
         for (String permission : getRequiredPermissions()) if (!isPermissionGranted(this, permission)) allNeededPermissions.add(permission);
-        if (!allNeededPermissions.isEmpty()) ActivityCompat.requestPermissions(this, allNeededPermissions.toArray(new String[0]), PERMISSION_REQUESTS);
+        if (!allNeededPermissions.isEmpty()) ActivityCompat.requestPermissions(this, allNeededPermissions.toArray(new String[0]), 1);
     }
 
     @Override
@@ -194,39 +192,53 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Toast.makeText(this, connectionResult.getErrorMessage(), Toast.LENGTH_SHORT).show();
-    }
-
-    private void setupFences() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) return;
-        addFence("edA", LocationFence.in(39.73565192930836, -8.820967774868791, 65, 0L));
-    }
-
-    private void addFence(final String fenceKey, final AwarenessFence fence) {
+    protected void removeFences(String unique_key) {
         Awareness.getFenceClient(this).updateFences(new FenceUpdateRequest.Builder()
-                .addFence(fenceKey, fence, myPendingIntent)
+                .removeFence(unique_key)
                 .build())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "Fences add success");
+                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\nFences were successfully removed.");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "Fences add fail");
+                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\nFences could not be removed: " + e.getMessage());
                     }
                 });
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d(TAG, "back button pressed");
+        showDialogWarning();
+    }
+
+    public void showDialogWarning() {
+        new AlertDialog.Builder(this)
+                .setTitle("Sair Tarefa")
+                .setMessage("Caloiro tem a certeza que pretende sair!\n Qualquer progresso que tenha feito ira ser perdido")
+                .setPositiveButton("Terminar Tarefa", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        for (int i = 0; i < 5; i++) Singleton.getInstance().setFaltaEdificios(i, true);
+                        finish();
+                    }
+                })
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .create().show();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
-//        setupFences();
         startCameraSource();
     }
 
@@ -241,6 +253,7 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
+        removeFences("rotALocationFenceKey");
         if (cameraSource != null) cameraSource.release();
     }
 
@@ -248,10 +261,6 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
     public void onStop() {
         super.onStop();
         Log.d(TAG, "onStop");
-        if (fenceReceiver != null) {
-            unregisterReceiver(fenceReceiver);
-            fenceReceiver = null;
-        }
     }
 
     @Override
@@ -259,6 +268,11 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.menu_preamb, menu);
         return true;
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Toast.makeText(this, connectionResult.getErrorMessage(), Toast.LENGTH_SHORT).show();
     }
 
 }

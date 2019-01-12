@@ -22,8 +22,8 @@ import com.example.joaoparracho.peddypraxis.model.Singleton;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class GameScreenActivity extends AppCompatActivity {
+    public static final String TAG = "GameScreenActivity";
     private FirebaseAuth firebaseAuth;
-
     private RecyclerView recyclerView;
     private Game_adapter_rec adapter_rec;
 
@@ -42,7 +42,6 @@ public class GameScreenActivity extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter_rec);
         adapter_rec.notifyDataSetChanged();
-
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
@@ -69,7 +68,7 @@ public class GameScreenActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Log.d("xxxfences", "back button pressed");
+        Log.d(TAG, "back button pressed");
         showLogoutDialog();
     }
 

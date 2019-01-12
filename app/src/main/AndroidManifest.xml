@@ -3,20 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.joaoparracho.peddypraxis">
 
-
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-feature android:name="android.hardware.camera2" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
-    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera2" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
-
 
     <application
         android:allowBackup="true"
@@ -28,8 +26,7 @@
         tools:ignore="GoogleAppIndexingWarning">
         <meta-data
             android:name="com.google.android.awareness.API_KEY"
-            android:value="AIzaSyDY13BM4cqHGsbaiZke55XGbIBLqOkCm40"/>
-        <!-- place snapshots -->
+            android:value="AIzaSyDY13BM4cqHGsbaiZke55XGbIBLqOkCm40" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDY13BM4cqHGsbaiZke55XGbIBLqOkCm40" />
@@ -40,29 +37,16 @@
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".GameScreenActivity"
-            android:label="GameScreenActivity"
-            android:windowSoftInputMode="stateHidden" />
-        <activity
-            android:name=".PasswordActivity"
-            android:label="Recover Password"
-            android:windowSoftInputMode="stateHidden" />
-        <activity
-            android:name=".PatioActivity"
-            android:label="Patio"
-            android:windowSoftInputMode="stateHidden" />
-        <activity
-            android:name=".EdificioActivity"
-            android:label="Edificio"
-            android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".BibliotecaActivity"
-            android:label="Biblioteca"
-            android:windowSoftInputMode="stateHidden" />
+        <activity android:name=".GameScreenActivity" />
+        <activity android:name=".PasswordActivity" />
+        <activity android:name=".PatioActivity" />
+        <activity android:name=".EdificioActivity" />
+        <activity android:name=".BibliotecaActivity" />
         <activity android:name=".DescompressaoActivity" />
         <activity android:name=".PreambuloActivity" />
         <activity android:name=".CorridaActivity" />

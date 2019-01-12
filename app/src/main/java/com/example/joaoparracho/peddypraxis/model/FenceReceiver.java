@@ -35,9 +35,9 @@ public class FenceReceiver extends BroadcastReceiver {
             case "essleiFenceKey":
                 Singleton.getInstance().setbInEsslei(fenceState.getCurrentState() == FenceState.TRUE);
                 break;
-            case "notWalkingFenceKey":
-                Singleton.getInstance().setNotWalkinBool(fenceState.getCurrentState() == FenceState.FALSE);
-                if (fenceState.getCurrentState() == FenceState.TRUE) {
+            case "walkingFenceKey":
+                Singleton.getInstance().setWalkingBool(fenceState.getCurrentState() != FenceState.FALSE);
+                if (fenceState.getCurrentState() == FenceState.FALSE) {
                     Singleton.getInstance().setActivityKey("finishGameKey");
                     context.startActivity(new Intent(context, PreambuloActivity.class));
                 }
