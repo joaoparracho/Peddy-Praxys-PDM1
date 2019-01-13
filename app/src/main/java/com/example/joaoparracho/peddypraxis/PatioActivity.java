@@ -124,7 +124,6 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
                 Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete() + 1);
                 finish();
                 startActivity(new Intent(PatioActivity.this, PreambuloActivity.class));
-
             }
         }.start();
 
@@ -326,7 +325,10 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
     public void onBackPressed() {
         Log.d(TAG, "back button pressed");
         checkWarning = true;
-        m1.pause();
+        if (!m1.ismPaused()) {
+            m1.pause();
+            pauseCounterOnce = true;
+        }
         showDialogWarning();
     }
 
@@ -347,7 +349,6 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         checkWarning = false;
-                        m1.resume();
                     }
                 })
                 .create().show();
