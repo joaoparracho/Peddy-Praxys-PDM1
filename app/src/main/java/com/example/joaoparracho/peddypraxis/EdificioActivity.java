@@ -63,6 +63,7 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
     private String edificios = "Faltam os edifícios";
     private String tempString = " ";
     private boolean completa = true;
+    private String text2;
 
     private static boolean isPermissionGranted(Context context, String permission) {
         if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) Log.i(TAG, "Permission granted: " + permission);
@@ -135,6 +136,19 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
             tempString += ((char) (65 + i)) + " ";
         }
         textViewEdificio.setText(edificios + tempString);
+    }
+
+    public void onClickFence(View view) {
+        queryFences();
+        new AlertDialog.Builder(EdificioActivity.this)
+                .setTitle("Fences")
+                .setMessage(text2)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .create().show();
     }
 
     public void onCLickShowPreamb(MenuItem item) {
@@ -229,9 +243,14 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
                             int state = fenceStateMap.getFenceState(fenceKey).getCurrentState();
                             fenceInfo += fenceKey + ": " + (state == FenceState.TRUE ? "TRUE" : state == FenceState.FALSE ? "FALSE" : "UNKNOWN") + "\n";
                             if (fenceKey.equals("locationFenceKey") && state == FenceState.TRUE) Singleton.getInstance().setFenceBool(true);
+                            if (fenceKey.equals("ediA") && state == FenceState.TRUE) Singleton.getInstance().setInEdidicio('A');
+                            if (fenceKey.equals("ediB") && state == FenceState.TRUE) Singleton.getInstance().setInEdidicio('B');
+                            if (fenceKey.equals("ediC") && state == FenceState.TRUE) Singleton.getInstance().setInEdidicio('C');
+                            if (fenceKey.equals("ediD") && state == FenceState.TRUE) Singleton.getInstance().setInEdidicio('D');
+                            if (fenceKey.equals("ediE") && state == FenceState.TRUE) Singleton.getInstance().setInEdidicio('E');
                         }
                         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                        String text = "\n\n[Fences @ " + timestamp + "]\n" + "> Fences' states:\n" + (fenceInfo.equals("") ? "No registered fences." : fenceInfo);
+                        String text = text2 = "\n\n[Fences @ " + timestamp + "]\n" + "> Fences' states:\n" + (fenceInfo.equals("") ? "No registered fences." : fenceInfo);
                         Log.d(TAG, text);
                     }
                 })

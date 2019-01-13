@@ -94,6 +94,7 @@ public class TextRecognitionProcessor extends VisionProcessorBase<FirebaseVision
                 this.lastLetra = this.letra = ' ';
                 this.wrong = true;
             }
+            this.letra = ' ';
         }
     }
 
