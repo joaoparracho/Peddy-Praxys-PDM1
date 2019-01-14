@@ -137,7 +137,7 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
                 else v.vibrate(500);
                 Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete() + 1);
-                Singleton.getInstance().setActivityKey("corridaKey");
+                Singleton.getInstance().setActivityKey("finishGameKey");
                 finish();
                 startActivity(new Intent(DescompressaoActivity.this, PreambuloActivity.class));
             }

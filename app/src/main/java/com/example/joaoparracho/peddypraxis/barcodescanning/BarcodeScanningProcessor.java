@@ -14,10 +14,13 @@
 package com.example.joaoparracho.peddypraxis.barcodescanning;
 
 import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.example.joaoparracho.peddypraxis.PerguntaActivity;
 import com.example.joaoparracho.peddypraxis.VisionProcessorBase;
 import com.example.joaoparracho.peddypraxis.common.CameraImageGraphic;
 import com.example.joaoparracho.peddypraxis.common.FrameMetadata;
@@ -40,6 +43,7 @@ public class BarcodeScanningProcessor extends VisionProcessorBase<List<FirebaseV
     private static final String TAG = "BarcodeScanProc";
 
     private final FirebaseVisionBarcodeDetector detector;
+    private String texto, lastTexto = "";
 
     public BarcodeScanningProcessor() {
         detector = FirebaseVision.getInstance().getVisionBarcodeDetector(new FirebaseVisionBarcodeDetectorOptions.Builder().setBarcodeFormats(FirebaseVisionBarcode.FORMAT_QR_CODE).build());
@@ -62,9 +66,25 @@ public class BarcodeScanningProcessor extends VisionProcessorBase<List<FirebaseV
     @Override
     protected void onSuccess(@Nullable Bitmap originalCameraImage, @NonNull List<FirebaseVisionBarcode> barcodes, @NonNull FrameMetadata frameMetadata, @NonNull GraphicOverlay graphicOverlay) {
         graphicOverlay.clear();
+        Message message = PerguntaActivity.mHandler.obtainMessage();
+        Bundle bundle = new Bundle();
         if (originalCameraImage != null) graphicOverlay.add(new CameraImageGraphic(graphicOverlay, originalCameraImage));
-        for (int i = 0; i < barcodes.size(); ++i) graphicOverlay.add(new BarcodeGraphic(graphicOverlay, barcodes.get(i)));
-        graphicOverlay.postInvalidate();
+        for (int i = 0; i < barcodes.size(); ++i) {
+            texto = barcodes.get(i).getRawValue();
+            if ((texto.equals("Qual") || texto.equals("é") || texto.equals("o") || texto.equals("Curso?")) && !lastTexto.equals(texto)) {
+                Log.d(TAG, "Found");
+                bundle.putString("FEEDBACK", texto);
+                message.setData(bundle);
+                PerguntaActivity.mHandler.sendMessage(message);
+                lastTexto = texto;
+            } else if (!lastTexto.equals(texto)){
+                Log.d(TAG, "Wrong code");
+                bundle.putString("FEEDBACK", "False");
+                message.setData(bundle);
+                PerguntaActivity.mHandler.sendMessage(message);
+                lastTexto = texto;
+            }
+        }
     }
 
     @Override

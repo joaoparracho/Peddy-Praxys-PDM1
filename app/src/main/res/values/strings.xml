@@ -14,4 +14,5 @@
     <string name="preambCorrida">O caloiro tem 30 segundos para se deslocar ate a esslei. Comece no patio do A.</string>
     <string name="pergunta">A pergunta</string>
     <string name="preambPergunta">Todos sabemos que o calorio é ignóbil, um rombo, um ser de pouca capacidade cognitiva e penetrante, pelo que surge a necessidade de lhe fazer uma grande e importante pergunta, a qual deve responder corretamente. Caloiro, por obséquio, dirija-se para o pátio em frente ao bar do Edifício A!  Tarefa:O caloiro tem de descobrir a pergunta através de QR Codes espalhados pelo pátio. No final tem de respondar corretamente a esta.</string>
+    <string name="resposta">Resposta?</string>
 </resources>

@@ -95,7 +95,7 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
                     if (Singleton.getInstance().isShowFinishBtn()) {
                         Log.d(TAG, "2 " + Singleton.getInstance().getNumTasksComplete());
                         Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete() + 1);
-                        Singleton.getInstance().setActivityKey("descompressaoKey");
+                        Singleton.getInstance().setActivityKey("corridaKey");
                         finish();
                         startActivity(new Intent(BibliotecaActivity.this, PreambuloActivity.class));
 

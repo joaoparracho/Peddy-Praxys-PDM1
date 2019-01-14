@@ -17,10 +17,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,8 +62,8 @@ public class PerguntaActivity extends AppCompatActivity implements ActivityCompa
     private GoogleApiClient mGoogleApiClient;
     private FenceReceiver fenceReceiver;
     private PendingIntent myPendingIntent;
-    private String edificios = "Faltam os edifícios";
-    private String tempString = " ";
+    private boolean[] palavras = {false, false, false, false};
+    private String tempString = "";
     private boolean completa = true;
     private String text2;
 
@@ -75,7 +77,7 @@ public class PerguntaActivity extends AppCompatActivity implements ActivityCompa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
-        setContentView(R.layout.activity_qrcode);
+        setContentView(R.layout.activity_pergunta);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(Places.GEO_DATA_API).addApi(Places.PLACE_DETECTION_API).enableAutoManage(this, this).build();
 
@@ -101,43 +103,56 @@ public class PerguntaActivity extends AppCompatActivity implements ActivityCompa
                 super.handleMessage(msg);
                 String feedback = msg.getData().getString(FEEDBACK);
                 if (feedback != null) {
-                    queryFences();
-                    if (feedback == "False") Snackbar.make(findViewById(android.R.id.content), "Ediífio errado!", Snackbar.LENGTH_SHORT).show();
-                    else {
-                        Log.d(TAG, "Found " + feedback);
-                        Snackbar.make(findViewById(android.R.id.content), "Encontrou o ediífio " + feedback + "!", Snackbar.LENGTH_SHORT).show();
-                        Singleton.getInstance().setFaltaEdificios(feedback.charAt(0) - 65, false);
-                        tempString = " ";
-                        for (int i = 0; i < 5; i++)
-                            if (Singleton.getInstance().getFaltaEdificios(i)) {
-                                tempString += ((char) (65 + i)) + " ";
-                                completa = completa & !Singleton.getInstance().getFaltaEdificios(i);
-                            }
-                        if (completa) {
-                            textViewQRCode.setText("Finish");
-                            Singleton.getInstance().setActivityKey("perguntaKey");
-                            Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete() + 1);
-                            finish();
-                            startActivity(new Intent(PerguntaActivity.this, PreambuloActivity.class));
-                        } else completa = true;
-                        textViewQRCode.setText(edificios + tempString);
-                    }
+                    if (Singleton.getInstance().isFenceBool()) {
+                        queryFences();
+                        if (feedback == "False") Snackbar.make(findViewById(android.R.id.content), "QR Code errado!", Snackbar.LENGTH_SHORT).show();
+                        else {
+                            Log.d(TAG, feedback);
+                            tempString = "";
+                            if (feedback.equals("Qual")) palavras[0] = true;
+                            if (feedback.equals("é")) palavras[1] = true;
+                            if (feedback.equals("o")) palavras[2] = true;
+                            if (feedback.equals("Curso?")) palavras[3] = true;
+                            if (palavras[0]) tempString += "Qual ";
+                            if (palavras[1]) tempString += "é ";
+                            if (palavras[2]) tempString += "o ";
+                            if (palavras[3]) tempString += "Curso?";
+                            for (int i = 0; i < 4; i++) completa = completa & palavras[i];
+                            textViewQRCode.setText(tempString);
+                            if (completa) findViewById(R.id.resposta).setVisibility(View.VISIBLE);
+                            else completa = true;
+                        }
+                    } else Snackbar.make(findViewById(android.R.id.content), "Tens de estar no pátio do A!", Snackbar.LENGTH_SHORT).show();
                 }
             }
         };
     }
 
+    public void onClickResposta(View view) {
+        final EditText input = new EditText(PerguntaActivity.this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        AlertDialog dialog = new AlertDialog.Builder(PerguntaActivity.this).setTitle(tempString).setView(input).setPositiveButton("OK", null).create();
+        dialog.show();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (input.getText().toString().toUpperCase().contains("ELETRO")) {
+                    Singleton.getInstance().setActivityKey("descompressaoKey");
+                    Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete() + 1);
+                    finish();
+                    startActivity(new Intent(PerguntaActivity.this, PreambuloActivity.class));
+                } else new AlertDialog.Builder(PerguntaActivity.this).setTitle("Errado!").setPositiveButton("OK", null).create().show();
+            }
+        });
+    }
+
     public void onClickActivity(View view) {
         queryFences();
-        new AlertDialog.Builder(PerguntaActivity.this)
-                .setTitle("Fences")
-                .setMessage(text2)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .create().show();
+        new AlertDialog.Builder(PerguntaActivity.this).setTitle("Fences").setMessage(text2).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        }).create().show();
     }
 
     public void onCLickShowPreamb(MenuItem item) {
@@ -147,7 +162,7 @@ public class PerguntaActivity extends AppCompatActivity implements ActivityCompa
     public void showDescription() {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.pergunta)
-                .setMessage("O caloiro tem ir junto de todos os edifícios e confirmar que se encontra perto deles ao mostrar com a câmara \"Edifício X\"\n")
+                .setMessage("O caloiro tem de descobrir a pergunta através de QR Codes espalhados pelo pátio. No final tem de respondar corretamente a esta.")
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) { /*checkDescr = true;*/ }

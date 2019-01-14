@@ -29,6 +29,7 @@ public class CorridaActivity extends AppCompatActivity {
     private long mTimeInMillis = 60 * 1000 * 5;
     private CountDownTimer2 m2;
 
+    // TODO: mudar a partida da esslei para o A, faz mais sentido...
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +64,7 @@ public class CorridaActivity extends AppCompatActivity {
         Singleton.getInstance().setbInEsslei(false);
         timeTextView.setText("Finish");
         Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete() + 1);
-        Singleton.getInstance().setActivityKey("finishGameKey");
+        Singleton.getInstance().setActivityKey("perguntaKey");
         finish();
         startActivity(new Intent(CorridaActivity.this, PreambuloActivity.class));
     }

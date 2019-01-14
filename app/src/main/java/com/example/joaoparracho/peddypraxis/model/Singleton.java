@@ -16,7 +16,7 @@ public class Singleton {
     private char inEdidicio = ' ';
     private int numTasksComplete;
     private long startTime = -1;
-    private String activityKey = "perguntaKey";
+    private String activityKey = "patioKey";
     private boolean[] faltaEdificios = {true, true, true, true, true}; // A, B, C, D, E
 
     private Singleton() {
