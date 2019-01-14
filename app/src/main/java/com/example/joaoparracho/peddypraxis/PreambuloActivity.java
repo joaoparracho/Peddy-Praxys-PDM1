@@ -383,6 +383,7 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
     public void onResume() {
         super.onResume();
         gameProgress.setProgress(Singleton.getInstance().getNumTasksComplete());
+        setupFences();
         queryFences();
     }
 

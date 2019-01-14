@@ -181,8 +181,8 @@ public class CorridaActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        removeFences("locationFenceKey");
-        removeFences("essleiFenceKey");
+       // removeFences("locationFenceKey");
+        //removeFences("essleiFenceKey");
     }
 
     @Override

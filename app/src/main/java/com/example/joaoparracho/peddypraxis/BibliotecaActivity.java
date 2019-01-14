@@ -279,7 +279,7 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
-        removeFences("libLocationFenceKey");
+       // removeFences("libLocationFenceKey");
     }
 
     @Override
