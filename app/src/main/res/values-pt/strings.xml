@@ -91,4 +91,7 @@
     <string name="inRotA">Caloiro estas na rotunda!</string>
     <string name="welcomeESSLEI">Bem-vindo a ESSLEI!</string>
     <string name="blink">Vamos Caloiro! Pisca esses olhos</string>
+    <string name="insAge">Insira a idade novamente</string>
+    <string name="callAge">Caloiro tens de ter mais que 17 anos</string>
+    <string name="ageInv">Idade Invalida</string>
 </resources>

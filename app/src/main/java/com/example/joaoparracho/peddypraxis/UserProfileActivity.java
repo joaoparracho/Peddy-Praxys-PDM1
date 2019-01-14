@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableStringBuilder;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -41,10 +42,18 @@ public class UserProfileActivity extends AppCompatActivity {
     public void onCLickRestPass(View view) {
         userName = tvUserName.getText().toString();
         userAge = tvUserAge.getText().toString();
-        if (userName.equals("") || userAge.equals("")) {
-            Toast.makeText(UserProfileActivity.this, "Please all fields", Toast.LENGTH_SHORT).show();
-        } else {
-            sendData();
+        userName = tvUserName.getText().toString();
+        userAge = tvUserAge.getText().toString();
+        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(getString(R.string.ageInv));
+        SpannableStringBuilder spannable2StringBuilder = new SpannableStringBuilder(getString(R.string.callAge));
+
+
+        if (userName.equals("") || userAge.equals("")) Toast.makeText(UserProfileActivity.this, getString(R.string.enterAllFields), Toast.LENGTH_SHORT).show();
+        else {
+            if (isNumeric(userAge)) {
+                if(Integer.parseInt(userAge)>17) sendData();
+                else tvUserAge.setError(spannable2StringBuilder);
+            } else tvUserAge.setError(spannableStringBuilder);
         }
     }
 
@@ -52,7 +61,6 @@ public class UserProfileActivity extends AppCompatActivity {
         tvUserName = findViewById(R.id.EditTextUserName);
         tvUserAge = findViewById(R.id.EditTextRecEmail);
         btnValidate = findViewById(R.id.BtnRestPass);
-
         tvUserAge.setHint("Age");
         tvUserName.setHint("Name");
         tvUserName.setVisibility(View.VISIBLE);
@@ -65,5 +73,14 @@ public class UserProfileActivity extends AppCompatActivity {
         myRef.setValue(Singleton.getInstance().getCurrentUser());
         startActivity(new Intent(UserProfileActivity.this, GameScreenActivity.class));
         finish();
+    }
+    public boolean isNumeric(String input) {
+        try {
+            Integer.parseInt(input);
+            return true;
+        } catch (NumberFormatException e) {
+            // s is not numeric
+            return false;
+        }
     }
 }

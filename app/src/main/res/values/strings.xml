@@ -91,4 +91,7 @@
     <string name = "inRotA"> Freshman at the roundabout! </string>
     <string name = "welcomeESSLEI"> Welcome to ESSLEI! </string>
     <string name = "blink"> Come on Freshman! Blink those eyes </string>
+    <string name="insAge">Insert your age again</string>
+    <string name="callAge">Freshman you must be over 17 years old </string>
+    <string name="ageInv">Age invalid</string>
 </resources>
