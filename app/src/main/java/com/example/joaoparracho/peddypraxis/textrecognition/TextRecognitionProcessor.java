@@ -60,8 +60,7 @@ public class TextRecognitionProcessor extends VisionProcessorBase<FirebaseVision
     }
 
     @Override
-    protected void onSuccess( @Nullable Bitmap originalCameraImage, @NonNull FirebaseVisionText results, @NonNull FrameMetadata frameMetadata, @NonNull GraphicOverlay graphicOverlay) {
-        graphicOverlay.clear();
+    protected void onSuccess(@Nullable Bitmap originalCameraImage, @NonNull FirebaseVisionText results, @NonNull FrameMetadata frameMetadata, @NonNull GraphicOverlay graphicOverlay) {
         graphicOverlay.clear();
         if (originalCameraImage != null) graphicOverlay.add(new CameraImageGraphic(graphicOverlay, originalCameraImage));
         String texto = results.getText();
@@ -86,7 +85,7 @@ public class TextRecognitionProcessor extends VisionProcessorBase<FirebaseVision
                 EdificioActivity.mHandler.sendMessage(message);
                 this.lastLetra = this.letra;
                 this.wrong = false;
-            } else if (!wrong){
+            } else if (!wrong) {
                 Log.d(TAG, "False detection" + this.letra);
                 bundle.putString("FEEDBACK", "False");
                 message.setData(bundle);

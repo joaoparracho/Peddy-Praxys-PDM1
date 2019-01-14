@@ -42,14 +42,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".GameScreenActivity" />
         <activity android:name=".PasswordActivity" />
+        <activity android:name=".GameScreenActivity" />
+        <activity android:name=".PreambuloActivity" />
         <activity android:name=".PatioActivity" />
         <activity android:name=".EdificioActivity" />
         <activity android:name=".BibliotecaActivity" />
-        <activity android:name=".DescompressaoActivity" />
-        <activity android:name=".PreambuloActivity" />
         <activity android:name=".CorridaActivity" />
+        <activity android:name=".PerguntaActivity" />
+        <activity android:name=".DescompressaoActivity" />
     </application>
 
 </manifest>

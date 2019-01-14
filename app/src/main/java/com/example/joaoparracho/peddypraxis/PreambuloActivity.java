@@ -99,13 +99,17 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
                 titlePreamTextV.setText(getString(R.string.biblioteca));
                 preambTextV.setText(getString(R.string.preamBiblioteca));
                 break;
+            case "corridaKey":
+                titlePreamTextV.setText(getString(R.string.corrida));
+                preambTextV.setText(getString(R.string.preambCorrida));
+                break;
+            case "perguntaKey":
+                titlePreamTextV.setText(getString(R.string.pergunta));
+                preambTextV.setText(getString(R.string.preambPergunta));
+                break;
             case "descompressaoKey":
                 titlePreamTextV.setText(getString(R.string.descompressap));
                 preambTextV.setText(getString(R.string.preambDescompressao));
-                break;
-            case "corridaKey":
-                titlePreamTextV.setText("Corrida");
-                preambTextV.setText("O caloiro tem 30 segundos para se deslocar ate a esslei. Comece no patio do A.");
                 break;
             case "finishGameKey":
                 titlePreamTextV.setText("Game Finished");
@@ -139,12 +143,16 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
                 else if (!Singleton.getInstance().isbLibLoc()) Snackbar.make(findViewById(android.R.id.content), "Caloiro dirija-se para a Biblioteca", Snackbar.LENGTH_LONG).show();
                 else Snackbar.make(findViewById(android.R.id.content), "Introduza a resposta correta!", Snackbar.LENGTH_LONG).show();
                 break;
-            case "descompressaoKey":
-                if (Singleton.getInstance().isFenceBool()) startActivity(new Intent(PreambuloActivity.this, DescompressaoActivity.class));
-                else Snackbar.make(findViewById(android.R.id.content), "Caloiro dirija-se para o pátio do A", Snackbar.LENGTH_LONG).show();
-                break;
             case "corridaKey":
                 if (Singleton.getInstance().isFenceBool()) startActivity(new Intent(PreambuloActivity.this, CorridaActivity.class));
+                else Snackbar.make(findViewById(android.R.id.content), "Caloiro dirija-se para o pátio do A", Snackbar.LENGTH_LONG).show();
+                break;
+            case "perguntaKey":
+                if (Singleton.getInstance().isFenceBool()) startActivity(new Intent(PreambuloActivity.this, PerguntaActivity.class));
+                else Snackbar.make(findViewById(android.R.id.content), "Caloiro dirija-se para o pátio do A", Snackbar.LENGTH_LONG).show();
+                break;
+            case "descompressaoKey":
+                if (Singleton.getInstance().isFenceBool()) startActivity(new Intent(PreambuloActivity.this, DescompressaoActivity.class));
                 else Snackbar.make(findViewById(android.R.id.content), "Caloiro dirija-se para o pátio do A", Snackbar.LENGTH_LONG).show();
                 break;
             case "finishGameKey":
@@ -169,6 +177,7 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
             case "corridaKey":
                 addFence("essleiFenceKey", LocationFence.entering(39.732766, -8.820643, 30));
             case "patioKey":
+            case "perguntaKey":
             case "descompressaoKey":
                 addFence("locationFenceKey", LocationFence.in(39.735655, -8.820948, 50, 0L));
                 break;
