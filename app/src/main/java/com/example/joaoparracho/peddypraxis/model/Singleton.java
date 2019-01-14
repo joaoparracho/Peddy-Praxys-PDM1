@@ -17,6 +17,7 @@ public class Singleton {
     private int numTasksComplete;
     private long startTime = -1;
     private String activityKey = "patioKey";
+    private boolean bStart = false;
     private boolean[] faltaEdificios = {true, true, true, true, true}; // A, B, C, D, E
 
     private Singleton() {
@@ -147,5 +148,13 @@ public class Singleton {
 
     public void setInEdidicio(char inEdidicio) {
         this.inEdidicio = inEdidicio;
+    }
+
+    public boolean isbStart() {
+        return bStart;
+    }
+
+    public void setbStart(boolean bStart) {
+        this.bStart = bStart;
     }
 }

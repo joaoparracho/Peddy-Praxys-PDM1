@@ -36,6 +36,11 @@ import com.google.android.gms.awareness.fence.TimeFence;
 import com.google.android.gms.awareness.snapshot.LocationResponse;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -55,6 +60,8 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
     private GoogleApiClient mGoogleApiClient;
     private FenceReceiver fenceReceiver;
     private PendingIntent myPendingIntent;
+    private FusedLocationProviderClient mFusedLocationClient;
+    private LocationCallback mLocationCallback;
     private long finishTime;
 
     @Override
@@ -76,12 +83,29 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
         fenceReceiver = new FenceReceiver();
         registerReceiver(fenceReceiver, new IntentFilter(FENCE_RECEIVER_ACTION));
 
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+            }
+        };
+        if (!Singleton.getInstance().isbStart()) {
+            Singleton.getInstance().setbStart(true);
+            LocationRequest mLocationRequest = LocationRequest.create();
+            mLocationRequest.setInterval(2000).setFastestInterval(1000).setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            checkPermission();
+            mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+        }
+
         if (Singleton.getInstance().getStartTime() == -1) Singleton.getInstance().setStartTime(System.currentTimeMillis());
 
         if (!Singleton.getInstance().getActivityKey().equals("finishGameKey")) {
             setupFences();
             if (Singleton.getInstance().getActivityKey().equals("bibliotecaKey")) respostaEdtT.setVisibility(View.VISIBLE);
-        } else removeFences();
+        } else {
+            removeFences();
+            mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+        }
         updatePreambuloText();
     }
 
@@ -308,7 +332,7 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
         super.onStop();
     }
 
-    protected void queryFences() {
+    private void checkPermission() {
         if (ContextCompat.checkSelfPermission(PreambuloActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ActivityCompat.requestPermissions(PreambuloActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 42);
         try {
             int locationMode = Settings.Secure.getInt(getContentResolver(), Settings.Secure.LOCATION_MODE);
@@ -316,7 +340,10 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
         } catch (Settings.SettingNotFoundException e) {
             Log.e(TAG, "Error: could not access location mode" + e);
         }
+    }
 
+    protected void queryFences() {
+        checkPermission();
         Awareness.getSnapshotClient(this).getLocation()
                 .addOnSuccessListener(new OnSuccessListener<LocationResponse>() {
                     @Override
