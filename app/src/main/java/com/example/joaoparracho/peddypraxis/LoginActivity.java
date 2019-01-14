@@ -20,7 +20,6 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.joaoparracho.peddypraxis.model.Manager;
 import com.example.joaoparracho.peddypraxis.model.Singleton;
 import com.example.joaoparracho.peddypraxis.model.Utilizador;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -66,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
         if (validate()) validate(email, password);
     }
 
-    public void onCLickSignUp(View v) {
+    public void onClickSignUp(View v) {
         if(validate()) {
             progressDialog.setMessage(getString(R.string.sign_in));
             progressDialog.show();
@@ -211,7 +210,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onClick_Language(MenuItem item) {
         final String[] listItems = {"Portugues", "English"};
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(LoginActivity.this);
-        mBuilder.setTitle("Linguagem");
+        mBuilder.setTitle(getString(R.string.linguagem));
         mBuilder.setSingleChoiceItems(listItems, -1, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {

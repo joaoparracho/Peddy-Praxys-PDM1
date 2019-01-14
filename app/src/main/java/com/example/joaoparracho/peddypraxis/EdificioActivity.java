@@ -4,7 +4,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -20,7 +19,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,7 +29,10 @@ import com.example.joaoparracho.peddypraxis.model.FenceReceiver;
 import com.example.joaoparracho.peddypraxis.model.Singleton;
 import com.example.joaoparracho.peddypraxis.textrecognition.TextRecognitionProcessor;
 import com.google.android.gms.awareness.Awareness;
-import com.google.android.gms.awareness.fence.FenceUpdateRequest;
+import com.google.android.gms.awareness.fence.FenceQueryRequest;
+import com.google.android.gms.awareness.fence.FenceQueryResponse;
+import com.google.android.gms.awareness.fence.FenceState;
+import com.google.android.gms.awareness.fence.FenceStateMap;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Places;
@@ -56,9 +57,10 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
     private GoogleApiClient mGoogleApiClient;
     private FenceReceiver fenceReceiver;
     private PendingIntent myPendingIntent;
-    private String edificios = "Faltam os edifícios";
+    private String edificios;
     private String tempString = " ";
     private boolean completa = true;
+    private String text2;
 
     private static boolean isPermissionGranted(Context context, String permission) {
         if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) Log.i(TAG, "Permission granted: " + permission);
@@ -71,6 +73,7 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_edificio);
+        edificios = getString(R.string.ediFalta);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(Places.GEO_DATA_API).addApi(Places.PLACE_DETECTION_API).enableAutoManage(this, this).build();
 
@@ -98,46 +101,59 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
                 super.handleMessage(msg);
                 String feedback = msg.getData().getString(FEEDBACK);
                 if (feedback != null) {
-                    Log.d(TAG, "Found " + feedback);
-                    Snackbar.make(findViewById(android.R.id.content), "Encontrou o ediífio " + feedback + "!", Snackbar.LENGTH_SHORT).show();
-                    Singleton.getInstance().setFaltaEdificios(feedback.charAt(0) - 65, false);
-                    tempString = " ";
-                    for (int i = 0; i < 5; i++)
-                        if (Singleton.getInstance().getFaltaEdificios(i)) {
-                            tempString += ((char) (65 + i)) + " ";
-                            completa = completa & !Singleton.getInstance().getFaltaEdificios(i);
-                        }
-                    if (completa) {
-                        textViewEdificio.setText("Finish");
-                        Singleton.getInstance().setActivityKey("bibliotecaKey");
-                        Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete() + 1);
-                        finish();
-                        startActivity(new Intent(EdificioActivity.this, PreambuloActivity.class));
-                    } else completa = true;
-                    textViewEdificio.setText(edificios + tempString);
+                    queryFences();
+                    if (feedback == "False") Snackbar.make(findViewById(android.R.id.content), R.string.ediErrado, Snackbar.LENGTH_SHORT).show();
+                    else {
+                        Log.d(TAG, "Found " + feedback);
+                        Snackbar.make(findViewById(android.R.id.content), getString(R.string.ediEncontrado) + feedback + "!", Snackbar.LENGTH_SHORT).show();
+                        Singleton.getInstance().setFaltaEdificios(feedback.charAt(0) - 65, false);
+                        tempString = " ";
+                        for (int i = 0; i < 5; i++)
+                            if (Singleton.getInstance().getFaltaEdificios(i)) {
+                                tempString += ((char) (65 + i)) + " ";
+                                completa = completa & !Singleton.getInstance().getFaltaEdificios(i);
+                            }
+                        if (completa) {
+                            textViewEdificio.setText(R.string.finish);
+                            Singleton.getInstance().setActivityKey("bibliotecaKey");
+                            Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete() + 1);
+                            finish();
+                            startActivity(new Intent(EdificioActivity.this, PreambuloActivity.class));
+                        } else completa = true;
+                        textViewEdificio.setText(edificios + tempString);
+                    }
                 }
             }
         };
     }
 
-    public void onClickActivity(View view) {
-        tempString = " ";
-        for (int i = 0; i < 5; i++) {
-            Singleton.getInstance().setFaltaEdificios(i, true);
-            tempString += ((char) (65 + i)) + " ";
-        }
-        textViewEdificio.setText(edificios + tempString);
-    }
+//    public void onClickActivity(View view) {
+//        tempString = " ";
+//        for (int i = 0; i < 5; i++) {
+//            Singleton.getInstance().setFaltaEdificios(i, true);
+//            tempString += ((char) (65 + i)) + " ";
+//        }
+//        textViewEdificio.setText(edificios + tempString);
+//    }
+//
+//    public void onClickFence(View view) {
+//        queryFences();
+//        new AlertDialog.Builder(EdificioActivity.this)
+//                .setTitle("Fences")
+//                .setMessage(text2)
+//                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                    }
+//                })
+//                .create().show();
+//    }
 
-    public void onCLickShowPreamb(MenuItem item) {
-        showDescription();
-    }
-
-    public void showDescription() {
+    public void onClickShowPreamb(MenuItem item) {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.edificios)
-                .setMessage("O caloiro tem ir junto de todos os edifícios e confirmar que se encontra perto deles ao mostrar com a câmara \"Edifício X\"\n")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setMessage(R.string.descEdificios)
+                .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) { /*checkDescr = true;*/ }
                 })
@@ -192,20 +208,34 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    protected void removeFences(String unique_key) {
-        Awareness.getFenceClient(this).updateFences(new FenceUpdateRequest.Builder()
-                .removeFence(unique_key)
-                .build())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+    protected void queryFences() {
+        Awareness.getFenceClient(this).queryFences(FenceQueryRequest.all())
+                .addOnSuccessListener(new OnSuccessListener<FenceQueryResponse>() {
                     @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\nFences were successfully removed.");
+                    public void onSuccess(FenceQueryResponse fenceQueryResponse) {
+                        String fenceInfo = "";
+                        FenceStateMap fenceStateMap = fenceQueryResponse.getFenceStateMap();
+                        for (String fenceKey : fenceStateMap.getFenceKeys()) {
+                            int state = fenceStateMap.getFenceState(fenceKey).getCurrentState();
+                            fenceInfo += fenceKey + ": " + (state == FenceState.TRUE ? "TRUE" : state == FenceState.FALSE ? "FALSE" : "UNKNOWN") + "\n";
+                            if (fenceKey.equals("locationFenceKey") && state == FenceState.TRUE) Singleton.getInstance().setFenceBool(true);
+                            if (fenceKey.equals("ediA") && state == FenceState.TRUE) Singleton.getInstance().setInEdidicio('A');
+                            if (fenceKey.equals("ediB") && state == FenceState.TRUE) Singleton.getInstance().setInEdidicio('B');
+                            if (fenceKey.equals("ediC") && state == FenceState.TRUE) Singleton.getInstance().setInEdidicio('C');
+                            if (fenceKey.equals("ediD") && state == FenceState.TRUE) Singleton.getInstance().setInEdidicio('D');
+                            if (fenceKey.equals("ediE") && state == FenceState.TRUE) Singleton.getInstance().setInEdidicio('E');
+                        }
+                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                        String text = text2 = "\n\n[Fences @ " + timestamp + "]\n" + "> Fences' states:\n" + (fenceInfo.equals("") ? "No registered fences." : fenceInfo);
+                        Log.d(TAG, text);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\nFences could not be removed: " + e.getMessage());
+                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                        String text = "\n\n[Fences @ " + timestamp + "]\n" + "Fences could not be queried: " + e.getMessage();
+                        Log.d(TAG, text);
                     }
                 });
     }
@@ -213,26 +243,23 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
     @Override
     public void onBackPressed() {
         Log.d(TAG, "back button pressed");
-        showDialogWarning();
-    }
-
-    public void showDialogWarning() {
         new AlertDialog.Builder(this)
-                .setTitle("Sair Tarefa")
-                .setMessage("Caloiro tem a certeza que pretende sair!\n Qualquer progresso que tenha feito ira ser perdido")
-                .setPositiveButton("Terminar Tarefa", new DialogInterface.OnClickListener() {
+                .setTitle(R.string.endTask)
+                .setMessage(R.string.warnLst)
+                .setPositiveButton(R.string.endTask, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         for (int i = 0; i < 5; i++) Singleton.getInstance().setFaltaEdificios(i, true);
                         finish();
                     }
                 })
-                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                     }
                 })
                 .create().show();
+        queryFences();
     }
 
     @Override
@@ -240,6 +267,7 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
         super.onResume();
         Log.d(TAG, "onResume");
         startCameraSource();
+        queryFences();
     }
 
     @Override
@@ -247,13 +275,13 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
         super.onPause();
         Log.d(TAG, "onPause");
         preview.stop();
+        queryFences();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
-        removeFences("rotALocationFenceKey");
         if (cameraSource != null) cameraSource.release();
     }
 
@@ -261,6 +289,7 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
     public void onStop() {
         super.onStop();
         Log.d(TAG, "onStop");
+        queryFences();
     }
 
     @Override

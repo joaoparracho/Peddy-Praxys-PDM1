@@ -1,4 +1,3 @@
-// Copyright 2018 Google LLC
 package com.example.joaoparracho.peddypraxis;
 
 import android.app.PendingIntent;
@@ -15,21 +14,22 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.joaoparracho.peddypraxis.barcodescanning.BarcodeScanningProcessor;
 import com.example.joaoparracho.peddypraxis.common.CameraSource;
 import com.example.joaoparracho.peddypraxis.common.CameraSourcePreview;
 import com.example.joaoparracho.peddypraxis.common.GraphicOverlay;
-import com.example.joaoparracho.peddypraxis.facedetection.FaceDetectionProcessor;
-import com.example.joaoparracho.peddypraxis.model.CountDownTimer2;
 import com.example.joaoparracho.peddypraxis.model.FenceReceiver;
 import com.example.joaoparracho.peddypraxis.model.Singleton;
 import com.google.android.gms.awareness.Awareness;
@@ -38,7 +38,6 @@ import com.google.android.gms.awareness.fence.FenceQueryResponse;
 import com.google.android.gms.awareness.fence.FenceState;
 import com.google.android.gms.awareness.fence.FenceStateMap;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.annotation.KeepName;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -48,30 +47,24 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-/**
- * Demo app showing the various features of ML Kit for Firebase. This class is used to
- * set up continuous frame processing on frames from a camera source.
- */
-@KeepName
-public final class PatioActivity extends AppCompatActivity implements OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener {
-    private static final String TAG = "PatioActivity";
+public class PerguntaActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener {
+
+    private static final String TAG = "PerguntaActivity";
+    private static final String FEEDBACK = "FEEDBACK";
     private static final String FENCE_RECEIVER_ACTION = "FENCE_RECEIVER_ACTION";
     public static Handler mHandler;
-    CountDownTimer2 m1;
     private CameraSource cameraSource = null;
     private CameraSourcePreview preview;
     private GraphicOverlay graphicOverlay;
-    private TextView mTextViewCountDown;
+    private TextView textViewQRCode;
     private GoogleApiClient mGoogleApiClient;
     private FenceReceiver fenceReceiver;
     private PendingIntent myPendingIntent;
-    private long mTimeInMillis = 60 * 100;
-    private boolean pauseCounterOnce;
-    private int counterDelay;
-    private String text2 = "";
-    private boolean checkWarning;
+    private boolean[] palavras = {false, false, false, false};
+    private String tempString = "";
+    private boolean completa = true;
+    private String text2;
 
     private static boolean isPermissionGranted(Context context, String permission) {
         if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) Log.i(TAG, "Permission granted: " + permission);
@@ -83,7 +76,7 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
-        setContentView(R.layout.activity_patio);
+        setContentView(R.layout.activity_pergunta);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(Places.GEO_DATA_API).addApi(Places.PLACE_DETECTION_API).enableAutoManage(this, this).build();
 
@@ -92,35 +85,7 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
         fenceReceiver = new FenceReceiver();
         registerReceiver(fenceReceiver, new IntentFilter(FENCE_RECEIVER_ACTION));
 
-        mTextViewCountDown = findViewById(R.id.tVInfo);
-        m1 = new CountDownTimer2(mTimeInMillis, 1000) {
-            public void onTick(long millisUntilFinished) {
-                if (Singleton.getInstance().getFd() && Singleton.getInstance().isFenceBool() && Singleton.getInstance().isWalkingBool() && !checkWarning) {
-                    if (m1.ismPaused()) m1.resume();
-                    mTimeInMillis = millisUntilFinished;
-                    if (counterDelay >= 3) {
-                        counterDelay = 0;
-                        pauseCounterOnce = false;
-                        Singleton.getInstance().setFd(false);
-                    } else counterDelay++;
-                } else if (!pauseCounterOnce) {
-                    m1.pause();
-                    pauseCounterOnce = true;
-                    counterDelay = 0;
-                    Snackbar.make(findViewById(android.R.id.content), R.string.blink, Snackbar.LENGTH_LONG).show();
-                }
-                mTextViewCountDown.setText(updateCountDownText());
-            }
-
-            @Override
-            public void onFinish() {
-                mTextViewCountDown.setText(getString(R.string.acabou));
-                Singleton.getInstance().setActivityKey("edificiosKey");
-                Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete() + 1);
-                finish();
-                startActivity(new Intent(PatioActivity.this, PreambuloActivity.class));
-            }
-        }.start();
+        textViewQRCode = findViewById(R.id.tVInfo);
 
         preview = findViewById(R.id.firePreview);
         if (preview == null) Log.d(TAG, "Preview is null");
@@ -134,64 +99,70 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
+                String feedback = msg.getData().getString(FEEDBACK);
+                if (feedback != null) {
+                    if (Singleton.getInstance().isFenceBool()) {
+                        queryFences();
+                        if (feedback == "False") Snackbar.make(findViewById(android.R.id.content), R.string.qrErrado, Snackbar.LENGTH_SHORT).show();
+                        else {
+                            Log.d(TAG, feedback);
+                            tempString = "";
+                            if (feedback.equals("Qual")) palavras[0] = true;
+                            if (feedback.equals("é")) palavras[1] = true;
+                            if (feedback.equals("o")) palavras[2] = true;
+                            if (feedback.equals("Curso?")) palavras[3] = true;
+                            if (palavras[0]) tempString += getString(R.string.qual);
+                            if (palavras[1]) tempString += getString(R.string.é);
+                            if (palavras[2]) tempString += getString(R.string.o);
+                            if (palavras[3]) tempString += getString(R.string.curso);
+                            for (int i = 0; i < 4; i++) completa = completa & palavras[i];
+                            textViewQRCode.setText(tempString);
+                            if (completa) findViewById(R.id.resposta).setVisibility(View.VISIBLE);
+                            else completa = true;
+                        }
+                    } else Snackbar.make(findViewById(android.R.id.content), R.string.estarNoPatA, Snackbar.LENGTH_SHORT).show();
+                }
             }
         };
-        queryFences();
     }
 
-    private String updateCountDownText() {
-        return String.format(Locale.getDefault(), "%02d:%02d", ((mTimeInMillis / 1000) % 3600) / 60, (mTimeInMillis / 1000) % 60);
+    public void onClickResposta(View view) {
+        final EditText input = new EditText(PerguntaActivity.this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        AlertDialog dialog = new AlertDialog.Builder(PerguntaActivity.this).setTitle(tempString).setView(input).setPositiveButton(R.string.OK, null).create();
+        dialog.show();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (input.getText().toString().toUpperCase().contains("ELETRO") || input.getText().toString().toUpperCase().contains("ELECTRO")) {
+                    Singleton.getInstance().setActivityKey("descompressaoKey");
+                    Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete() + 1);
+                    finish();
+                    startActivity(new Intent(PerguntaActivity.this, PreambuloActivity.class));
+                } else new AlertDialog.Builder(PerguntaActivity.this).setTitle(R.string.errado).setPositiveButton(R.string.OK, null).create().show();
+            }
+        });
     }
-
-//    private String updateCountDownText() {
-//        String timeLeftFormatted;
-//        int hours = (int) (mTimeInMillis / 1000) / 3600;
-//        int minutes = (int) ((mTimeInMillis / 1000) % 3600) / 60;
-//        int seconds = (int) (mTimeInMillis / 1000) % 60;
-//        int a, b;
-//
-//        a = Singleton.getInstance().isFenceBool() ? 1 : 0;
-//        b = Singleton.getInstance().isWalkingBool() ? 1 : 0;
-//
-//        if (hours > 0) {
-//            if (Singleton.getInstance().getFd()) timeLeftFormatted = String.format(Locale.getDefault(), "%d:%02d:%02d-TRUE %d %d %d", hours, minutes, seconds, counterDelay, a, b);
-//            else timeLeftFormatted = String.format(Locale.getDefault(), "%d:%02d:%02d--FALSE %d %d %d", hours, minutes, seconds, counterDelay, a, b);
-//        } else {
-//            if (Singleton.getInstance().getFd()) timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d---TRUE %d %d %d", minutes, seconds, counterDelay, a, b);
-//            else timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d--FALSE %d %d %d", minutes, seconds, counterDelay, a, b);
-//        }
-//        return timeLeftFormatted;
-//    }
 
 //    public void onClickActivity(View view) {
-//        //printLocation();
 //        queryFences();
-//        new AlertDialog.Builder(PatioActivity.this)
-//                .setTitle("Fences")
-//                .setMessage(text2)
-//                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                    }
-//                })
-//                .create().show();
+//        new AlertDialog.Builder(PerguntaActivity.this).setTitle("Fences").setMessage(text2).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//            }
+//        }).create().show();
 //    }
 
     public void onClickShowPreamb(MenuItem item) {
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.patio)
-                .setMessage(R.string.descPat)
-                .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .create().show();
+        new AlertDialog.Builder(this).setTitle(R.string.pergunta).setMessage(getString(R.string.descPergunta)).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {  }
+        }).create().show();
     }
 
     private void createCameraSource() {
         if (cameraSource == null) cameraSource = new CameraSource(this, graphicOverlay);
-        cameraSource.setMachineLearningFrameProcessor(new FaceDetectionProcessor());
+        cameraSource.setMachineLearningFrameProcessor(new BarcodeScanningProcessor());
     }
 
     private void startCameraSource() {
@@ -199,7 +170,7 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
             try {
                 if (preview == null) Log.d(TAG, "resume: Preview is null");
                 if (graphicOverlay == null) Log.d(TAG, "resume: graphOverlay is null");
-                cameraSource.setFacing(CameraSource.CAMERA_FACING_FRONT);
+                cameraSource.setFacing(CameraSource.CAMERA_FACING_BACK);
                 preview.start(cameraSource, graphicOverlay);
             } catch (IOException e) {
                 Log.e(TAG, "Unable to start camera source.", e);
@@ -248,16 +219,18 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
                             int state = fenceStateMap.getFenceState(fenceKey).getCurrentState();
                             fenceInfo += fenceKey + ": " + (state == FenceState.TRUE ? "TRUE" : state == FenceState.FALSE ? "FALSE" : "UNKNOWN") + "\n";
                             if (fenceKey.equals("locationFenceKey") && state == FenceState.TRUE) Singleton.getInstance().setFenceBool(true);
-                            if (fenceKey.equals("walkingFenceKey") && state != FenceState.FALSE) Singleton.getInstance().setWalkingBool(true);
                         }
-                        text2 = "location: " + fenceInfo;
-                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\n> Fences' states:\n" + (fenceInfo.equals("") ? "No registered fences." : fenceInfo));
+                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                        String text = text2 = "\n\n[Fences @ " + timestamp + "]\n" + "> Fences' states:\n" + (fenceInfo.equals("") ? "No registered fences." : fenceInfo);
+                        Log.d(TAG, text);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\nFences could not be queried: " + e.getMessage());
+                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                        String text = "\n\n[Fences @ " + timestamp + "]\n" + "Fences could not be queried: " + e.getMessage();
+                        Log.d(TAG, text);
                     }
                 });
     }
@@ -265,30 +238,22 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
     @Override
     public void onBackPressed() {
         Log.d(TAG, "back button pressed");
-        checkWarning = true;
-        if (!m1.ismPaused()) {
-            m1.pause();
-            pauseCounterOnce = true;
-        }
         new AlertDialog.Builder(this)
                 .setTitle(R.string.endTask)
                 .setMessage(R.string.warnLst)
                 .setPositiveButton(R.string.endTask, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        checkWarning = false;
-                        m1.cancel();
-                        Singleton.getInstance().setFd(false);
                         finish();
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        checkWarning = false;
                     }
                 })
                 .create().show();
+        queryFences();
     }
 
     @Override
@@ -303,8 +268,8 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
     protected void onPause() {
         super.onPause();
         Log.d(TAG, "onPause");
-        queryFences();
         preview.stop();
+        queryFences();
     }
 
     @Override
@@ -332,4 +297,5 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Toast.makeText(this, connectionResult.getErrorMessage(), Toast.LENGTH_SHORT).show();
     }
+
 }

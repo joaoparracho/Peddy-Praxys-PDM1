@@ -2,8 +2,6 @@ package com.example.joaoparracho.peddypraxis.model;
 
 import android.util.Log;
 
-import com.google.firebase.firestore.auth.User;
-
 public class Singleton {
     private static final Singleton ourInstance = new Singleton();
     private Manager manager;
@@ -11,23 +9,17 @@ public class Singleton {
     private boolean showFinishBtn;
     private boolean fd;
     private boolean fenceBool;
+    private boolean nearbyBool;
     private boolean walkingBool;
     private boolean bLibLoc;
     private boolean bInRotA;
     private boolean bInEsslei;
-    private boolean bCreateFenceTime;
+    private char inEdidicio = ' ';
     private int numTasksComplete;
     private long startTime = -1;
     private String activityKey = "patioKey";
+    private boolean bStart = false;
     private boolean[] faltaEdificios = {true, true, true, true, true}; // A, B, C, D, E
-
-    public Utilizador getCurrentUser() {
-        return currentUser;
-    }
-
-    public void setCurrentUser(Utilizador currentUser) {
-        this.currentUser = currentUser;
-    }
 
     private Singleton() {
         manager = new Manager();
@@ -35,6 +27,14 @@ public class Singleton {
 
     public static Singleton getInstance() {
         return ourInstance;
+    }
+
+    public Utilizador getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(Utilizador currentUser) {
+        this.currentUser = currentUser;
     }
 
     public boolean isbLibLoc() {
@@ -86,10 +86,9 @@ public class Singleton {
     }
 
     public void restartVariables() {
-        Log.d("xxxfences", "Reset variables");
+        Log.d("Singleton", "Reset variables");
         this.fd = false;
         this.showFinishBtn = false;
-        this.bCreateFenceTime = false;
         this.numTasksComplete = 0;
         this.faltaEdificios = new boolean[]{true, true, true, true, true};
         this.startTime = -1;
@@ -101,14 +100,6 @@ public class Singleton {
 
     public void setActivityKey(String activityKey) {
         this.activityKey = activityKey;
-    }
-
-    public boolean isbCreateFenceTime() {
-        return bCreateFenceTime;
-    }
-
-    public void setbCreateFenceTime(boolean bCreateFenceTime) {
-        this.bCreateFenceTime = bCreateFenceTime;
     }
 
     public boolean getFaltaEdificios(int i) {
@@ -149,5 +140,29 @@ public class Singleton {
 
     public void setbInRotA(boolean bInRotA) {
         this.bInRotA = bInRotA;
+    }
+
+    public char getInEdidicio() {
+        return inEdidicio;
+    }
+
+    public void setInEdidicio(char inEdidicio) {
+        this.inEdidicio = inEdidicio;
+    }
+
+    public boolean isbStart() {
+        return bStart;
+    }
+
+    public void setbStart(boolean bStart) {
+        this.bStart = bStart;
+    }
+
+    public boolean isNearbyBool() {
+        return nearbyBool;
+    }
+
+    public void setNearbyBool(boolean nearbyBool) {
+        this.nearbyBool = nearbyBool;
     }
 }

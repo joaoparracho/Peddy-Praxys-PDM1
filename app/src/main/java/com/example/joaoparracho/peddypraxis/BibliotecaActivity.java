@@ -33,7 +33,6 @@ import com.google.android.gms.awareness.fence.FenceQueryRequest;
 import com.google.android.gms.awareness.fence.FenceQueryResponse;
 import com.google.android.gms.awareness.fence.FenceState;
 import com.google.android.gms.awareness.fence.FenceStateMap;
-import com.google.android.gms.awareness.fence.FenceUpdateRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -49,7 +48,7 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
     private static final String KEY_IMAGE_MAX_WIDTH = "com.googletest.firebase.ml.demo.KEY_IMAGE_MAX_WIDTH";
     private static final String KEY_IMAGE_MAX_HEIGHT = "com.googletest.firebase.ml.demo.KEY_IMAGE_MAX_HEIGHT";
     private static final String KEY_SELECTED_SIZE = "com.googletest.firebase.ml.demo.KEY_SELECTED_SIZE";
-    private static final String SIZE_1024_768 = "w:1024"; // ~1024*768 in a normal ratio
+    private static final String SIZE_PREVIEW = "w:max";
     public static Handler mHandler;
     boolean isLandScape;
     private Button getImageButton;
@@ -61,7 +60,7 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
     // Max height (portrait mode)
     private Integer imageMaxHeight;
     private VisionImageProcessor imageProcessor;
-    private String selectedSize = SIZE_1024_768;
+    private String selectedSize = SIZE_PREVIEW;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +74,7 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
             public void onClick(View view) {
                 queryFences();
                 if (Singleton.getInstance().isbLibLoc()) startCameraIntentForResult();
-                else Snackbar.make(findViewById(android.R.id.content), "You must be inside library dummie", Snackbar.LENGTH_LONG).show();
+                else Snackbar.make(findViewById(android.R.id.content), R.string.dentroBiblio, Snackbar.LENGTH_LONG).show();
             }
         });
         imageProcessor = new CloudTextRecognitionProcessor();
@@ -95,11 +94,9 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
                     if (Singleton.getInstance().isShowFinishBtn()) {
                         Log.d(TAG, "2 " + Singleton.getInstance().getNumTasksComplete());
                         Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete() + 1);
-                        //Singleton.getInstance().setActivityKey("corridaKey");
-                        Singleton.getInstance().setActivityKey("descompressaoKey");
+                        Singleton.getInstance().setActivityKey("corridaKey");
                         finish();
                         startActivity(new Intent(BibliotecaActivity.this, PreambuloActivity.class));
-
                     }
                 }
             }
@@ -115,15 +112,11 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
         }
     }
 
-    public void onCLickShowPreamb(MenuItem item) {
-        showDescription();
-    }
-
-    public void showDescription() {
+    public void onClickShowPreamb(MenuItem item) {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.Bibl)
                 .setMessage(R.string.descBib)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                     }
@@ -182,13 +175,32 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
         }
     }
 
+    private Integer getImageMaxWidth() {
+        if (imageMaxWidth == null) {
+            if (isLandScape) imageMaxWidth = ((View) preview.getParent()).getHeight();
+            else imageMaxWidth = ((View) preview.getParent()).getWidth();
+        }
+        return imageMaxWidth;
+    }
+
+    private Integer getImageMaxHeight() {
+        if (imageMaxHeight == null) {
+            if (isLandScape) imageMaxHeight = ((View) preview.getParent()).getWidth();
+            else imageMaxHeight = ((View) preview.getParent()).getHeight();
+        }
+        return imageMaxHeight;
+    }
+
+
     private Pair<Integer, Integer> getTargetedWidthHeight() {
         int targetWidth;
         int targetHeight;
         switch (selectedSize) {
-            case SIZE_1024_768:
-                targetWidth = isLandScape ? 1024 : 768;
-                targetHeight = isLandScape ? 768 : 1024;
+            case SIZE_PREVIEW:
+                int maxWidthForPortraitMode = getImageMaxWidth();
+                int maxHeightForPortraitMode = getImageMaxHeight();
+                targetWidth = isLandScape ? maxHeightForPortraitMode : maxWidthForPortraitMode;
+                targetHeight = isLandScape ? maxWidthForPortraitMode : maxHeightForPortraitMode;
                 break;
             default:
                 throw new IllegalStateException("Unknown size");
@@ -219,31 +231,9 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
                 });
     }
 
-    protected void removeFences(String unique_key) {
-        Awareness.getFenceClient(this).updateFences(new FenceUpdateRequest.Builder()
-                .removeFence(unique_key)
-                .build())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\nFences were successfully removed.");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\nFences could not be removed: " + e.getMessage());
-                    }
-                });
-    }
-
     @Override
     public void onBackPressed() {
         Log.d(TAG, "back button pressed");
-        showDialogWaring();
-    }
-
-    public void showDialogWaring() {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.endTask)
                 .setMessage(R.string.warnLst)
@@ -279,7 +269,6 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
-       // removeFences("libLocationFenceKey");
     }
 
     @Override

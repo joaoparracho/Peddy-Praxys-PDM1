@@ -16,7 +16,6 @@ import com.google.android.gms.awareness.fence.FenceQueryRequest;
 import com.google.android.gms.awareness.fence.FenceQueryResponse;
 import com.google.android.gms.awareness.fence.FenceState;
 import com.google.android.gms.awareness.fence.FenceStateMap;
-import com.google.android.gms.awareness.fence.FenceUpdateRequest;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
@@ -26,7 +25,7 @@ import java.util.Locale;
 public class CorridaActivity extends AppCompatActivity {
     private static final String TAG = "CorridaActivity";
     private TextView timeTextView;
-    private long mTimeInMillis = 60 * 500;
+    private long mTimeInMillis = 60 * 1000;
     private CountDownTimer2 m2;
 
     @Override
@@ -34,13 +33,12 @@ public class CorridaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_descompressao);
 
-        timeTextView = (TextView) findViewById(R.id.tvTime);
+        timeTextView = findViewById(R.id.tvTime);
 
         m2 = new CountDownTimer2(mTimeInMillis, 1000) {
             public void onTick(long millisUntilFinished) {
-                if (!Singleton.getInstance().isbInEsslei()) {
-                    mTimeInMillis = millisUntilFinished;
-                } else {
+                if (!Singleton.getInstance().isFenceBool()) mTimeInMillis = millisUntilFinished;
+                else {
                     m2.cancel();
                     endCorrida();
                 }
@@ -49,9 +47,8 @@ public class CorridaActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                if (Singleton.getInstance().isbInEsslei()) {
-                    endCorrida();
-                } else {
+                if (Singleton.getInstance().isFenceBool()) endCorrida();
+                else {
                     finish();
                     startActivity(new Intent(CorridaActivity.this, PreambuloActivity.class));
                 }
@@ -63,7 +60,7 @@ public class CorridaActivity extends AppCompatActivity {
         Singleton.getInstance().setbInEsslei(false);
         timeTextView.setText(R.string.finish);
         Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete() + 1);
-        Singleton.getInstance().setActivityKey("finishGameKey");
+        Singleton.getInstance().setActivityKey("perguntaKey");
         finish();
         startActivity(new Intent(CorridaActivity.this, PreambuloActivity.class));
     }
@@ -73,39 +70,9 @@ public class CorridaActivity extends AppCompatActivity {
         int hours = (int) (mTimeInMillis / 1000) / 3600;
         int minutes = (int) ((mTimeInMillis / 1000) % 3600) / 60;
         int seconds = (int) (mTimeInMillis / 1000) % 60;
-        if (hours > 0) {
-            timeLeftFormatted = String.format(Locale.getDefault(),
-                    "%d:%02d:%02d", hours, minutes, seconds);
-        } else {
-            timeLeftFormatted = String.format(Locale.getDefault(),
-                    "%02d:%02d", minutes, seconds);
-        }
+        if (hours > 0) timeLeftFormatted = String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes, seconds);
+        else timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
         return timeLeftFormatted;
-    }
-
-    protected void removeFences(String fenceKey) {
-        Awareness.getFenceClient(this).updateFences(new FenceUpdateRequest.Builder()
-                .removeFence(fenceKey)
-                .build())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                        String text = "\n\n[Fences @ " + timestamp + "]\n"
-                                + "Fences were successfully removed.";
-                        Log.d(TAG, text);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-
-                        String text = "\n\n[Fences @ " + timestamp + "]\n"
-                                + "Fences could not be removed: " + e.getMessage();
-                        Log.d(TAG, text);
-                    }
-                });
     }
 
     protected void queryFences() {
@@ -117,26 +84,16 @@ public class CorridaActivity extends AppCompatActivity {
                         FenceStateMap fenceStateMap = fenceQueryResponse.getFenceStateMap();
                         for (String fenceKey : fenceStateMap.getFenceKeys()) {
                             int state = fenceStateMap.getFenceState(fenceKey).getCurrentState();
-                            fenceInfo += fenceKey + ": "
-                                    + (state == FenceState.TRUE ? "TRUE" :
-                                    state == FenceState.FALSE ? "FALSE" : "UNKNOWN") + "\n";
-                            if (fenceKey.equals("locationFenceKey") && state == FenceState.TRUE)
-                                Singleton.getInstance().setFenceBool(true);
+                            fenceInfo += fenceKey + ": " + (state == FenceState.TRUE ? "TRUE" : state == FenceState.FALSE ? "FALSE" : "UNKNOWN") + "\n";
+                            if (fenceKey.equals("locationFenceKey") && state == FenceState.TRUE) Singleton.getInstance().setFenceBool(true);
                         }
-                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                        String text = "\n\n[Fences @ " + timestamp + "]\n"
-                                + "> Fences' states:\n" + (fenceInfo.equals("") ?
-                                "No registered fences." : fenceInfo);
-                        Log.d(TAG, text);
+                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\n> Fences' states:\n" + (fenceInfo.equals("") ? "No registered fences." : fenceInfo));
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                        String text = "\n\n[Fences @ " + timestamp + "]\n"
-                                + "Fences could not be queried: " + e.getMessage();
-                        Log.d(TAG, text);
+                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\nFences could not be queried: " + e.getMessage());
                     }
                 });
     }
@@ -144,26 +101,22 @@ public class CorridaActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Log.d(TAG, "back button pressed");
-        showDialogWaring();
-    }
-
-    public void showDialogWaring() {
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle(R.string.endTask);
-        alert.setMessage(R.string.descCorrida);
-        alert.setPositiveButton(R.string.endTask, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                m2.cancel();
-                finish();
-            }
-        });
-        alert.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
-        });
-        alert.create().show();
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.endTask)
+                .setMessage(R.string.warnLst)
+                .setPositiveButton(R.string.endTask, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        m2.cancel();
+                        finish();
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .create().show();
     }
 
     @Override
@@ -181,8 +134,6 @@ public class CorridaActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-       // removeFences("locationFenceKey");
-        //removeFences("essleiFenceKey");
     }
 
     @Override
