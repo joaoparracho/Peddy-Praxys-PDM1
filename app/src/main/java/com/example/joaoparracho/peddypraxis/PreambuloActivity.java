@@ -146,7 +146,7 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
                     if ((int) ((finishTime / 1000) / 3600) > 0) {
                         preambTextV.setText(getString(R.string.fnsGame1h));
                     } else {
-                        preambTextV.setText(getString(R.string.fnshGameInTime) + min + getString(R.string.min) + sec + getString(R.string.sec));
+                        preambTextV.setText(getString(R.string.fnshGameInTime) +" "+ min+" " + getString(R.string.min) +" "+ sec + " "+getString(R.string.sec));
                     }
                     if (Singleton.getInstance().getCurrentUser().getMelhorTempo() > finishTime || Singleton.getInstance().getCurrentUser().getMelhorTempo() == 0){
                         showDialogBestTime();
@@ -247,7 +247,6 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
                 break;
         }
     }
-
 
     private void setupFences() {
         long nowMillis = System.currentTimeMillis();

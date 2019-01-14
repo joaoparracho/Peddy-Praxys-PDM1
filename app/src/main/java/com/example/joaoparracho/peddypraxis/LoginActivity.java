@@ -68,6 +68,8 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onCLickSignUp(View v) {
         if(validate()) {
+            progressDialog.setMessage(getString(R.string.sign_in));
+            progressDialog.show();
             TextView userEmail = findViewById(R.id.TextViewEmail);
             TextView userPassword = findViewById(R.id.TextViewPass);
 
@@ -77,6 +79,7 @@ public class LoginActivity extends AppCompatActivity {
             firebaseAuth.createUserWithEmailAndPassword(email,pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
+                    progressDialog.dismiss();
                     if(task.isSuccessful()) {
                         Toast.makeText(LoginActivity.this, getString(R.string.RegSuc), Toast.LENGTH_SHORT).show();
                     }

@@ -71,8 +71,6 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
     private GraphicOverlay graphicOverlay;
     private TextView mTextViewCountDown;
     private GoogleApiClient mGoogleApiClient;
-    private FenceReceiver fenceReceiver;
-    private PendingIntent myPendingIntent;
     private long mTimeInMillis = 60 * 100;
     private boolean pauseCounterOnce;
     private int counterDelay;
@@ -108,6 +106,7 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
                     m1.pause();
                     pauseCounterOnce = true;
                     counterDelay = 0;
+                    Snackbar.make(findViewById(android.R.id.content),R.string.blink, Snackbar.LENGTH_LONG).show();
                 }
                 mTextViewCountDown.setText(updateCountDownText());
             }

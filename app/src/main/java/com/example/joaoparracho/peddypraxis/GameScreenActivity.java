@@ -129,9 +129,14 @@ public class GameScreenActivity extends AppCompatActivity {
     }
 
     public void showDescription() {
-        float precVit = (Singleton.getInstance().getCurrentUser().getNumJogosTerm() * 100) / (Singleton.getInstance().getCurrentUser().getNumJogosInic());
-        int min = (int) (((Singleton.getInstance().getCurrentUser().getMelhorTempo()) / 1000) % 3600) / 60;
-        int sec = (int) (Singleton.getInstance().getCurrentUser().getMelhorTempo() / 1000) % 60;
+        float precVit=0;
+        int sec=0;
+        int min=0;
+        if(Singleton.getInstance().getCurrentUser().getNumJogosTerm()!=0) {
+            precVit = (Singleton.getInstance().getCurrentUser().getNumJogosTerm() * 100) / (Singleton.getInstance().getCurrentUser().getNumJogosInic());
+            min = (int) (((Singleton.getInstance().getCurrentUser().getMelhorTempo()) / 1000) % 3600) / 60;
+            sec = (int) (Singleton.getInstance().getCurrentUser().getMelhorTempo() / 1000) % 60;
+        }
 
         ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(Color.RED);
         SpannableStringBuilder ssBuilder = new SpannableStringBuilder(getString(R.string.estatiTitle));

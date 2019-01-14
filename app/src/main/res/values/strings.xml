@@ -35,70 +35,60 @@
     <string name="lestPlay"> So let\'s continue playing! </string>
     <string name="enterMail"> Please enter your registered email ID </string>
     <string name="sndEmail"> Sending Email! </string>
-
     <string name="passResSnt"> Email with reset password sent </string>
-        
-    <string name="errEmailRstPass"> Error sending password reset email </string>
-        
-    <string name="run"> Run </string>
-        
-    <string name="runDesc"> The freshman has 30 seconds to move to the esslei. Start in the courtyard of A. </string>
-        
-    <string name="fnsGame1h"> Good Freshman! You managed to complete everything in 1 hour even by little </string>
-        
-    <string name="fnshGameInTime"> Good Freshman! You have completed everything in </string>
-        
-    <string name="min"> minutes and </string>
-        
+    <string name="errEmailRstPass"> Error sending password reset email </string>    
+    <string name="run"> Run </string>  
+    <string name="runDesc"> The freshman has 30 seconds to move to the esslei. Start in the courtyard of A. </string>  
+    <string name="fnsGame1h"> Good Freshman! You managed to complete everything in 1 hour even by little </string>  
+    <string name="fnshGameInTime"> Good Freshman! You have completed everything in </string> 
+    <string name="min"> minutes and </string> 
     <string name="sec"> seconds </string>
-        
     <string name="finTime"> Unfortunately the time is up! You just completed </string>
-        
     <string name="numTask"> number of tasks </string>
-        
-    <string name="returnGmMn"> Back Game Menu </string>
-        
-    <string name="goPatA"> Freshman head for the courtyard of A </string>
-        
-    <string name="goRotA"> Freshman go to the roundabout near the A </string>
-        
-    <string name="goBib"> Freshman head to the Library </string>
-        
-    <string name="rightAns"> Enter the correct answer! </string>
-        
-    <string name="extGame"> Exit Game </string>
-        
-    <string name="retMnJg"> Does freshman want to return to the game menu? </string>
-        
-    <string name="warnLst"> Freshman is sure to finish the game! Any progress you\'ve made will be lost </string>
-        
-    <string name="fngame"> End Game </string>
-        
-    <string name="cancel"> Cancel </string>
-        
-    <string name="congt"> PARABENS! </string>
-        
-    <string name="checksta"> Good freshman! You managed to improve your time, congratulations! Check the information icon to see your stats </string>
-        
+    <string name="returnGmMn"> Back Game Menu </string>    
+    <string name="goPatA"> Freshman head for the courtyard of A </string>    
+    <string name="goRotA"> Freshman go to the roundabout near the A </string>    
+    <string name="goBib"> Freshman head to the Library </string>    
+    <string name="rightAns"> Enter the correct answer! </string>    
+    <string name="extGame"> Exit Game </string>    
+    <string name="retMnJg"> Does freshman want to return to the game menu? </string>    
+    <string name="warnLst"> Freshman is sure to finish the game! Any progress you\'ve made will be lost </string>    
+    <string name="fngame"> End Game </string>    
+    <string name="cancel"> Cancel </string>    
+    <string name="congt"> PARABENS! </string>   
+    <string name="checksta"> Good freshman! You managed to improve your time, congratulations! Check the information icon to see your stats </string>   
     <string name="descPat"> The freshman has to walk, for 5 minutes in a row, around the yard ed. A, blinking an eye and smiling with the front camera of the mobile device pointed at you! </string>
-        
-    <string name="endTask"> Exit Task </string>
-        
-    <string name="Bibl"> The Library </string>
-        
-    <string name="descBib"> The José Saramago Library is an area of ​​Culture, Knowledge and ...? To complete this task, you should take a photo of the answer somewhere in the Library </string>
-        
-    <string name="finish"> End </string>
-        
-    <string name="descomp"> Decompression </string>
-        
-    <string name="descompDesc"> The freshman must be seated for 10 minutes in the courtyard of the ed. A, with the phone on your lap with the screen facing down (it\'s for relaxing!). </string>
-        
+    <string name="endTask"> Exit Task </string>    
+    <string name="Bibl"> The Library </string>   
+    <string name="descBib"> The José Saramago Library is an area of ​​Culture, Knowledge and …? To complete this task, you should take a photo of the answer somewhere in the Library </string>    
+    <string name="finish"> End </string>  
+    <string name="descomp"> Decompression </string>    
+    <string name="descompDesc"> The freshman must be seated for 10 minutes in the courtyard of the ed. A, with the phone on your lap with the screen facing down (it\'s for relaxing!). </string>    
     <string name="atention"> Attention! </string>
-        
-    <string name="warnAtent"> It has been detected that the best conditions are not met to finish this activity in the yard. </string>
-        
+    <string name="warnAtent"> It has been detected that the best conditions are not met to finish this activity in the yard. </string>  
     <string name="goNearbyPlac"> Please go to one of these places of interest if you wish. </string>
-        
     <string name="descCorrida"> Freshman is sure you want to leave! Any progress you\'ve made will be lost </string>
+    <string name="email">Email</string>
+    <string name="pass">Password</string>
+    <string name="remember_me">Remember Me</string>
+    <string name="forget_password">Forget Password</string>
+    <string name="log_in">Log In</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="take_photo">Take photo</string>
+    <string name="jogar_tarefa">Play Task</string>
+    <string name="insira_a_resposta">Insert Answer</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="game">Game:</string>
+    <string name="auth">Auth:</string>
+    <string name="order">Order:</string>
+    <string name="estatisticas">Statistics</string>
+    <string name="sign_in">Sign In!</string>
+    <string name = "halftime"> Ya come in half the time oh CAMPEAO! </string>
+    <string name = "almostENdTime"> Ui UI that will end! </string>
+    <string name = "followrule"> You have to follow the rules! </string>
+    <string name = "welcomePatio"> Welcome to the courtyard of A! </string>
+    <string name = "welcomeBibl"> Welcome to the Library! </string>
+    <string name = "inRotA"> Freshman at the roundabout! </string>
+    <string name = "welcomeESSLEI"> Welcome to ESSLEI! </string>
+    <string name = "blink"> Come on Freshman! Blink those eyes </string>
 </resources>

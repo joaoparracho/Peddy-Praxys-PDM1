@@ -11,7 +11,7 @@
         android:gravity="center_vertical"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:text="Estatisticas"
+        android:text="@string/estatisticas"
         android:textColor="#fff"
         android:textSize="18sp"
         android:textStyle="bold" />

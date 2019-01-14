@@ -42,7 +42,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="37dp"
         android:onClick="oncLickPreamb"
-        android:text="Jogar Tarefa"
+        android:text="@string/jogar_tarefa"
         android:background="@drawable/shapelogin"/>
 
     <EditText
@@ -54,7 +54,7 @@
         android:layout_marginStart="13dp"
         android:layout_marginBottom="123dp"
         android:ems="10"
-        android:hint="Insira a Resposta"
+        android:hint="@string/insira_a_resposta"
         android:textColor="@color/white"
         android:inputType="textUri|textPersonName"
         android:visibility="invisible" />

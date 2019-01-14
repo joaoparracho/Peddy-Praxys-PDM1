@@ -41,7 +41,7 @@
             android:layout_width="match_parent"
             android:layout_height="61dp"
             android:layout_gravity="left"
-            android:text="Take photo" />
+            android:text="@string/take_photo" />
     </FrameLayout>
 
 </RelativeLayout>
