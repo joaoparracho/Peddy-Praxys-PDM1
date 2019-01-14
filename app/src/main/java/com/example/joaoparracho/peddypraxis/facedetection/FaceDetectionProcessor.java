@@ -45,13 +45,7 @@ public class FaceDetectionProcessor extends VisionProcessorBase<List<FirebaseVis
     private double rightEyeOpenProbability = -1.0;
 
     public FaceDetectionProcessor() {
-        FirebaseVisionFaceDetectorOptions options =
-                new FirebaseVisionFaceDetectorOptions.Builder()
-                        .setClassificationMode(FirebaseVisionFaceDetectorOptions.ALL_CLASSIFICATIONS)
-                        .enableTracking()
-                        .build();
-
-        detector = FirebaseVision.getInstance().getVisionFaceDetector(options);
+        detector = FirebaseVision.getInstance().getVisionFaceDetector(new FirebaseVisionFaceDetectorOptions.Builder().setClassificationMode(FirebaseVisionFaceDetectorOptions.ALL_CLASSIFICATIONS).enableTracking().build());
     }
 
     @Override
@@ -69,32 +63,18 @@ public class FaceDetectionProcessor extends VisionProcessorBase<List<FirebaseVis
     }
 
     @Override
-    protected void onSuccess(
-            @Nullable Bitmap originalCameraImage,
-            @NonNull List<FirebaseVisionFace> faces,
-            @NonNull FrameMetadata frameMetadata,
-            @NonNull com.example.joaoparracho.peddypraxis.common.GraphicOverlay graphicOverlay) {
+    protected void onSuccess(@Nullable Bitmap originalCameraImage, @NonNull List<FirebaseVisionFace> faces, @NonNull FrameMetadata frameMetadata, @NonNull com.example.joaoparracho.peddypraxis.common.GraphicOverlay graphicOverlay) {
         graphicOverlay.clear();
         if (originalCameraImage != null) {
             CameraImageGraphic imageGraphic = new CameraImageGraphic(graphicOverlay, originalCameraImage);
             graphicOverlay.add(imageGraphic);
-
         }
-
         for (int i = 0; i < faces.size(); ++i) {
             FirebaseVisionFace face = faces.get(i);
-            if (face.getTrackingId() >= 0 && !Singleton.getInstance().getFd()) {
-                if (isEyeBlinked(face.getLeftEyeOpenProbability(), face.getRightEyeOpenProbability()) && face.getSmilingProbability() > 0.5) {
-                    Singleton.getInstance().setFd(true);
-                }
-            }
-            int cameraFacing =
-                    frameMetadata != null ? frameMetadata.getCameraFacing() :
-                            Camera.CameraInfo.CAMERA_FACING_BACK;
+            if (face.getTrackingId() >= 0 && !Singleton.getInstance().getFd()) if (isEyeBlinked(face.getLeftEyeOpenProbability(), face.getRightEyeOpenProbability()) && face.getSmilingProbability() > 0.5) Singleton.getInstance().setFd(true);
+            int cameraFacing = frameMetadata != null ? frameMetadata.getCameraFacing() : Camera.CameraInfo.CAMERA_FACING_BACK;
             com.example.joaoparracho.peddypraxis.facedetection.FaceGraphic faceGraphic = new com.example.joaoparracho.peddypraxis.facedetection.FaceGraphic(graphicOverlay, face, cameraFacing);
-            graphicOverlay.add(faceGraphic);
         }
-        graphicOverlay.postInvalidate();
     }
 
     @Override
@@ -102,17 +82,11 @@ public class FaceDetectionProcessor extends VisionProcessorBase<List<FirebaseVis
         Log.e(TAG, "Face detection failed " + e);
     }
 
-    // https://github.com/murali129/Eye-blink-detector/blob/master/app/src/main/java/com/murali129/theeyegame/theeyegame/FaceOverlayView.java
     private boolean isEyeBlinked(float currentLeftEyeOpenProbability, float currentRightEyeOpenProbability) {
-
-        if (currentLeftEyeOpenProbability == -1.0 || currentRightEyeOpenProbability == -1.0) {
-            return false;
-        }
+        if (currentLeftEyeOpenProbability == -1.0 || currentRightEyeOpenProbability == -1.0) return false;
         if (leftEyeOpenProbability > 0.9 || rightEyeOpenProbability > 0.9) {
             boolean blinked = false;
-            if (currentLeftEyeOpenProbability < 0.6 || rightEyeOpenProbability < 0.6) {
-                blinked = true;
-            }
+            if (currentLeftEyeOpenProbability < 0.6 || rightEyeOpenProbability < 0.6) blinked = true;
             leftEyeOpenProbability = currentLeftEyeOpenProbability;
             rightEyeOpenProbability = currentRightEyeOpenProbability;
             return blinked;

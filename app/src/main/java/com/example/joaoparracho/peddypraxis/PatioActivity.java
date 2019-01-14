@@ -1,7 +1,6 @@
 // Copyright 2018 Google LLC
 package com.example.joaoparracho.peddypraxis;
 
-import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,12 +8,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -25,7 +22,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,8 +37,6 @@ import com.google.android.gms.awareness.fence.FenceQueryRequest;
 import com.google.android.gms.awareness.fence.FenceQueryResponse;
 import com.google.android.gms.awareness.fence.FenceState;
 import com.google.android.gms.awareness.fence.FenceStateMap;
-import com.google.android.gms.awareness.fence.FenceUpdateRequest;
-import com.google.android.gms.awareness.snapshot.LocationResponse;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.annotation.KeepName;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -113,14 +107,14 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
                     m1.pause();
                     pauseCounterOnce = true;
                     counterDelay = 0;
-                    Snackbar.make(findViewById(android.R.id.content),R.string.blink, Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(android.R.id.content), R.string.blink, Snackbar.LENGTH_LONG).show();
                 }
                 mTextViewCountDown.setText(updateCountDownText());
             }
 
             @Override
             public void onFinish() {
-                mTextViewCountDown.setText("Finish");
+                mTextViewCountDown.setText(getString(R.string.acabou));
                 Singleton.getInstance().setActivityKey("edificiosKey");
                 Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete() + 1);
                 finish();
@@ -146,46 +140,48 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
     }
 
     private String updateCountDownText() {
-        String timeLeftFormatted;
-        int hours = (int) (mTimeInMillis / 1000) / 3600;
-        int minutes = (int) ((mTimeInMillis / 1000) % 3600) / 60;
-        int seconds = (int) (mTimeInMillis / 1000) % 60;
-        int a, b;
-
-        a = Singleton.getInstance().isFenceBool() ? 1 : 0;
-        b = Singleton.getInstance().isWalkingBool() ? 1 : 0;
-
-        if (hours > 0) {
-            if (Singleton.getInstance().getFd()) timeLeftFormatted = String.format(Locale.getDefault(), "%d:%02d:%02d-TRUE %d %d %d", hours, minutes, seconds, counterDelay, a, b);
-            else timeLeftFormatted = String.format(Locale.getDefault(), "%d:%02d:%02d--FALSE %d %d %d", hours, minutes, seconds, counterDelay, a, b);
-        } else {
-            if (Singleton.getInstance().getFd()) timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d---TRUE %d %d %d", minutes, seconds, counterDelay, a, b);
-            else timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d--FALSE %d %d %d", minutes, seconds, counterDelay, a, b);
-        }
-        return timeLeftFormatted;
+        return String.format(Locale.getDefault(), "%02d:%02d", ((mTimeInMillis / 1000) % 3600) / 60, (mTimeInMillis / 1000) % 60);
     }
 
-    public void onClickActivity(View view) {
-        //printLocation();
-        queryFences();
-        new AlertDialog.Builder(PatioActivity.this)
-                .setTitle("Fences")
-                .setMessage(text2)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .create().show();
-    }
+//    private String updateCountDownText() {
+//        String timeLeftFormatted;
+//        int hours = (int) (mTimeInMillis / 1000) / 3600;
+//        int minutes = (int) ((mTimeInMillis / 1000) % 3600) / 60;
+//        int seconds = (int) (mTimeInMillis / 1000) % 60;
+//        int a, b;
+//
+//        a = Singleton.getInstance().isFenceBool() ? 1 : 0;
+//        b = Singleton.getInstance().isWalkingBool() ? 1 : 0;
+//
+//        if (hours > 0) {
+//            if (Singleton.getInstance().getFd()) timeLeftFormatted = String.format(Locale.getDefault(), "%d:%02d:%02d-TRUE %d %d %d", hours, minutes, seconds, counterDelay, a, b);
+//            else timeLeftFormatted = String.format(Locale.getDefault(), "%d:%02d:%02d--FALSE %d %d %d", hours, minutes, seconds, counterDelay, a, b);
+//        } else {
+//            if (Singleton.getInstance().getFd()) timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d---TRUE %d %d %d", minutes, seconds, counterDelay, a, b);
+//            else timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d--FALSE %d %d %d", minutes, seconds, counterDelay, a, b);
+//        }
+//        return timeLeftFormatted;
+//    }
 
-    public void onCLickShowPreamb(MenuItem item) {showDescription(); }
+//    public void onClickActivity(View view) {
+//        //printLocation();
+//        queryFences();
+//        new AlertDialog.Builder(PatioActivity.this)
+//                .setTitle("Fences")
+//                .setMessage(text2)
+//                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                    }
+//                })
+//                .create().show();
+//    }
 
-    public void showDescription() {
+    public void onClickShowPreamb(MenuItem item) {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.patio)
                 .setMessage(R.string.descPat)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                     }
@@ -241,24 +237,6 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    protected void removeFences(String unique_key) {
-        Awareness.getFenceClient(this).updateFences(new FenceUpdateRequest.Builder()
-                .removeFence(unique_key)
-                .build())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\nFences were successfully removed.");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\nFences could not be removed: " + e.getMessage());
-                    }
-                });
-    }
-
     protected void queryFences() {
         Awareness.getFenceClient(this).queryFences(FenceQueryRequest.all())
                 .addOnSuccessListener(new OnSuccessListener<FenceQueryResponse>() {
@@ -292,10 +270,6 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
             m1.pause();
             pauseCounterOnce = true;
         }
-        showDialogWarning();
-    }
-
-    public void showDialogWarning() {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.endTask)
                 .setMessage(R.string.warnLst)

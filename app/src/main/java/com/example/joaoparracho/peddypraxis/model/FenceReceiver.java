@@ -24,21 +24,20 @@ public class FenceReceiver extends BroadcastReceiver {
         FenceState fenceState = FenceState.extract(intent);
         Log.i(TAG, "fences " + fenceState);
         switch (fenceState.getFenceKey()) {
+            case "nearbyFence":
+                Singleton.getInstance().setNearbyBool(fenceState.getCurrentState() == FenceState.TRUE);
+                break;
             case "locationFenceKey":
                 Singleton.getInstance().setFenceBool(fenceState.getCurrentState() == FenceState.TRUE);
-                if(fenceState.getCurrentState() == FenceState.TRUE) Toast.makeText(context,context.getString(R.string.welcomePatio), Toast.LENGTH_LONG).show();
                 break;
             case "libLocationFenceKey":
                 Singleton.getInstance().setbLibLoc(fenceState.getCurrentState() == FenceState.TRUE);
-                if(fenceState.getCurrentState() == FenceState.TRUE) Toast.makeText(context,context.getString(R.string.welcomeBibl), Toast.LENGTH_LONG).show();
                 break;
             case "rotALocationFenceKey":
                 Singleton.getInstance().setbInRotA(fenceState.getCurrentState() == FenceState.TRUE);
-                if(fenceState.getCurrentState() == FenceState.TRUE) Toast.makeText(context,context.getString(R.string.inRotA), Toast.LENGTH_LONG).show();
                 break;
             case "essleiFenceKey":
                 Singleton.getInstance().setbInEsslei(fenceState.getCurrentState() == FenceState.TRUE);
-                if(fenceState.getCurrentState() == FenceState.TRUE) Toast.makeText(context,context.getString(R.string.welcomeESSLEI), Toast.LENGTH_LONG).show();
                 break;
             case "walkingFenceKey":
                 Singleton.getInstance().setWalkingBool(fenceState.getCurrentState() != FenceState.FALSE);

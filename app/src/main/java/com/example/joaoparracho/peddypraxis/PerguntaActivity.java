@@ -37,7 +37,6 @@ import com.google.android.gms.awareness.fence.FenceQueryRequest;
 import com.google.android.gms.awareness.fence.FenceQueryResponse;
 import com.google.android.gms.awareness.fence.FenceState;
 import com.google.android.gms.awareness.fence.FenceStateMap;
-import com.google.android.gms.awareness.fence.FenceUpdateRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Places;
@@ -87,7 +86,6 @@ public class PerguntaActivity extends AppCompatActivity implements ActivityCompa
         registerReceiver(fenceReceiver, new IntentFilter(FENCE_RECEIVER_ACTION));
 
         textViewQRCode = findViewById(R.id.tVInfo);
-        textViewQRCode.setText("Calma");
 
         preview = findViewById(R.id.firePreview);
         if (preview == null) Log.d(TAG, "Preview is null");
@@ -105,7 +103,7 @@ public class PerguntaActivity extends AppCompatActivity implements ActivityCompa
                 if (feedback != null) {
                     if (Singleton.getInstance().isFenceBool()) {
                         queryFences();
-                        if (feedback == "False") Snackbar.make(findViewById(android.R.id.content), "QR Code errado!", Snackbar.LENGTH_SHORT).show();
+                        if (feedback == "False") Snackbar.make(findViewById(android.R.id.content), R.string.qrErrado, Snackbar.LENGTH_SHORT).show();
                         else {
                             Log.d(TAG, feedback);
                             tempString = "";
@@ -113,16 +111,16 @@ public class PerguntaActivity extends AppCompatActivity implements ActivityCompa
                             if (feedback.equals("é")) palavras[1] = true;
                             if (feedback.equals("o")) palavras[2] = true;
                             if (feedback.equals("Curso?")) palavras[3] = true;
-                            if (palavras[0]) tempString += "Qual ";
-                            if (palavras[1]) tempString += "é ";
-                            if (palavras[2]) tempString += "o ";
-                            if (palavras[3]) tempString += "Curso?";
+                            if (palavras[0]) tempString += getString(R.string.qual);
+                            if (palavras[1]) tempString += getString(R.string.é);
+                            if (palavras[2]) tempString += getString(R.string.o);
+                            if (palavras[3]) tempString += getString(R.string.curso);
                             for (int i = 0; i < 4; i++) completa = completa & palavras[i];
                             textViewQRCode.setText(tempString);
                             if (completa) findViewById(R.id.resposta).setVisibility(View.VISIBLE);
                             else completa = true;
                         }
-                    } else Snackbar.make(findViewById(android.R.id.content), "Tens de estar no pátio do A!", Snackbar.LENGTH_SHORT).show();
+                    } else Snackbar.make(findViewById(android.R.id.content), R.string.estarNoPatA, Snackbar.LENGTH_SHORT).show();
                 }
             }
         };
@@ -131,43 +129,35 @@ public class PerguntaActivity extends AppCompatActivity implements ActivityCompa
     public void onClickResposta(View view) {
         final EditText input = new EditText(PerguntaActivity.this);
         input.setInputType(InputType.TYPE_CLASS_TEXT);
-        AlertDialog dialog = new AlertDialog.Builder(PerguntaActivity.this).setTitle(tempString).setView(input).setPositiveButton("OK", null).create();
+        AlertDialog dialog = new AlertDialog.Builder(PerguntaActivity.this).setTitle(tempString).setView(input).setPositiveButton(R.string.OK, null).create();
         dialog.show();
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (input.getText().toString().toUpperCase().contains("ELETRO")) {
+                if (input.getText().toString().toUpperCase().contains("ELETRO") || input.getText().toString().toUpperCase().contains("ELECTRO")) {
                     Singleton.getInstance().setActivityKey("descompressaoKey");
                     Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete() + 1);
                     finish();
                     startActivity(new Intent(PerguntaActivity.this, PreambuloActivity.class));
-                } else new AlertDialog.Builder(PerguntaActivity.this).setTitle("Errado!").setPositiveButton("OK", null).create().show();
+                } else new AlertDialog.Builder(PerguntaActivity.this).setTitle(R.string.errado).setPositiveButton(R.string.OK, null).create().show();
             }
         });
     }
 
-    public void onClickActivity(View view) {
-        queryFences();
-        new AlertDialog.Builder(PerguntaActivity.this).setTitle("Fences").setMessage(text2).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//    public void onClickActivity(View view) {
+//        queryFences();
+//        new AlertDialog.Builder(PerguntaActivity.this).setTitle("Fences").setMessage(text2).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//            }
+//        }).create().show();
+//    }
+
+    public void onClickShowPreamb(MenuItem item) {
+        new AlertDialog.Builder(this).setTitle(R.string.pergunta).setMessage(getString(R.string.descPergunta)).setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
+            public void onClick(DialogInterface dialog, int which) {  }
         }).create().show();
-    }
-
-    public void onCLickShowPreamb(MenuItem item) {
-        showDescription();
-    }
-
-    public void showDescription() {
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.pergunta)
-                .setMessage("O caloiro tem de descobrir a pergunta através de QR Codes espalhados pelo pátio. No final tem de respondar corretamente a esta.")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) { /*checkDescr = true;*/ }
-                })
-                .create().show();
     }
 
     private void createCameraSource() {
@@ -218,24 +208,6 @@ public class PerguntaActivity extends AppCompatActivity implements ActivityCompa
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    protected void removeFences(String unique_key) {
-        Awareness.getFenceClient(this).updateFences(new FenceUpdateRequest.Builder()
-                .removeFence(unique_key)
-                .build())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\nFences were successfully removed.");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\nFences could not be removed: " + e.getMessage());
-                    }
-                });
-    }
-
     protected void queryFences() {
         Awareness.getFenceClient(this).queryFences(FenceQueryRequest.all())
                 .addOnSuccessListener(new OnSuccessListener<FenceQueryResponse>() {
@@ -266,27 +238,22 @@ public class PerguntaActivity extends AppCompatActivity implements ActivityCompa
     @Override
     public void onBackPressed() {
         Log.d(TAG, "back button pressed");
-        showDialogWarning();
-        queryFences();
-    }
-
-    public void showDialogWarning() {
         new AlertDialog.Builder(this)
-                .setTitle("Sair Tarefa")
-                .setMessage("Caloiro tem a certeza que pretende sair!\n Qualquer progresso que tenha feito ira ser perdido")
-                .setPositiveButton("Terminar Tarefa", new DialogInterface.OnClickListener() {
+                .setTitle(R.string.endTask)
+                .setMessage(R.string.warnLst)
+                .setPositiveButton(R.string.endTask, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        for (int i = 0; i < 5; i++) Singleton.getInstance().setFaltaEdificios(i, true);
                         finish();
                     }
                 })
-                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                     }
                 })
                 .create().show();
+        queryFences();
     }
 
     @Override

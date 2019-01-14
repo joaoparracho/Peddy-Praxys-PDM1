@@ -35,7 +35,7 @@
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
         android:layout_marginBottom="23dp"
-        android:background=""
+        android:background="@drawable/shapelogin"
         android:text="@string/take_photo" />
 
 </RelativeLayout>

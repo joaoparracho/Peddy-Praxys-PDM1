@@ -51,13 +51,13 @@
             android:layout_gravity="center"
             android:textColor="#FFFF" />
 
-        <Button
-            android:id="@+id/facingSwitch"
-            android:layout_width="70dp"
-            android:layout_height="48dp"
-            android:layout_gravity="right|center_vertical"
-            android:checked="false"
-            android:onClick="onClickActivity" />
+        <!--<Button-->
+            <!--android:id="@+id/facingSwitch"-->
+            <!--android:layout_width="70dp"-->
+            <!--android:layout_height="48dp"-->
+            <!--android:layout_gravity="right|center_vertical"-->
+            <!--android:checked="false"-->
+            <!--android:onClick="onClickActivity" />-->
 
         <Button
             android:id="@+id/resposta"

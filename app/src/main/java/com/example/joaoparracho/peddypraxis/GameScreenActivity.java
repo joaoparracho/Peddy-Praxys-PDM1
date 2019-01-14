@@ -33,7 +33,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 public class GameScreenActivity extends AppCompatActivity {

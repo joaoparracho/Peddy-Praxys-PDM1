@@ -4,7 +4,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -20,7 +19,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +33,6 @@ import com.google.android.gms.awareness.fence.FenceQueryRequest;
 import com.google.android.gms.awareness.fence.FenceQueryResponse;
 import com.google.android.gms.awareness.fence.FenceState;
 import com.google.android.gms.awareness.fence.FenceStateMap;
-import com.google.android.gms.awareness.fence.FenceUpdateRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Places;
@@ -60,7 +57,7 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
     private GoogleApiClient mGoogleApiClient;
     private FenceReceiver fenceReceiver;
     private PendingIntent myPendingIntent;
-    private String edificios = "Faltam os edifícios";
+    private String edificios;
     private String tempString = " ";
     private boolean completa = true;
     private String text2;
@@ -76,6 +73,7 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_edificio);
+        edificios = getString(R.string.ediFalta);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(Places.GEO_DATA_API).addApi(Places.PLACE_DETECTION_API).enableAutoManage(this, this).build();
 
@@ -104,10 +102,10 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
                 String feedback = msg.getData().getString(FEEDBACK);
                 if (feedback != null) {
                     queryFences();
-                    if (feedback == "False") Snackbar.make(findViewById(android.R.id.content), "Ediífio errado!", Snackbar.LENGTH_SHORT).show();
+                    if (feedback == "False") Snackbar.make(findViewById(android.R.id.content), R.string.ediErrado, Snackbar.LENGTH_SHORT).show();
                     else {
                         Log.d(TAG, "Found " + feedback);
-                        Snackbar.make(findViewById(android.R.id.content), "Encontrou o ediífio " + feedback + "!", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(findViewById(android.R.id.content), getString(R.string.ediEncontrado) + feedback + "!", Snackbar.LENGTH_SHORT).show();
                         Singleton.getInstance().setFaltaEdificios(feedback.charAt(0) - 65, false);
                         tempString = " ";
                         for (int i = 0; i < 5; i++)
@@ -116,7 +114,7 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
                                 completa = completa & !Singleton.getInstance().getFaltaEdificios(i);
                             }
                         if (completa) {
-                            textViewEdificio.setText("Finish");
+                            textViewEdificio.setText(R.string.finish);
                             Singleton.getInstance().setActivityKey("bibliotecaKey");
                             Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete() + 1);
                             finish();
@@ -129,37 +127,33 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
         };
     }
 
-    public void onClickActivity(View view) {
-        tempString = " ";
-        for (int i = 0; i < 5; i++) {
-            Singleton.getInstance().setFaltaEdificios(i, true);
-            tempString += ((char) (65 + i)) + " ";
-        }
-        textViewEdificio.setText(edificios + tempString);
-    }
+//    public void onClickActivity(View view) {
+//        tempString = " ";
+//        for (int i = 0; i < 5; i++) {
+//            Singleton.getInstance().setFaltaEdificios(i, true);
+//            tempString += ((char) (65 + i)) + " ";
+//        }
+//        textViewEdificio.setText(edificios + tempString);
+//    }
+//
+//    public void onClickFence(View view) {
+//        queryFences();
+//        new AlertDialog.Builder(EdificioActivity.this)
+//                .setTitle("Fences")
+//                .setMessage(text2)
+//                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                    }
+//                })
+//                .create().show();
+//    }
 
-    public void onClickFence(View view) {
-        queryFences();
-        new AlertDialog.Builder(EdificioActivity.this)
-                .setTitle("Fences")
-                .setMessage(text2)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .create().show();
-    }
-
-    public void onCLickShowPreamb(MenuItem item) {
-        showDescription();
-    }
-
-    public void showDescription() {
+    public void onClickShowPreamb(MenuItem item) {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.edificios)
-                .setMessage("O caloiro tem ir junto de todos os edifícios e confirmar que se encontra perto deles ao mostrar com a câmara \"Edifício X\"\n")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setMessage(R.string.descEdificios)
+                .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) { /*checkDescr = true;*/ }
                 })
@@ -214,24 +208,6 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    protected void removeFences(String unique_key) {
-        Awareness.getFenceClient(this).updateFences(new FenceUpdateRequest.Builder()
-                .removeFence(unique_key)
-                .build())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\nFences were successfully removed.");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\nFences could not be removed: " + e.getMessage());
-                    }
-                });
-    }
-
     protected void queryFences() {
         Awareness.getFenceClient(this).queryFences(FenceQueryRequest.all())
                 .addOnSuccessListener(new OnSuccessListener<FenceQueryResponse>() {
@@ -267,27 +243,23 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
     @Override
     public void onBackPressed() {
         Log.d(TAG, "back button pressed");
-        showDialogWarning();
-        queryFences();
-    }
-
-    public void showDialogWarning() {
         new AlertDialog.Builder(this)
-                .setTitle("Sair Tarefa")
-                .setMessage("Caloiro tem a certeza que pretende sair!\n Qualquer progresso que tenha feito ira ser perdido")
-                .setPositiveButton("Terminar Tarefa", new DialogInterface.OnClickListener() {
+                .setTitle(R.string.endTask)
+                .setMessage(R.string.warnLst)
+                .setPositiveButton(R.string.endTask, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         for (int i = 0; i < 5; i++) Singleton.getInstance().setFaltaEdificios(i, true);
                         finish();
                     }
                 })
-                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                     }
                 })
                 .create().show();
+        queryFences();
     }
 
     @Override
@@ -310,12 +282,6 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
-        removeFences("rotALocationFenceKey");
-        removeFences("ediA");
-        removeFences("ediB");
-        removeFences("ediC");
-        removeFences("ediD");
-        removeFences("ediE");
         if (cameraSource != null) cameraSource.release();
     }
 
