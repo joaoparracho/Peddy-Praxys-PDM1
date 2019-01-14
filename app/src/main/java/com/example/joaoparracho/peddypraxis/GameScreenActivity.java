@@ -198,7 +198,9 @@ public class GameScreenActivity extends AppCompatActivity {
                     Utilizador uInfo = new Utilizador();
                     uInfo.setName(ds.getValue(Utilizador.class).getName());
                     uInfo.setMelhorTempo(ds.getValue(Utilizador.class).getMelhorTempo());
-                    users.add(uInfo);
+                    if(uInfo.getMelhorTempo()!=0) {
+                        users.add(uInfo);
+                    }
                     //display all the information
                     Log.d(TAG, "xxxSingleton " + uInfo.getName());
                     Log.d(TAG, "xxxSingleton " + uInfo.getMelhorTempo());

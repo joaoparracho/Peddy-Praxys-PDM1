@@ -60,9 +60,6 @@ public class Utilizador implements Serializable,Comparable<Utilizador> {
 
     @Override
     public int compareTo(Utilizador o) {
-        if(o.getMelhorTempo()==0){
-            return -1;
-        }
         if(melhorTempo>o.getMelhorTempo()){
             return 1;
         }
