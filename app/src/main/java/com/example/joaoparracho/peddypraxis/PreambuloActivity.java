@@ -44,7 +44,7 @@ import java.sql.Timestamp;
 
 public class PreambuloActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
-    private static final int numTask = 5;
+    private static final int numTask = 6;
     private static final String FENCE_RECEIVER_ACTION = "FENCE_RECEIVER_ACTION";
     private static final String TAG = "PreambuloActivity";
     private TextView preambTextV;
@@ -144,8 +144,8 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
                 else Snackbar.make(findViewById(android.R.id.content), "Introduza a resposta correta!", Snackbar.LENGTH_LONG).show();
                 break;
             case "corridaKey":
-                if (Singleton.getInstance().isFenceBool()) startActivity(new Intent(PreambuloActivity.this, CorridaActivity.class));
-                else Snackbar.make(findViewById(android.R.id.content), "Caloiro dirija-se para o pátio do A", Snackbar.LENGTH_LONG).show();
+                if (Singleton.getInstance().isbInEsslei()) startActivity(new Intent(PreambuloActivity.this, CorridaActivity.class));
+                else Snackbar.make(findViewById(android.R.id.content), "Caloiro dirija-se para a ESSLei", Snackbar.LENGTH_LONG).show();
                 break;
             case "perguntaKey":
                 if (Singleton.getInstance().isFenceBool()) startActivity(new Intent(PreambuloActivity.this, PerguntaActivity.class));
@@ -175,7 +175,7 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
         Log.d(TAG, "Olha a string " + Singleton.getInstance().getActivityKey());
         switch (Singleton.getInstance().getActivityKey()) {
             case "corridaKey":
-                addFence("essleiFenceKey", LocationFence.entering(39.732766, -8.820643, 30));
+                addFence("essleiFenceKey", LocationFence.in(39.732766, -8.820643, 30, 0L));
             case "patioKey":
             case "perguntaKey":
             case "descompressaoKey":
@@ -344,6 +344,7 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
                             if (fenceKey.equals("locationFenceKey") && state == FenceState.TRUE) Singleton.getInstance().setFenceBool(true);
                             if (fenceKey.equals("walkingFenceKey") && state == FenceState.TRUE) Singleton.getInstance().setWalkingBool(true);
                             if (fenceKey.equals("rotALocationFenceKey") && state == FenceState.TRUE) Singleton.getInstance().setbInRotA(true);
+                            if (fenceKey.equals("essleiFenceKey") && state == FenceState.TRUE) Singleton.getInstance().setbInEsslei(true);
                         }
                         Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\n> Fences states:\n" + (fenceInfo.equals("") ? "No registered fences." : fenceInfo));
                     }

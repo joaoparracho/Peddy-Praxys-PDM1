@@ -734,6 +734,7 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
+        removeFences("locationFenceKey");
     }
 
     @Override

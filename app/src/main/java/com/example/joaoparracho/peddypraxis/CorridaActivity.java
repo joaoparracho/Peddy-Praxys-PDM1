@@ -29,7 +29,6 @@ public class CorridaActivity extends AppCompatActivity {
     private long mTimeInMillis = 60 * 1000 * 5;
     private CountDownTimer2 m2;
 
-    // TODO: mudar a partida da esslei para o A, faz mais sentido...
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,9 +38,8 @@ public class CorridaActivity extends AppCompatActivity {
 
         m2 = new CountDownTimer2(mTimeInMillis, 1000) {
             public void onTick(long millisUntilFinished) {
-                if (!Singleton.getInstance().isbInEsslei()) {
-                    mTimeInMillis = millisUntilFinished;
-                } else {
+                if (!Singleton.getInstance().isFenceBool()) mTimeInMillis = millisUntilFinished;
+                else {
                     m2.cancel();
                     endCorrida();
                 }
@@ -50,9 +48,8 @@ public class CorridaActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                if (Singleton.getInstance().isbInEsslei()) {
-                    endCorrida();
-                } else {
+                if (Singleton.getInstance().isbInEsslei()) endCorrida();
+                else {
                     finish();
                     startActivity(new Intent(CorridaActivity.this, PreambuloActivity.class));
                 }
@@ -74,37 +71,25 @@ public class CorridaActivity extends AppCompatActivity {
         int hours = (int) (mTimeInMillis / 1000) / 3600;
         int minutes = (int) ((mTimeInMillis / 1000) % 3600) / 60;
         int seconds = (int) (mTimeInMillis / 1000) % 60;
-        if (hours > 0) {
-            timeLeftFormatted = String.format(Locale.getDefault(),
-                    "%d:%02d:%02d", hours, minutes, seconds);
-        } else {
-            timeLeftFormatted = String.format(Locale.getDefault(),
-                    "%02d:%02d", minutes, seconds);
-        }
+        if (hours > 0) timeLeftFormatted = String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes, seconds);
+        else timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
         return timeLeftFormatted;
     }
 
-    protected void removeFences(String fenceKey) {
+    protected void removeFences(String unique_key) {
         Awareness.getFenceClient(this).updateFences(new FenceUpdateRequest.Builder()
-                .removeFence(fenceKey)
+                .removeFence(unique_key)
                 .build())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                        String text = "\n\n[Fences @ " + timestamp + "]\n"
-                                + "Fences were successfully removed.";
-                        Log.d(TAG, text);
+                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\nFences were successfully removed.");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-
-                        String text = "\n\n[Fences @ " + timestamp + "]\n"
-                                + "Fences could not be removed: " + e.getMessage();
-                        Log.d(TAG, text);
+                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\nFences could not be removed: " + e.getMessage());
                     }
                 });
     }
@@ -118,26 +103,16 @@ public class CorridaActivity extends AppCompatActivity {
                         FenceStateMap fenceStateMap = fenceQueryResponse.getFenceStateMap();
                         for (String fenceKey : fenceStateMap.getFenceKeys()) {
                             int state = fenceStateMap.getFenceState(fenceKey).getCurrentState();
-                            fenceInfo += fenceKey + ": "
-                                    + (state == FenceState.TRUE ? "TRUE" :
-                                    state == FenceState.FALSE ? "FALSE" : "UNKNOWN") + "\n";
-                            if (fenceKey.equals("locationFenceKey") && state == FenceState.TRUE)
-                                Singleton.getInstance().setFenceBool(true);
+                            fenceInfo += fenceKey + ": " + (state == FenceState.TRUE ? "TRUE" : state == FenceState.FALSE ? "FALSE" : "UNKNOWN") + "\n";
+                            if (fenceKey.equals("locationFenceKey") && state == FenceState.TRUE) Singleton.getInstance().setFenceBool(true);
                         }
-                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                        String text = "\n\n[Fences @ " + timestamp + "]\n"
-                                + "> Fences' states:\n" + (fenceInfo.equals("") ?
-                                "No registered fences." : fenceInfo);
-                        Log.d(TAG, text);
+                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\n> Fences' states:\n" + (fenceInfo.equals("") ? "No registered fences." : fenceInfo));
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                        String text = "\n\n[Fences @ " + timestamp + "]\n"
-                                + "Fences could not be queried: " + e.getMessage();
-                        Log.d(TAG, text);
+                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\nFences could not be queried: " + e.getMessage());
                     }
                 });
     }
@@ -149,22 +124,22 @@ public class CorridaActivity extends AppCompatActivity {
     }
 
     public void showDialogWaring() {
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("Sair Tarefa");
-        alert.setMessage("Caloiro tem a certeza que pretende sair!\n Qualquer progresso que tenha feito ira ser perdido");
-        alert.setPositiveButton("Terminar Tarefa", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                m2.cancel();
-                finish();
-            }
-        });
-        alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
-        });
-        alert.create().show();
+        new AlertDialog.Builder(this)
+                .setTitle("Sair Tarefa")
+                .setMessage("Caloiro tem a certeza que pretende sair!\n Qualquer progresso que tenha feito ira ser perdido")
+                .setPositiveButton("Terminar Tarefa", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        m2.cancel();
+                        finish();
+                    }
+                })
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .create().show();
     }
 
     @Override
@@ -182,7 +157,6 @@ public class CorridaActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        removeFences("locationFenceKey");
         removeFences("essleiFenceKey");
     }
 
