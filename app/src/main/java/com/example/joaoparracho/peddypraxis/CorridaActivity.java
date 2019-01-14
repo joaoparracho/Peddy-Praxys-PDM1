@@ -26,7 +26,7 @@ import java.util.Locale;
 public class CorridaActivity extends AppCompatActivity {
     private static final String TAG = "CorridaActivity";
     private TextView timeTextView;
-    private long mTimeInMillis = 60 * 1000 * 5;
+    private long mTimeInMillis = 60 * 1000;
     private CountDownTimer2 m2;
 
     @Override
@@ -59,7 +59,7 @@ public class CorridaActivity extends AppCompatActivity {
 
     private void endCorrida() {
         Singleton.getInstance().setbInEsslei(false);
-        timeTextView.setText("Finish");
+        timeTextView.setText(R.string.finish);
         Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete() + 1);
         Singleton.getInstance().setActivityKey("perguntaKey");
         finish();
@@ -125,16 +125,16 @@ public class CorridaActivity extends AppCompatActivity {
 
     public void showDialogWaring() {
         new AlertDialog.Builder(this)
-                .setTitle("Sair Tarefa")
-                .setMessage("Caloiro tem a certeza que pretende sair!\n Qualquer progresso que tenha feito ira ser perdido")
-                .setPositiveButton("Terminar Tarefa", new DialogInterface.OnClickListener() {
+                .setTitle(R.string.endTask)
+                .setMessage(R.string.descCorrida)
+                .setPositiveButton(R.string.endTask, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         m2.cancel();
                         finish();
                     }
                 })
-                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                     }
@@ -157,7 +157,8 @@ public class CorridaActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        removeFences("essleiFenceKey");
+       // removeFences("locationFenceKey");
+        //removeFences("essleiFenceKey");
     }
 
     @Override

@@ -120,8 +120,8 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
 
     public void showDescription() {
         new AlertDialog.Builder(this)
-                .setTitle("A Biblioteca")
-                .setMessage("A Biblioteca José Saramago é um espaço de Cultura, Conhecimento e ...? Para concluir esta tarefa deve de retirar uma foto da resposta que se encontra algures na Biblioteca")
+                .setTitle(R.string.Bibl)
+                .setMessage(R.string.descBib)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -244,15 +244,15 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
 
     public void showDialogWaring() {
         new AlertDialog.Builder(this)
-                .setTitle("Sair Tarefa")
-                .setMessage("Caloiro tem a certeza que pretende sair!\n Qualquer progresso que tenha feito ira ser perdido")
-                .setPositiveButton("Terminar Tarefa", new DialogInterface.OnClickListener() {
+                .setTitle(R.string.endTask)
+                .setMessage(R.string.warnLst)
+                .setPositiveButton(R.string.endTask, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         finish();
                     }
                 })
-                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                     }
@@ -278,7 +278,7 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
-        removeFences("libLocationFenceKey");
+       // removeFences("libLocationFenceKey");
     }
 
     @Override

@@ -7,4 +7,17 @@
         android:onClick="onClickReturn"
         android:title="Logout"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/iconEstatistica"
+        android:icon="@android:drawable/ic_menu_info_details"
+        android:onClick="onCLickShowStatus"
+        android:title="Estatisticas"
+        app:showAsAction="ifRoom" />
+    <item
+        android:icon="@android:drawable/star_big_off"
+        android:id="@+id/iconScoreboard"
+        android:title="Scoreboard"
+        android:onClick="onClickShowScoreboard"
+        app:showAsAction="ifRoom" />
+
 </menu>

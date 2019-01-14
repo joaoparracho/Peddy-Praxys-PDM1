@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scaleType="center"
-            android:text="Game:"
+            android:text="@string/game"
             android:textSize="13dp"
             android:textStyle="bold" />
 
@@ -33,7 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scaleType="center"
-            android:text="Auth:"
+            android:text="@string/auth"
             android:textSize="13dp" />
 
         <TextView
@@ -41,7 +41,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scaleType="center"
-            android:text="Order:"
+            android:text="@string/order"
             android:textSize="13dp" />
 
     </LinearLayout>

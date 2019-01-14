@@ -6,6 +6,7 @@
     android:gravity="bottom"
     android:orientation="vertical"
     android:padding="8dp"
+    android:background="@mipmap/back"
     tools:context=".BibliotecaActivity">
 
     <ImageView
@@ -26,22 +27,15 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true"/>
 
-    <FrameLayout
-        android:id="@+id/control"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_alignParentStart="true"
+    <Button
+        android:id="@+id/getImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
         android:layout_alignParentBottom="true"
-        android:layout_gravity="bottom"
-        android:layout_toEndOf="@id/firePreview"
-        android:background="#000">
-
-        <Button
-            android:id="@+id/getImageButton"
-            android:layout_width="match_parent"
-            android:layout_height="61dp"
-            android:layout_gravity="left"
-            android:text="Take photo" />
-    </FrameLayout>
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:layout_marginBottom="23dp"
+        android:background=""
+        android:text="@string/take_photo" />
 
 </RelativeLayout>

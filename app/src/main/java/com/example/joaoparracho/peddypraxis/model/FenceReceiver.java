@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.joaoparracho.peddypraxis.PreambuloActivity;
+import com.example.joaoparracho.peddypraxis.R;
 import com.google.android.gms.awareness.fence.FenceState;
 
 public class FenceReceiver extends BroadcastReceiver {
@@ -25,19 +26,24 @@ public class FenceReceiver extends BroadcastReceiver {
         switch (fenceState.getFenceKey()) {
             case "locationFenceKey":
                 Singleton.getInstance().setFenceBool(fenceState.getCurrentState() == FenceState.TRUE);
+                if(fenceState.getCurrentState() == FenceState.TRUE) Toast.makeText(context,context.getString(R.string.welcomePatio), Toast.LENGTH_LONG).show();
                 break;
             case "libLocationFenceKey":
                 Singleton.getInstance().setbLibLoc(fenceState.getCurrentState() == FenceState.TRUE);
+                if(fenceState.getCurrentState() == FenceState.TRUE) Toast.makeText(context,context.getString(R.string.welcomeBibl), Toast.LENGTH_LONG).show();
                 break;
             case "rotALocationFenceKey":
                 Singleton.getInstance().setbInRotA(fenceState.getCurrentState() == FenceState.TRUE);
+                if(fenceState.getCurrentState() == FenceState.TRUE) Toast.makeText(context,context.getString(R.string.inRotA), Toast.LENGTH_LONG).show();
                 break;
             case "essleiFenceKey":
                 Singleton.getInstance().setbInEsslei(fenceState.getCurrentState() == FenceState.TRUE);
+                if(fenceState.getCurrentState() == FenceState.TRUE) Toast.makeText(context,context.getString(R.string.welcomeESSLEI), Toast.LENGTH_LONG).show();
                 break;
             case "walkingFenceKey":
                 Singleton.getInstance().setWalkingBool(fenceState.getCurrentState() != FenceState.FALSE);
                 if (fenceState.getCurrentState() == FenceState.FALSE) {
+                    Toast.makeText(context,context.getString(R.string.followrule), Toast.LENGTH_LONG).show();
                     Singleton.getInstance().setActivityKey("finishGameKey");
                     context.startActivity(new Intent(context, PreambuloActivity.class));
                 }
@@ -51,10 +57,10 @@ public class FenceReceiver extends BroadcastReceiver {
                 }
                 break;
             case "timeFence50Key":
-                if (fenceState.getCurrentState() == FenceState.FALSE) Toast.makeText(context, "Ja vens em metade do tempo  oh CAMPEAO!", Toast.LENGTH_LONG).show();
+                if (fenceState.getCurrentState() == FenceState.FALSE) Toast.makeText(context, context.getString(R.string.halftime), Toast.LENGTH_LONG).show();
                 break;
             case "timeFence90Key":
-                if (fenceState.getCurrentState() == FenceState.FALSE) Toast.makeText(context, "Ui UI que vai acabar!", Toast.LENGTH_LONG).show();
+                if (fenceState.getCurrentState() == FenceState.FALSE) Toast.makeText(context, context.getString(R.string.almostENdTime), Toast.LENGTH_LONG).show();
                 break;
             case "ediA":
                 if (fenceState.getCurrentState() == FenceState.TRUE) Singleton.getInstance().setInEdidicio('A');

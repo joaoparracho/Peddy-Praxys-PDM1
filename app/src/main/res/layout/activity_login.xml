@@ -22,7 +22,7 @@
         android:background="@drawable/shapeemail"
         android:drawableLeft="@drawable/ic_person_black_24dp"
         android:drawablePadding="10dp"
-        android:hint="Email"
+        android:hint="@string/email"
         android:padding="15dp"
         android:textColor="@color/white"
         android:textColorHighlight="@color/white"
@@ -36,7 +36,7 @@
         android:background="@drawable/shapeemail"
         android:drawableLeft="@drawable/ic_lock_black_24dp"
         android:drawablePadding="10dp"
-        android:hint="Password"
+        android:hint="@string/pass"
         android:password="true"
         android:padding="15dp"
         android:textColor="@color/white"
@@ -51,18 +51,19 @@
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Remember Me"
+            android:text="@string/remember_me"
             android:layout_marginRight="10dp"
             android:layout_marginLeft="10dp"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="0dp"
             android:textColor="@color/white"
             android:buttonTint="@color/white"
-            android:checked="true"/>
+            android:checked="false"
+            android:id="@+id/checkRemUsr"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Forget Password"
+            android:text="@string/forget_password"
             android:onClick="onClickResetPassword"
             android:layout_marginRight="10dp"
             android:layout_marginLeft="10dp"
@@ -88,7 +89,7 @@
         android:onClick="onClickLogin"
         android:padding="15dp"
         android:shadowColor="@android:color/transparent"
-        android:text="Log In" />
+        android:text="@string/log_in" />
 
     <Button
         android:id="@+id/BtnSignUp"
@@ -102,7 +103,7 @@
         android:onClick="onCLickSignUp"
         android:padding="15dp"
         android:shadowColor="@android:color/transparent"
-        android:text="Sign Up"
+        android:text="@string/sign_up"
         android:textColor="@color/white" />
 
 

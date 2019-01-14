@@ -5,24 +5,34 @@ import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.renderscript.ScriptIntrinsicBLAS;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.joaoparracho.peddypraxis.model.FenceReceiver;
 import com.example.joaoparracho.peddypraxis.model.Singleton;
+import com.example.joaoparracho.peddypraxis.model.Utilizador;
 import com.google.android.gms.awareness.Awareness;
 import com.google.android.gms.awareness.fence.AwarenessFence;
 import com.google.android.gms.awareness.fence.DetectedActivityFence;
@@ -44,8 +54,16 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PreambuloActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
@@ -55,6 +73,7 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
     private TextView preambTextV;
     private TextView titlePreamTextV;
     private EditText respostaEdtT;
+    private MenuItem itemPreamb;
     private Button btnPream;
     private ProgressBar gameProgress;
     private GoogleApiClient mGoogleApiClient;
@@ -64,10 +83,16 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
     private LocationCallback mLocationCallback;
     private long finishTime;
 
+    private FirebaseDatabase firebaseDatabase;
+    private FirebaseAuth firebaseAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preambulo);
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
 
         gameProgress = findViewById(R.id.gameProgressBar);
         respostaEdtT = findViewById(R.id.editTextResposta);
@@ -124,8 +149,8 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
                 preambTextV.setText(getString(R.string.preamBiblioteca));
                 break;
             case "corridaKey":
-                titlePreamTextV.setText(getString(R.string.corrida));
-                preambTextV.setText(getString(R.string.preambCorrida));
+                titlePreamTextV.setText(getString(R.string.run));
+                preambTextV.setText(getString(R.string.runDesc));
                 break;
             case "perguntaKey":
                 titlePreamTextV.setText(getString(R.string.pergunta));
@@ -137,18 +162,75 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
                 break;
             case "finishGameKey":
                 titlePreamTextV.setText("Game Finished");
-                if (Singleton.getInstance().getNumTasksComplete() == numTask) preambTextV.setText("BEM CARALHO!\n Conseguiste concluir tudo");
-                else preambTextV.setText("BELA MERDA CARALHO!\nSo conseguiste completar " + Singleton.getInstance().getNumTasksComplete() + " numero de tarefas");
-                finishTime = System.currentTimeMillis() - Singleton.getInstance().getStartTime();
-                int min = (int) (((finishTime) / 1000) % 3600) / 60;
-                int sec = (int) (finishTime / 1000) % 60;
-                if (Singleton.getInstance().getNumTasksComplete() >= numTask) {
-                    if ((int) ((finishTime / 1000) / 3600) > 0) preambTextV.setText("BEM CARALHO!\n Conseguiste concluir tudo em 1 hora mesmo por pouco");
-                    else preambTextV.setText("BEM CARALHO!\n Conseguiste concluir tudo em " + min + " minutos e " + sec + " segundos");
-                } else preambTextV.setText("BELA MERDA CARALHO!\nSo conseguiste completar " + Singleton.getInstance().getNumTasksComplete() + " numero de tarefas");
-                btnPream.setText("Voltar Menu de Jogo");
+                if (Singleton.getInstance().getNumTasksComplete() == numTask) {
+                    finishTime = System.currentTimeMillis() - Singleton.getInstance().getStartTime();
+                    int min = (int) (((finishTime) / 1000) % 3600) / 60;
+                    int sec = (int) (finishTime / 1000) % 60;
+                    Singleton.getInstance().getCurrentUser().setNumJogosTerm(Singleton.getInstance().getCurrentUser().getNumJogosTerm() + 1);
+                    Log.d("xxxSingleton", "Number term" + (Singleton.getInstance().getCurrentUser().getNumJogosTerm()));
+
+                    if ((int) ((finishTime / 1000) / 3600) > 0) {
+                        preambTextV.setText(getString(R.string.fnsGame1h));
+                    } else {
+                        preambTextV.setText(getString(R.string.fnshGameInTime) +" "+ min+" " + getString(R.string.min) +" "+ sec + " "+getString(R.string.sec));
+                    }
+                    if (Singleton.getInstance().getCurrentUser().getMelhorTempo() > finishTime || Singleton.getInstance().getCurrentUser().getMelhorTempo() == 0){
+                        showDialogBestTime();
+                        Singleton.getInstance().getCurrentUser().setMelhorTempo(finishTime);
+                    }
+                }
+                else preambTextV.setText(getString(R.string.finTime) + Singleton.getInstance().getNumTasksComplete() + getString(R.string.numTask));
+
+                btnPream.setText(getString(R.string.returnGmMn));
+                sendData();
                 break;
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.menu_preamb, menu);
+        itemPreamb = menu.findItem(R.id.iconPreamb);
+        itemPreamb.setVisible(Singleton.getInstance().getActivityKey().equals("finishGameKey"));
+        return true;
+    }
+
+
+    public void onCLickShowPreamb(MenuItem item) {
+        showDescription();
+    }
+
+    public void showDescription() {
+        float precVit = (Singleton.getInstance().getCurrentUser().getNumJogosTerm() * 100) / (Singleton.getInstance().getCurrentUser().getNumJogosInic());
+        int min = (int) (((Singleton.getInstance().getCurrentUser().getMelhorTempo()) / 1000) % 3600) / 60;
+        int sec = (int) (Singleton.getInstance().getCurrentUser().getMelhorTempo() / 1000) % 60;
+
+        ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(Color.RED);
+        SpannableStringBuilder ssBuilder = new SpannableStringBuilder(getString(R.string.estatiTitle));
+
+        // Apply the text color span
+        ssBuilder.setSpan(
+                foregroundColorSpan,
+                0,
+                getString(R.string.estatiTitle).length(),
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        );
+
+        new AlertDialog.Builder(this)
+                .setTitle(ssBuilder)
+                .setMessage(getString(R.string.name) + Singleton.getInstance().getCurrentUser().getName()
+                        +"\n"+getString(R.string.age) + Singleton.getInstance().getCurrentUser().getIdade()
+                        +"\n"+getString(R.string.bestTime) + min + ":" + sec
+                        +"\n"+getString(R.string.numGameStr) + Singleton.getInstance().getCurrentUser().getNumJogosInic()
+                        +"\n"+getString(R.string.finishGame) + Singleton.getInstance().getCurrentUser().getNumJogosTerm()
+                        +"\n"+getString(R.string.percVict) + precVit+"%")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .create().show();
     }
 
     public void oncLickPreamb(View view) {
@@ -156,16 +238,16 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
         switch (Singleton.getInstance().getActivityKey()) {
             case "patioKey":
                 if (Singleton.getInstance().isFenceBool()) startActivity(new Intent(PreambuloActivity.this, PatioActivity.class));
-                else Snackbar.make(findViewById(android.R.id.content), "Caloiro dirija-se para o pátio do A", Snackbar.LENGTH_LONG).show();
+                else Snackbar.make(findViewById(android.R.id.content), R.string.goPatA, Snackbar.LENGTH_LONG).show();
                 break;
             case "edificiosKey":
                 if (Singleton.getInstance().isbInRotA()) startActivity(new Intent(PreambuloActivity.this, EdificioActivity.class));
-                else Snackbar.make(findViewById(android.R.id.content), "Caloiro dirija-se para a rotunda perto do A", Snackbar.LENGTH_LONG).show();
+                else Snackbar.make(findViewById(android.R.id.content), R.string.goRotA, Snackbar.LENGTH_LONG).show();
                 break;
             case "bibliotecaKey":
                 if (Singleton.getInstance().isbLibLoc() && respostaEdtT.getText().toString().equalsIgnoreCase("criatividade")) startActivity(new Intent(PreambuloActivity.this, BibliotecaActivity.class));
-                else if (!Singleton.getInstance().isbLibLoc()) Snackbar.make(findViewById(android.R.id.content), "Caloiro dirija-se para a Biblioteca", Snackbar.LENGTH_LONG).show();
-                else Snackbar.make(findViewById(android.R.id.content), "Introduza a resposta correta!", Snackbar.LENGTH_LONG).show();
+                else if (!Singleton.getInstance().isbLibLoc()) Snackbar.make(findViewById(android.R.id.content), R.string.goBib, Snackbar.LENGTH_LONG).show();
+                else Snackbar.make(findViewById(android.R.id.content), R.string.rightAns, Snackbar.LENGTH_LONG).show();
                 break;
             case "corridaKey":
                 if (Singleton.getInstance().isbInEsslei()) startActivity(new Intent(PreambuloActivity.this, CorridaActivity.class));
@@ -173,11 +255,11 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
                 break;
             case "perguntaKey":
                 if (Singleton.getInstance().isFenceBool()) startActivity(new Intent(PreambuloActivity.this, PerguntaActivity.class));
-                else Snackbar.make(findViewById(android.R.id.content), "Caloiro dirija-se para o pátio do A", Snackbar.LENGTH_LONG).show();
+                else Snackbar.make(findViewById(android.R.id.content), R.string.goPatA, Snackbar.LENGTH_LONG).show();
                 break;
             case "descompressaoKey":
                 if (Singleton.getInstance().isFenceBool()) startActivity(new Intent(PreambuloActivity.this, DescompressaoActivity.class));
-                else Snackbar.make(findViewById(android.R.id.content), "Caloiro dirija-se para o pátio do A", Snackbar.LENGTH_LONG).show();
+                else Snackbar.make(findViewById(android.R.id.content), R.string.goPatA, Snackbar.LENGTH_LONG).show();
                 break;
             case "finishGameKey":
                 showDialogExit();
@@ -227,14 +309,12 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "addFence success " + fenceKey);
-//                        Snackbar.make(findViewById(android.R.id.content), "Success to add Fence", Snackbar.LENGTH_LONG).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.d(TAG, "addFence failure " + fenceKey);
-//                        Snackbar.make(findViewById(android.R.id.content), "Failed to add Fence", Snackbar.LENGTH_LONG).show();
                     }
                 });
     }
@@ -270,10 +350,11 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
     }
 
     public void showDialogExit() {
+        String s = getString(R.string.retMnJg);
         new AlertDialog.Builder(this)
-                .setTitle("Exit Game")
-                .setMessage("Caloiro pretende voltar ao menu de jogos?")
-                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                .setTitle(R.string.extGame)
+                .setMessage(s)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Singleton.getInstance().restartVariables();
@@ -283,7 +364,7 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
                         finish();
                     }
                 })
-                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                     }
@@ -292,10 +373,11 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
     }
 
     public void showDialogWarning() {
+        String s = getString(R.string.warnLst);
         new AlertDialog.Builder(this)
-                .setTitle("Exit Game")
-                .setMessage("Caloiro tem a certeza que pretende terminar o jogo!\n Qualquer progresso que tenha feito ira ser perdido")
-                .setPositiveButton("Terminar Jogo", new DialogInterface.OnClickListener() {
+                .setTitle(R.string.extGame)
+                .setMessage(s)
+                .setPositiveButton(R.string.fngame, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Singleton.getInstance().restartVariables();
@@ -305,7 +387,7 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
                         finish();
                     }
                 })
-                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                     }
@@ -382,5 +464,40 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
                         Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\nFences could not be queried: " + e.getMessage());
                     }
                 });
+    }
+
+    private void sendData() {
+        DatabaseReference myRef = firebaseDatabase.getReference(firebaseAuth.getUid());
+        myRef.setValue(Singleton.getInstance().getCurrentUser());
+    }
+
+    public void verifyPrvInfo() {
+        final DatabaseReference databaseReference = firebaseDatabase.getReference(firebaseAuth.getUid());
+        Log.d("xxxSingleton", firebaseAuth.getUid());
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Singleton.getInstance().setCurrentUser(dataSnapshot.getValue(Utilizador.class));
+                Singleton.getInstance().getCurrentUser().setNumJogosTerm(Singleton.getInstance().getCurrentUser().getNumJogosTerm() + 1);
+                Log.d("xxxSingleton", "Number term" + (Singleton.getInstance().getCurrentUser().getNumJogosTerm()));
+                sendData();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
+
+    public void showDialogBestTime() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.congt)
+                .setMessage(R.string.checksta)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .create().show();
     }
 }

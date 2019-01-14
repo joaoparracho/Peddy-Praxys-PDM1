@@ -32,6 +32,8 @@ public class PasswordActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.menu_gamescreen, menu);
+        menu.findItem(R.id.iconEstatistica).setVisible(false);
+        menu.findItem(R.id.iconScoreboard).setVisible(false);
         return true;
     }
     public void onClickReturn(MenuItem item) {
@@ -42,21 +44,21 @@ public class PasswordActivity extends AppCompatActivity {
     public void onCLickRestPass(View view) {
         String useremail = passwordEmail.getText().toString();
         if(useremail.equals("")){
-            Toast.makeText(PasswordActivity.this, "Please enter your registered email ID", Toast.LENGTH_SHORT).show();
+            Toast.makeText(PasswordActivity.this, getString(R.string.enterMail), Toast.LENGTH_SHORT).show();
         }else{
-            progressDialog.setMessage("Sending email!");
+            progressDialog.setMessage(getString(R.string.sndEmail));
             progressDialog.show();
             firebaseAuth.sendPasswordResetEmail(useremail).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if(task.isSuccessful()){
                         progressDialog.dismiss();
-                        Toast.makeText(PasswordActivity.this, "Password reset email sent!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PasswordActivity.this, getString(R.string.passResSnt), Toast.LENGTH_SHORT).show();
                         finish();
                         startActivity(new Intent(PasswordActivity.this, LoginActivity.class));
                     }else{
                         progressDialog.dismiss();
-                        Toast.makeText(PasswordActivity.this, "Error in sending password reset email", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PasswordActivity.this, getString(R.string.errEmailRstPass), Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -64,4 +66,8 @@ public class PasswordActivity extends AppCompatActivity {
     }
 
 
+    public void onClickShowScoreboard(MenuItem item) {
+    }
+    public void onCLickShowStatus(MenuItem item) {
+    }
 }

@@ -2,9 +2,12 @@ package com.example.joaoparracho.peddypraxis.model;
 
 import android.util.Log;
 
+import com.google.firebase.firestore.auth.User;
+
 public class Singleton {
     private static final Singleton ourInstance = new Singleton();
     private Manager manager;
+    private Utilizador currentUser;
     private boolean showFinishBtn;
     private boolean fd;
     private boolean fenceBool;
@@ -19,6 +22,14 @@ public class Singleton {
     private String activityKey = "patioKey";
     private boolean bStart = false;
     private boolean[] faltaEdificios = {true, true, true, true, true}; // A, B, C, D, E
+
+    public Utilizador getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(Utilizador currentUser) {
+        this.currentUser = currentUser;
+    }
 
     private Singleton() {
         manager = new Manager();

@@ -43,6 +43,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".PasswordActivity" />
+        <activity android:name=".UserProfileActivity" />
         <activity android:name=".GameScreenActivity" />
         <activity android:name=".PreambuloActivity" />
         <activity android:name=".PatioActivity" />

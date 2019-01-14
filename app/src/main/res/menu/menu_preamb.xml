@@ -3,8 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/iconPreamb"
         android:icon="@android:drawable/ic_menu_info_details"
+        android:onClick="onCLickShowPreamb"
         android:title="Item"
-        app:showAsAction="ifRoom"
-        android:onClick="onCLickShowPreamb"/>
+        app:showAsAction="ifRoom" />
 </menu>
