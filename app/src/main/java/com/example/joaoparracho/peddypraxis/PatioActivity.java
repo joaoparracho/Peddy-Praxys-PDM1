@@ -93,11 +93,6 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
 
         mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(Places.GEO_DATA_API).addApi(Places.PLACE_DETECTION_API).enableAutoManage(this, this).build();
 
-        Intent intent = new Intent(FENCE_RECEIVER_ACTION);
-        myPendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-        fenceReceiver = new FenceReceiver();
-        registerReceiver(fenceReceiver, new IntentFilter(FENCE_RECEIVER_ACTION));
-
         mTextViewCountDown = findViewById(R.id.tVInfo);
         m1 = new CountDownTimer2(mTimeInMillis, 1000) {
             public void onTick(long millisUntilFinished) {
@@ -120,7 +115,8 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
             @Override
             public void onFinish() {
                 mTextViewCountDown.setText("Finish");
-                Singleton.getInstance().setActivityKey("edificiosKey");
+                //Singleton.getInstance().setActivityKey("edificiosKey");
+                Singleton.getInstance().setActivityKey("bibliotecaKey");
                 Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete() + 1);
                 finish();
                 startActivity(new Intent(PatioActivity.this, PreambuloActivity.class));
@@ -140,16 +136,6 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                String feedback = msg.getData().getString("100");
-                if (feedback != null) {
-                    Snackbar.make(findViewById(android.R.id.content), feedback, Snackbar.LENGTH_LONG).show();
-                    Intent i = new Intent(PatioActivity.this, GameScreenActivity.class);
-                    startActivity(i);
-                }
-                feedback = msg.getData().getString("90");
-                if (feedback != null) Snackbar.make(findViewById(android.R.id.content), feedback, Snackbar.LENGTH_LONG).show();
-                feedback = msg.getData().getString("50");
-                if (feedback != null) Snackbar.make(findViewById(android.R.id.content), feedback, Snackbar.LENGTH_LONG).show();
             }
         };
         queryFences();
@@ -189,14 +175,12 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
                 .create().show();
     }
 
-    public void onCLickShowPreamb(MenuItem item) {
-        showDescription();
-    }
+    public void onCLickShowPreamb(MenuItem item) {showDescription(); }
 
     public void showDescription() {
         new AlertDialog.Builder(this)
-                .setTitle("O Pátio")
-                .setMessage("O caloiro tem de andar, durante 5 minutos seguidos, às voltas pátio do ed. A, a piscar um olho e a sorrir com a câmara frontal do dispositivo móvel apontada para si!\n")
+                .setTitle(R.string.patio)
+                .setMessage(R.string.descPat)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -296,45 +280,22 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
                 });
     }
 
-    private void printLocation() {
-        if (ContextCompat.checkSelfPermission(PatioActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ActivityCompat.requestPermissions(PatioActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 42);
-        try {
-            int locationMode = Settings.Secure.getInt(getContentResolver(), Settings.Secure.LOCATION_MODE);
-            if (locationMode != Settings.Secure.LOCATION_MODE_HIGH_ACCURACY) Toast.makeText(this, "Error: high accuracy location mode must be enabled in the device.", Toast.LENGTH_LONG).show();
-        } catch (Settings.SettingNotFoundException e) {
-            Toast.makeText(this, "Error: could not access location mode.", Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
-        Awareness.getSnapshotClient(this).getLocation()
-                .addOnSuccessListener(new OnSuccessListener<LocationResponse>() {
-                    @Override
-                    public void onSuccess(LocationResponse locationResponse) {
-                        Location location = locationResponse.getLocation();
-                        Snackbar.make(findViewById(android.R.id.content), "Lat:" + location.getLatitude() + ", Lng:" + location.getLongitude() + "  39.7356519" + "-8.8209677", Snackbar.LENGTH_LONG).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e(TAG, "Could not get Location: " + e);
-                        Snackbar.make(findViewById(android.R.id.content), "Noo", Snackbar.LENGTH_LONG).show();
-                    }
-                });
-    }
-
     @Override
     public void onBackPressed() {
         Log.d(TAG, "back button pressed");
         checkWarning = true;
-        m1.pause();
+        if (!m1.ismPaused()){
+            m1.pause();
+            pauseCounterOnce = true;
+        }
         showDialogWarning();
     }
 
     public void showDialogWarning() {
         new AlertDialog.Builder(this)
-                .setTitle("Sair Tarefa")
-                .setMessage("Caloiro tem a certeza que pretende sair!\n Qualquer progresso que tenha feito ira ser perdido")
-                .setPositiveButton("Terminar Tarefa", new DialogInterface.OnClickListener() {
+                .setTitle(R.string.endTask)
+                .setMessage(R.string.warnLst)
+                .setPositiveButton(R.string.endTask, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         checkWarning = false;
@@ -343,11 +304,10 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
                         finish();
                     }
                 })
-                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         checkWarning = false;
-                        m1.resume();
                     }
                 })
                 .create().show();

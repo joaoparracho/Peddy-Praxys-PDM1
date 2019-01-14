@@ -74,11 +74,11 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
 
         mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(Places.GEO_DATA_API).addApi(Places.PLACE_DETECTION_API).enableAutoManage(this, this).build();
 
-        Intent intent = new Intent(FENCE_RECEIVER_ACTION);
+      /*  Intent intent = new Intent(FENCE_RECEIVER_ACTION);
         myPendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
         fenceReceiver = new FenceReceiver();
         registerReceiver(fenceReceiver, new IntentFilter(FENCE_RECEIVER_ACTION));
-
+*/
         textViewEdificio = findViewById(R.id.tVInfo);
         tempString = " ";
         for (int i = 0; i < 5; i++) if (Singleton.getInstance().getFaltaEdificios(i)) tempString += ((char) (65 + i)) + " ";

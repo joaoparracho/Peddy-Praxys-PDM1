@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@mipmap/back">
 
     <ProgressBar
         android:id="@+id/gameProgressBar"
@@ -20,6 +21,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="31dp"
         android:textAlignment="center"
+        android:textSize="35dp"
         android:textStyle="bold" />
 
     <TextView
@@ -29,6 +31,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="0dp"
+        android:textColor="@color/white"
         android:layout_marginTop="103dp" />
 
     <Button
@@ -39,7 +42,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="37dp"
         android:onClick="oncLickPreamb"
-        android:text="Jogar Tarefa" />
+        android:text="Jogar Tarefa"
+        android:background="@drawable/shapelogin"/>
 
     <EditText
         android:id="@+id/editTextResposta"
@@ -51,6 +55,7 @@
         android:layout_marginBottom="123dp"
         android:ems="10"
         android:hint="Insira a Resposta"
+        android:textColor="@color/white"
         android:inputType="textUri|textPersonName"
         android:visibility="invisible" />
 

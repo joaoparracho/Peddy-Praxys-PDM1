@@ -82,13 +82,6 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(Places.GEO_DATA_API).addApi(Places.PLACE_DETECTION_API).enableAutoManage(this, this).build();
-
-        Intent intent = new Intent(FENCE_RECEIVER_ACTION);
-        myPendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-        fenceReceiver = new FenceReceiver();
-        registerReceiver(fenceReceiver, new IntentFilter(FENCE_RECEIVER_ACTION));
-
         timeTextView = findViewById(R.id.tvTime);
 
         m2 = new CountDownTimer2(mTimeInMillis, 1000) {
@@ -130,7 +123,7 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
 
             @Override
             public void onFinish() {
-                timeTextView.setText("Finish");
+                timeTextView.setText(getString(R.string.finish));
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
                 else v.vibrate(500);
@@ -158,8 +151,8 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
 
     public void showDescription() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("Descompressão");
-        alert.setMessage(": O caloiro tem de estar sentado durante 10 minutos, no pátio do ed. A, com o telemóvel pousado no colo com o ecrã virado para baixo (é para relaxar!).");
+        alert.setTitle(R.string.descomp);
+        alert.setMessage(R.string.descompDesc);
         alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -171,9 +164,9 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
 
     public void showDialogNearbyLocation() {
         new AlertDialog.Builder(this)
-                .setTitle("Atenção!")
-                .setMessage("Foi detectado que não estao reunidas as melhores condições para terminares esta atividade no patio.\n" +
-                        "Por favor dirija-se a um destes locais de interesse se assim quiser." +
+                .setTitle(R.string.atention)
+                .setMessage(getString(R.string.warnAtent) +
+                        getString(R.string.goNearbyPlac) +
                         plText)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
@@ -201,13 +194,6 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
                         for (int i = 0; i < (pll.size() < 3 ? pll.size() : 3); i++) {
                             PlaceLikelihood pl = pll.get(i);
                             plText += "\t#" + i + ": " + pl.getPlace().toString() + "\t" + printPlaceTypes(pl.getPlace().getPlaceTypes()) + "\n";
-//                            plText += "\t#" + i + ": " + pl.getPlace().getName().toString()
-//                                    + "\n\tlikelihood: " + pl.getLikelihood()
-//                                    + "\n\taddress: " + pl.getPlace().getAddress()
-//                                    + "\n\tlocation: " + pl.getPlace().getLatLng()
-//                                    + "\n\twebsite: " + pl.getPlace().getWebsiteUri()
-//                                    + "\n\tplaceTypes: " + pl.getPlace().getPlaceTypes()
-//                                    + "\t" + printPlaceTypes(pl.getPlace().getPlaceTypes()) + "\n";
                         }
                         showDialogNearbyLocation();
                     }
@@ -438,16 +424,16 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
 
     public void showDialogWaring() {
         new AlertDialog.Builder(this)
-                .setTitle("Sair Tarefa")
-                .setMessage("Caloiro tem a certeza que pretende sair!\n Qualquer progresso que tenha feito ira ser perdido")
-                .setPositiveButton("Terminar Tarefa", new DialogInterface.OnClickListener() {
+                .setTitle(R.string.endTask)
+                .setMessage(R.string.warnLst)
+                .setPositiveButton(R.string.endTask, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         m2.cancel();
                         finish();
                     }
                 })
-                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                     }

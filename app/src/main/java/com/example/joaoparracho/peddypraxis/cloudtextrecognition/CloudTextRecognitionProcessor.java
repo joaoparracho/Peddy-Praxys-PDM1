@@ -69,18 +69,19 @@ public class CloudTextRecognitionProcessor extends VisionProcessorBase<FirebaseV
                 for (int l = 0; l < elements.size(); l++) {
                     if (elements.get(l).getText().equals("CRIATIVIDADE") || elements.get(l).getText().equals("CRIATIVIDADE!")) {
                         Singleton.getInstance().setShowFinishBtn(true);
-                        if (Singleton.getInstance().isShowFinishBtn()) {
-                            Message message = BibliotecaActivity.mHandler.obtainMessage();
-                            Bundle bundle = new Bundle();
-                            bundle.putString("FEEDBACK", text.getText());
-                            message.setData(bundle);
-                            BibliotecaActivity.mHandler.sendMessage(message);
-                        }
+
                     }
                     CloudTextGraphic cloudTextGraphic = new CloudTextGraphic(graphicOverlay, elements.get(l));
                     graphicOverlay.add(cloudTextGraphic);
                 }
             }
+        }
+        if (Singleton.getInstance().isShowFinishBtn()) {
+            Message message = BibliotecaActivity.mHandler.obtainMessage();
+            Bundle bundle = new Bundle();
+            bundle.putString("FEEDBACK", text.getText());
+            message.setData(bundle);
+            BibliotecaActivity.mHandler.sendMessage(message);
         }
 
         graphicOverlay.postInvalidate();

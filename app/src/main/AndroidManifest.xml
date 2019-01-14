@@ -50,6 +50,7 @@
         <activity android:name=".DescompressaoActivity" />
         <activity android:name=".PreambuloActivity" />
         <activity android:name=".CorridaActivity" />
+        <activity android:name=".UserProfileActivity" />
     </application>
 
 </manifest>
