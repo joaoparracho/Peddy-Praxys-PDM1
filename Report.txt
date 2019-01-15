@@ -4,25 +4,23 @@ Xavier Torquato Bento nº 2160786
 
 # FUNCIONALIDADES IMPLEMENTADAS
 As 4º tarefas propostas juntamente com duas extras foram devidamente implementadas.
-A aplicação deteta se o caloiro esta a andar de carro ou de bicicleta .
+A aplicação deteta se o caloiro esta a andar de carro ou de bicicleta.
 
 # FUNCIONALIDADES NÃO IMPLEMENTADAS OU APENAS PARCIALMENTE IMPLEMENTADAS
 Nao foi implementado a integração com a aplicação desenvolvida no Projeto Prático #1. 
 Não é possivel construir jogos na aplicação Peddy Paper Builder para jogar na aplicação PeddyPraxis. A aplicação contem apenas um jogo.
 
 # DESCRIÇÃO DAS FUNCIONALIDADES EXTRA
-No ambito da aplicação, foi determinado que a mesma iria ter integração com uma base de dados usando o firebase. Atraves do firebase e possivel registar diferentes
-utilizadores, sendo que para cada utilizador é guardado o nome, a idade, numero de jogos iniciados, numero de jogos terminados e o melhor tempo (em que terminou o jogo).
+No decorrer do desnvolvimento da aplicação, foi determinado que a mesma iria ter integração com uma base de dados usando o firebase. Atraves do firebase é possivel registar diferentes utilizadores, sendo que para cada utilizador é guardado o nome, a idade, numero de jogos iniciados, numero de jogos terminados e o melhor tempo (em que terminou o jogo).
 Uma vez armazenada esta informação é possivel mostrar a estatistica de cada utilizador e assim como uma tabela (Ranking) com os melhores tempos de todas as pessoas que jogaram o jogo.
 Foi criado uma classe extra chamada Utilizador, que permite atualizar e guardar os dados de  um utilizador durante a aplicação.
 No Actividade Login é possivel escolher a opção "remember me", desta forma quando a aplicação for reiniciada o email de utilizador aparece automaticamente preenchido.
 Para visualizar esta "scoreboard" o utilizador deve de iniciar sessao e na atividade gamescreen clicar no icon em forma de estrela.
 Foi implementado uma class CountDownTimer2 baseada na class original CountDownTimer. Esta nova class implementada permite parar um countdown timer e retomar o timer 
-pausado. A class original não permitia tais funcionalidades.
+pausado. A classe original não permitia tais funcionalidades.
 
 Tarefa Extra#1:A 1º tarefa extra denomina-se de "A corrida". Nesta tarefa o caloiro tem de se deslocar da ESSLEI para o patio do A, promovendo assim o estado fisico do caloiro, uma vez que a sua condição é importante para aguentar a praxe.Foram implmentados duas fences de localização uma no ponto de partida ESSLEI e outra no patio do A e um timer decrescente que vai descontando o tempo. 
 Tarefa Extra#2:A 2º tarefa extra denomina-se de "Pergunta". Nesta parte do jogo o caloiro tem que encontrar quatro qr codes espalhados no edeifico A. A deteção dos qr codes é feita recorrendo ao ml kit. Uma vez encntrados todos os qr codes uma pergunta é desbloqueada. A tarefa é concluida após a resposta certa ser introduzida.
-
 
 # OBSERVAÇÕES
 Após alguns testes, foi verificado que o funcionamento da deteção da atividade do utilizador (Walkin,OnFoot,Still) não funcionava da maneira mais correta. Portanto foi criada uma fence combinada que deteta se o caloiro esta a andar de carro ou de bicicleta e, caso alguma destas duas datividades for detetadas o jogo é terminado automaticamente.
@@ -55,7 +53,6 @@ Cada tarefa de jogo possui a sua propria atividade excepto a "Descompresão" e a
 No inicio do jogo e apos a realização de cada tarefa a atividade "PreambuloActivity" é chamada. Esta ativida é responsavel por monotorizar as fences, mostrar o premabulo de cada tarefa, e uma vez as condições reunidas jogar a tarefa. Para que nesta atividade seja possivel saber que tarefa começar, foram criadas string keys.
 Esta key é guardada num atributo no singleton, para poder ser alterada e acedida em qualquer parte da aplicação.
 
- 
 
 # CÓDIGO DAS CLASSES JAVA
 
