@@ -1,11 +1,9 @@
 // Copyright 2018 Google LLC
 package com.example.joaoparracho.peddypraxis;
 
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -30,7 +28,6 @@ import com.example.joaoparracho.peddypraxis.common.CameraSourcePreview;
 import com.example.joaoparracho.peddypraxis.common.GraphicOverlay;
 import com.example.joaoparracho.peddypraxis.facedetection.FaceDetectionProcessor;
 import com.example.joaoparracho.peddypraxis.model.CountDownTimer2;
-import com.example.joaoparracho.peddypraxis.model.FenceReceiver;
 import com.example.joaoparracho.peddypraxis.model.Singleton;
 import com.google.android.gms.awareness.Awareness;
 import com.google.android.gms.awareness.fence.FenceQueryRequest;
@@ -40,7 +37,6 @@ import com.google.android.gms.awareness.fence.FenceStateMap;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.annotation.KeepName;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.places.Places;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
@@ -57,20 +53,15 @@ import java.util.Locale;
 @KeepName
 public final class PatioActivity extends AppCompatActivity implements OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "PatioActivity";
-    private static final String FENCE_RECEIVER_ACTION = "FENCE_RECEIVER_ACTION";
     public static Handler mHandler;
     CountDownTimer2 m1;
     private CameraSource cameraSource = null;
     private CameraSourcePreview preview;
     private GraphicOverlay graphicOverlay;
     private TextView mTextViewCountDown;
-    private GoogleApiClient mGoogleApiClient;
-    private FenceReceiver fenceReceiver;
-    private PendingIntent myPendingIntent;
     private long mTimeInMillis = 60 * 100;
     private boolean pauseCounterOnce;
     private int counterDelay;
-    private String text2 = "";
     private boolean checkWarning;
 
     private static boolean isPermissionGranted(Context context, String permission) {
@@ -84,13 +75,6 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_patio);
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(Places.GEO_DATA_API).addApi(Places.PLACE_DETECTION_API).enableAutoManage(this, this).build();
-
-        Intent intent = new Intent(FENCE_RECEIVER_ACTION);
-        myPendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-        fenceReceiver = new FenceReceiver();
-        registerReceiver(fenceReceiver, new IntentFilter(FENCE_RECEIVER_ACTION));
 
         mTextViewCountDown = findViewById(R.id.tVInfo);
         m1 = new CountDownTimer2(mTimeInMillis, 1000) {
@@ -143,50 +127,12 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
         return String.format(Locale.getDefault(), "%02d:%02d", ((mTimeInMillis / 1000) % 3600) / 60, (mTimeInMillis / 1000) % 60);
     }
 
-//    private String updateCountDownText() {
-//        String timeLeftFormatted;
-//        int hours = (int) (mTimeInMillis / 1000) / 3600;
-//        int minutes = (int) ((mTimeInMillis / 1000) % 3600) / 60;
-//        int seconds = (int) (mTimeInMillis / 1000) % 60;
-//        int a, b;
-//
-//        a = Singleton.getInstance().isFenceBool() ? 1 : 0;
-//        b = Singleton.getInstance().isWalkingBool() ? 1 : 0;
-//
-//        if (hours > 0) {
-//            if (Singleton.getInstance().getFd()) timeLeftFormatted = String.format(Locale.getDefault(), "%d:%02d:%02d-TRUE %d %d %d", hours, minutes, seconds, counterDelay, a, b);
-//            else timeLeftFormatted = String.format(Locale.getDefault(), "%d:%02d:%02d--FALSE %d %d %d", hours, minutes, seconds, counterDelay, a, b);
-//        } else {
-//            if (Singleton.getInstance().getFd()) timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d---TRUE %d %d %d", minutes, seconds, counterDelay, a, b);
-//            else timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d--FALSE %d %d %d", minutes, seconds, counterDelay, a, b);
-//        }
-//        return timeLeftFormatted;
-//    }
-
-//    public void onClickActivity(View view) {
-//        //printLocation();
-//        queryFences();
-//        new AlertDialog.Builder(PatioActivity.this)
-//                .setTitle("Fences")
-//                .setMessage(text2)
-//                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                    }
-//                })
-//                .create().show();
-//    }
-
     public void onClickShowPreamb(MenuItem item) {
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.patio)
-                .setMessage(R.string.descPat)
-                .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .create().show();
+        new AlertDialog.Builder(this).setTitle(R.string.patio).setMessage(R.string.descPat).setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        }).create().show();
     }
 
     private void createCameraSource() {
@@ -250,7 +196,6 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
                             if (fenceKey.equals("locationFenceKey") && state == FenceState.TRUE) Singleton.getInstance().setFenceBool(true);
                             if (fenceKey.equals("walkingFenceKey") && state != FenceState.FALSE) Singleton.getInstance().setWalkingBool(true);
                         }
-                        text2 = "location: " + fenceInfo;
                         Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\n> Fences' states:\n" + (fenceInfo.equals("") ? "No registered fences." : fenceInfo));
                     }
                 })
@@ -270,25 +215,20 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
             m1.pause();
             pauseCounterOnce = true;
         }
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.endTask)
-                .setMessage(R.string.warnLst)
-                .setPositiveButton(R.string.endTask, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        checkWarning = false;
-                        m1.cancel();
-                        Singleton.getInstance().setFd(false);
-                        finish();
-                    }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        checkWarning = false;
-                    }
-                })
-                .create().show();
+        new AlertDialog.Builder(this).setTitle(R.string.endTask).setMessage(R.string.warnLst).setPositiveButton(R.string.endTask, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                checkWarning = false;
+                m1.cancel();
+                Singleton.getInstance().setFd(false);
+                finish();
+            }
+        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                checkWarning = false;
+            }
+        }).create().show();
     }
 
     @Override

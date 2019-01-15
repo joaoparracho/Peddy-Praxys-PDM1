@@ -89,10 +89,7 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
                 super.handleMessage(msg);
                 String feedback = msg.getData().getString("FEEDBACK");
                 if (feedback != null) {
-                    Snackbar.make(findViewById(android.R.id.content), feedback, Snackbar.LENGTH_LONG).show();
-                    // TODO: alterar o nome desta variavel. Nao esta explicita inicialmente era usar para mudar a visibilidade de um botao
-                    if (Singleton.getInstance().isShowFinishBtn()) {
-                        Log.d(TAG, "2 " + Singleton.getInstance().getNumTasksComplete());
+                    if (Singleton.getInstance().isCriatividade()) {
                         Singleton.getInstance().setNumTasksComplete(Singleton.getInstance().getNumTasksComplete() + 1);
                         Singleton.getInstance().setActivityKey("corridaKey");
                         finish();
@@ -113,15 +110,11 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
     }
 
     public void onClickShowPreamb(MenuItem item) {
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.Bibl)
-                .setMessage(R.string.descBib)
-                .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .create().show();
+        new AlertDialog.Builder(this).setTitle(R.string.Bibl).setMessage(R.string.descBib).setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        }).create().show();
     }
 
     @Override
@@ -234,21 +227,16 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
     @Override
     public void onBackPressed() {
         Log.d(TAG, "back button pressed");
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.endTask)
-                .setMessage(R.string.warnLst)
-                .setPositiveButton(R.string.endTask, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .create().show();
+        new AlertDialog.Builder(this).setTitle(R.string.endTask).setMessage(R.string.warnLst).setPositiveButton(R.string.endTask, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        }).create().show();
     }
 
     @Override

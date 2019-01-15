@@ -3,10 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@mipmap/back"
     android:gravity="bottom"
     android:orientation="vertical"
     android:padding="8dp"
-    android:background="@mipmap/back"
     tools:context=".BibliotecaActivity">
 
     <ImageView
@@ -15,8 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:scaleType="fitStart">
-    </ImageView>
+        android:scaleType="fitStart"></ImageView>
 
 
     <com.example.joaoparracho.peddypraxis.common.GraphicOverlay
@@ -25,7 +24,7 @@
         android:layout_height="fill_parent"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true" />
 
     <Button
         android:id="@+id/getImageButton"

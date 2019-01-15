@@ -101,22 +101,17 @@ public class CorridaActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Log.d(TAG, "back button pressed");
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.endTask)
-                .setMessage(R.string.warnLst)
-                .setPositiveButton(R.string.endTask, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        m2.cancel();
-                        finish();
-                    }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .create().show();
+        new AlertDialog.Builder(this).setTitle(R.string.endTask).setMessage(R.string.warnLst).setPositiveButton(R.string.endTask, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                m2.cancel();
+                finish();
+            }
+        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        }).create().show();
     }
 
     @Override

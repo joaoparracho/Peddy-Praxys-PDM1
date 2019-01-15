@@ -3,14 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@mipmap/back"
-    android:orientation="vertical"
     android:gravity="center"
+    android:orientation="vertical"
     android:padding="20dp">
 
     <ImageView
         android:layout_width="90dp"
         android:layout_height="wrap_content"
-        android:src="@mipmap/praxe"/>
+        android:src="@mipmap/praxe" />
 
     <EditText
         android:id="@+id/TextViewEmail"
@@ -35,8 +35,8 @@
         android:drawableLeft="@drawable/ic_lock_black_24dp"
         android:drawablePadding="10dp"
         android:hint="@string/pass"
-        android:password="true"
         android:padding="15dp"
+        android:password="true"
         android:textColor="@color/white"
         android:textColorHighlight="@color/white"
         android:textColorHint="@color/white" />
@@ -47,30 +47,31 @@
         android:orientation="horizontal">
 
         <CheckBox
+            android:id="@+id/checkRemUsr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/remember_me"
-            android:layout_marginRight="10dp"
             android:layout_marginLeft="10dp"
-            android:layout_marginBottom="10dp"
             android:layout_marginTop="0dp"
-            android:textColor="@color/white"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
             android:buttonTint="@color/white"
             android:checked="false"
-            android:id="@+id/checkRemUsr"/>
+            android:text="@string/remember_me"
+            android:textColor="@color/white" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/forget_password"
-            android:onClick="onClickResetPassword"
-            android:layout_marginRight="10dp"
             android:layout_marginLeft="10dp"
-            android:layout_marginBottom="10dp"
             android:layout_marginTop="0dp"
-            android:textColor="@color/white"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
             android:drawableLeft="@drawable/ic_lock_open_black_24dp"
             android:drawablePadding="6dp"
-            android:padding="4dp"/>
+            android:onClick="onClickResetPassword"
+            android:padding="4dp"
+            android:text="@string/forget_password"
+            android:textColor="@color/white" />
 
 
     </LinearLayout>
@@ -103,8 +104,6 @@
         android:shadowColor="@android:color/transparent"
         android:text="@string/sign_up"
         android:textColor="@color/white" />
-
-
 
 
 </LinearLayout>

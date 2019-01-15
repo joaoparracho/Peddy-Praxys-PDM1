@@ -14,10 +14,10 @@
         android:title="Estatisticas"
         app:showAsAction="ifRoom" />
     <item
-        android:icon="@android:drawable/star_big_off"
         android:id="@+id/iconScoreboard"
-        android:title="Scoreboard"
+        android:icon="@android:drawable/star_big_off"
         android:onClick="onClickShowScoreboard"
+        android:title="Scoreboard"
         app:showAsAction="ifRoom" />
 
 </menu>

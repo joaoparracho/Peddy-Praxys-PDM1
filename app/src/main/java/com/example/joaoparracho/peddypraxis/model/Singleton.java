@@ -6,7 +6,7 @@ public class Singleton {
     private static final Singleton ourInstance = new Singleton();
     private Manager manager;
     private Utilizador currentUser;
-    private boolean showFinishBtn;
+    private boolean isCriatividade;
     private boolean fd;
     private boolean fenceBool;
     private boolean nearbyBool;
@@ -45,12 +45,12 @@ public class Singleton {
         this.bLibLoc = bLibLoc;
     }
 
-    public boolean isShowFinishBtn() {
-        return showFinishBtn;
+    public boolean isCriatividade() {
+        return isCriatividade;
     }
 
-    public void setShowFinishBtn(boolean showFinishBtn) {
-        this.showFinishBtn = showFinishBtn;
+    public void setCriatividade(boolean criatividade) {
+        this.isCriatividade = criatividade;
     }
 
     public boolean isFenceBool() {
@@ -88,7 +88,7 @@ public class Singleton {
     public void restartVariables() {
         Log.d("Singleton", "Reset variables");
         this.fd = false;
-        this.showFinishBtn = false;
+        this.isCriatividade = false;
         this.numTasksComplete = 0;
         this.faltaEdificios = new boolean[]{true, true, true, true, true};
         this.startTime = -1;

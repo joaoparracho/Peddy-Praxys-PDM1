@@ -4,10 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
+    android:background="@mipmap/back"
     android:gravity="center"
     android:orientation="vertical"
     android:padding="8dp"
-    android:background="@mipmap/back"
     tools:context=".DescompressaoActivity">
 
     <TextView

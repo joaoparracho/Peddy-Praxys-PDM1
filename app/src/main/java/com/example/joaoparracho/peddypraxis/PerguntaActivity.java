@@ -1,10 +1,8 @@
 package com.example.joaoparracho.peddypraxis;
 
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -30,7 +28,6 @@ import com.example.joaoparracho.peddypraxis.barcodescanning.BarcodeScanningProce
 import com.example.joaoparracho.peddypraxis.common.CameraSource;
 import com.example.joaoparracho.peddypraxis.common.CameraSourcePreview;
 import com.example.joaoparracho.peddypraxis.common.GraphicOverlay;
-import com.example.joaoparracho.peddypraxis.model.FenceReceiver;
 import com.example.joaoparracho.peddypraxis.model.Singleton;
 import com.google.android.gms.awareness.Awareness;
 import com.google.android.gms.awareness.fence.FenceQueryRequest;
@@ -39,7 +36,6 @@ import com.google.android.gms.awareness.fence.FenceState;
 import com.google.android.gms.awareness.fence.FenceStateMap;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.places.Places;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
@@ -52,19 +48,14 @@ public class PerguntaActivity extends AppCompatActivity implements ActivityCompa
 
     private static final String TAG = "PerguntaActivity";
     private static final String FEEDBACK = "FEEDBACK";
-    private static final String FENCE_RECEIVER_ACTION = "FENCE_RECEIVER_ACTION";
     public static Handler mHandler;
     private CameraSource cameraSource = null;
     private CameraSourcePreview preview;
     private GraphicOverlay graphicOverlay;
     private TextView textViewQRCode;
-    private GoogleApiClient mGoogleApiClient;
-    private FenceReceiver fenceReceiver;
-    private PendingIntent myPendingIntent;
     private boolean[] palavras = {false, false, false, false};
     private String tempString = "";
     private boolean completa = true;
-    private String text2;
 
     private static boolean isPermissionGranted(Context context, String permission) {
         if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) Log.i(TAG, "Permission granted: " + permission);
@@ -77,16 +68,7 @@ public class PerguntaActivity extends AppCompatActivity implements ActivityCompa
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_pergunta);
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(Places.GEO_DATA_API).addApi(Places.PLACE_DETECTION_API).enableAutoManage(this, this).build();
-
-        Intent intent = new Intent(FENCE_RECEIVER_ACTION);
-        myPendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-        fenceReceiver = new FenceReceiver();
-        registerReceiver(fenceReceiver, new IntentFilter(FENCE_RECEIVER_ACTION));
-
         textViewQRCode = findViewById(R.id.tVInfo);
-
         preview = findViewById(R.id.firePreview);
         if (preview == null) Log.d(TAG, "Preview is null");
         graphicOverlay = findViewById(R.id.fireFaceOverlay);
@@ -144,19 +126,11 @@ public class PerguntaActivity extends AppCompatActivity implements ActivityCompa
         });
     }
 
-//    public void onClickActivity(View view) {
-//        queryFences();
-//        new AlertDialog.Builder(PerguntaActivity.this).setTitle("Fences").setMessage(text2).setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//            }
-//        }).create().show();
-//    }
-
     public void onClickShowPreamb(MenuItem item) {
         new AlertDialog.Builder(this).setTitle(R.string.pergunta).setMessage(getString(R.string.descPergunta)).setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {  }
+            public void onClick(DialogInterface dialog, int which) {
+            }
         }).create().show();
     }
 
@@ -221,7 +195,7 @@ public class PerguntaActivity extends AppCompatActivity implements ActivityCompa
                             if (fenceKey.equals("locationFenceKey") && state == FenceState.TRUE) Singleton.getInstance().setFenceBool(true);
                         }
                         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                        String text = text2 = "\n\n[Fences @ " + timestamp + "]\n" + "> Fences' states:\n" + (fenceInfo.equals("") ? "No registered fences." : fenceInfo);
+                        String text = "\n\n[Fences @ " + timestamp + "]\n" + "> Fences' states:\n" + (fenceInfo.equals("") ? "No registered fences." : fenceInfo);
                         Log.d(TAG, text);
                     }
                 })
@@ -238,21 +212,16 @@ public class PerguntaActivity extends AppCompatActivity implements ActivityCompa
     @Override
     public void onBackPressed() {
         Log.d(TAG, "back button pressed");
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.endTask)
-                .setMessage(R.string.warnLst)
-                .setPositiveButton(R.string.endTask, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .create().show();
+        new AlertDialog.Builder(this).setTitle(R.string.endTask).setMessage(R.string.warnLst).setPositiveButton(R.string.endTask, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        }).create().show();
         queryFences();
     }
 

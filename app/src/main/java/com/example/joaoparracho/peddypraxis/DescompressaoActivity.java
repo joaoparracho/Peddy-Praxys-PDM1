@@ -48,7 +48,6 @@ import com.google.android.gms.awareness.state.Weather;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.PlaceLikelihood;
-import com.google.android.gms.location.places.Places;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
@@ -62,10 +61,8 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
     public static Handler mHandler;
     private FenceReceiver fenceReceiver;
     private PendingIntent myPendingIntent;
-    private GoogleApiClient mGoogleApiClient;
     private TextView timeTextView;
-    //    private long startMillis = 60 * 10000;
-    private long startMillis = 10000;
+    private long startMillis = 10000; // 60 * 10000
     private long mTimeInMillis = startMillis;
     private CountDownTimer2 m2;
     private boolean pauseCounterOnce;
@@ -75,7 +72,7 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
     private boolean bFaceDown;
     private boolean bRain;
     private Weather weather;
-    private String plText="";
+    private String plText = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,8 +80,6 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
         setContentView(R.layout.activity_descompressao);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(Places.GEO_DATA_API).addApi(Places.PLACE_DETECTION_API).enableAutoManage(this, this).build();
 
         Intent intent = new Intent(FENCE_RECEIVER_ACTION);
         myPendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
@@ -96,29 +91,25 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
         m2 = new CountDownTimer2(mTimeInMillis, 1000) {
             public void onTick(long millisUntilFinished) {
                 if (ActivityCompat.checkSelfPermission(DescompressaoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) return;
-                Awareness.getSnapshotClient(DescompressaoActivity.this).getWeather()
-                        .addOnSuccessListener(new OnSuccessListener<WeatherResponse>() {
-                            @Override
-                            public void onSuccess(WeatherResponse weatherResponse) {
-                                weather = weatherResponse.getWeather();
-                                for (int condition : weather.getConditions()) {
-                                    switch (condition) {
-                                        case Weather.CONDITION_RAINY:
-                                            bRain = true;
-                                            Log.e(TAG, "weatherSnap: Rainning");
-                                            break;
-                                    }
-                                }
+                Awareness.getSnapshotClient(DescompressaoActivity.this).getWeather().addOnSuccessListener(new OnSuccessListener<WeatherResponse>() {
+                    @Override
+                    public void onSuccess(WeatherResponse weatherResponse) {
+                        weather = weatherResponse.getWeather();
+                        for (int condition : weather.getConditions()) {
+                            switch (condition) {
+                                case Weather.CONDITION_RAINY:
+                                    bRain = true;
+                                    Log.e(TAG, "weatherSnap: Rainning");
+                                    break;
                             }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.e(TAG, "weatherSnap: Could not get Weather: " + e);
-                            }
-                        });
-                if (Singleton.getInstance().isFenceBool()) bRain = true;
-                if (Singleton.getInstance().isNearbyBool()) bRain = false;
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, "weatherSnap: Could not get Weather: " + e);
+                    }
+                });
                 if (!bRain && bFaceDown && (Singleton.getInstance().isFenceBool() || Singleton.getInstance().isNearbyBool()) && bCheck) {
                     if (m2.ismPaused()) {
                         m2.cancel();
@@ -169,94 +160,60 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
     }
 
     private void printNearbyPlaces() {
-        if (ContextCompat.checkSelfPermission(DescompressaoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ActivityCompat.requestPermissions(DescompressaoActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 42);
-        try {
-            int locationMode = Settings.Secure.getInt(getContentResolver(), Settings.Secure.LOCATION_MODE);
-            if (locationMode != Settings.Secure.LOCATION_MODE_HIGH_ACCURACY) Log.e(TAG, "Error: high accuracy location mode must be enabled in the device.");
-        } catch (Settings.SettingNotFoundException e) {
-            Log.e(TAG, "Error: could not access location mode.");
-            e.printStackTrace();
-        }
-        Awareness.getSnapshotClient(this).getPlaces()
-                .addOnSuccessListener(new OnSuccessListener<PlacesResponse>() {
+        checkPermission();
+        Awareness.getSnapshotClient(this).getPlaces().addOnSuccessListener(new OnSuccessListener<PlacesResponse>() {
+            @Override
+            public void onSuccess(PlacesResponse placesResponse) {
+                List<PlaceLikelihood> pll = placesResponse.getPlaceLikelihoods();
+                plText = "\n";
+                for (int i = 0; i < (pll.size() < 3 ? pll.size() : 3); i++) plText += "\t#" + (i + 1) + ": " + pll.get(i).getPlace().getName().toString() + "\n";
+                setupNearbyFences(pll.get(0).getPlace().getLatLng().latitude, pll.get(0).getPlace().getLatLng().longitude, pll.get(1).getPlace().getLatLng().latitude, pll.get(1).getPlace().getLatLng().longitude, pll.get(2).getPlace().getLatLng().latitude, pll.get(2).getPlace().getLatLng().longitude);
+                new AlertDialog.Builder(DescompressaoActivity.this).setTitle(R.string.atention).setMessage(getString(R.string.warnAtent) + getString(R.string.goNearbyPlac) + plText).setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onSuccess(PlacesResponse placesResponse) {
-                        List<PlaceLikelihood> pll = placesResponse.getPlaceLikelihoods();
-                        plText = "\n";
-                        for (int i = 0; i < (pll.size() < 3 ? pll.size() : 3); i++) {
-                            PlaceLikelihood pl = pll.get(i);
-                            plText += "\t#" + (i + 1) + ": " + pl.getPlace().getName().toString() + "\n";
-//                                    + "\n\tlikelihood: " + pl.getLikelihood()
-//                                    + "\n\taddress: " + pl.getPlace().getAddress()
-//                                    + "\n\tlocation: " + pl.getPlace().getLatLng()
-//                                    + "\n\twebsite: " + pl.getPlace().getWebsiteUri()
-//                                    + "\n\tplaceTypes: " + pl.getPlace().getPlaceTypes()
-//                                    + "\t" + printPlaceTypes(pl.getPlace().getPlaceTypes()) + "\n";
-                        }
-                        setupNearbyFences(pll.get(0).getPlace().getLatLng().latitude, pll.get(0).getPlace().getLatLng().longitude,
-                                pll.get(1).getPlace().getLatLng().latitude, pll.get(1).getPlace().getLatLng().longitude,
-                                pll.get(2).getPlace().getLatLng().latitude, pll.get(2).getPlace().getLatLng().longitude);
-                        new AlertDialog.Builder(DescompressaoActivity.this).setTitle(R.string.atention).setMessage(getString(R.string.warnAtent) + getString(R.string.goNearbyPlac) + plText).setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        }).create().show();
+                    public void onClick(DialogInterface dialog, int which) {
                     }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e(TAG, "Could not get Places: " + e);
-                        Toast.makeText(DescompressaoActivity.this, "Could not get Places: " + e, Toast.LENGTH_SHORT).show();
-                    }
-                });
+                }).create().show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "Could not get Places: " + e);
+                Toast.makeText(DescompressaoActivity.this, "Could not get Places: " + e, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void setupNearbyFences(double lat1, double long1, double lat2, double long2, double lat3, double long3) {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            return;
-        }
-        AwarenessFence nearbyLoc = AwarenessFence.or(LocationFence.in(lat1, long1, 30, 0L),
-                LocationFence.in(lat2, long2, 30, 0L),
-                LocationFence.in(lat3, long3, 30, 0L));
-        addFence("nearbyFence", nearbyLoc);
+        checkPermission();
+        addFence("nearbyFence", AwarenessFence.or(LocationFence.in(lat1, long1, 30, 0L), LocationFence.in(lat2, long2, 30, 0L), LocationFence.in(lat3, long3, 30, 0L)));
     }
 
     private void addFence(final String fenceKey, final AwarenessFence fence) {
-        Awareness.getFenceClient(this).updateFences(new FenceUpdateRequest.Builder()
-                .addFence(fenceKey, fence, myPendingIntent)
-                .build())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("AddFence", "addFence success " + fenceKey);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "addFence failure " + fenceKey);
-                    }
-                });
+        Awareness.getFenceClient(this).updateFences(new FenceUpdateRequest.Builder().addFence(fenceKey, fence, myPendingIntent).build()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("AddFence", "addFence success " + fenceKey);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "addFence failure " + fenceKey);
+            }
+        });
     }
 
     protected void removeFences(String unique_key) {
-        Awareness.getFenceClient(this).updateFences(new FenceUpdateRequest.Builder()
-                .removeFence(unique_key)
-                .build())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\nFences were successfully removed.");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\nFences could not be removed: " + e.getMessage());
-                    }
-                });
+        Awareness.getFenceClient(this).updateFences(new FenceUpdateRequest.Builder().removeFence(unique_key).build()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\nFences were successfully removed.");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "\n\n[Fences @ " + new Timestamp(System.currentTimeMillis()) + "]\nFences could not be removed: " + e.getMessage());
+            }
+        });
     }
 
 
@@ -282,6 +239,8 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
         bFaceDown = sensorEvent.values[2] < -9.5;
         if (!bFaceDown) {
             mTimeInMillis = startMillis;
+            m2.cancel();
+            m2.start();
             timeTextView.setText(updateCountDownText());
         }
     }
@@ -292,30 +251,39 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
     }
 
     protected void queryFences() {
-        Awareness.getFenceClient(this).queryFences(FenceQueryRequest.all())
-                .addOnSuccessListener(new OnSuccessListener<FenceQueryResponse>() {
-                    @Override
-                    public void onSuccess(FenceQueryResponse fenceQueryResponse) {
-                        String fenceInfo = "";
-                        FenceStateMap fenceStateMap = fenceQueryResponse.getFenceStateMap();
-                        for (String fenceKey : fenceStateMap.getFenceKeys()) {
-                            int state = fenceStateMap.getFenceState(fenceKey).getCurrentState();
-                            fenceInfo += fenceKey + ": " + (state == FenceState.TRUE ? "TRUE" : state == FenceState.FALSE ? "FALSE" : "UNKNOWN") + "\n";
-                            if (fenceKey.equals("locationFenceKey") && state == FenceState.TRUE) Singleton.getInstance().setFenceBool(true);
-                        }
-                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                        String text = "\n\n[Fences @ " + timestamp + "]\n" + "> Fences' states:\n" + (fenceInfo.equals("") ? "No registered fences." : fenceInfo);
-                        Log.d(TAG, text);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                        String text = "\n\n[Fences @ " + timestamp + "]\n" + "Fences could not be queried: " + e.getMessage();
-                        Log.d(TAG, text);
-                    }
-                });
+        Awareness.getFenceClient(this).queryFences(FenceQueryRequest.all()).addOnSuccessListener(new OnSuccessListener<FenceQueryResponse>() {
+            @Override
+            public void onSuccess(FenceQueryResponse fenceQueryResponse) {
+                String fenceInfo = "";
+                FenceStateMap fenceStateMap = fenceQueryResponse.getFenceStateMap();
+                for (String fenceKey : fenceStateMap.getFenceKeys()) {
+                    int state = fenceStateMap.getFenceState(fenceKey).getCurrentState();
+                    fenceInfo += fenceKey + ": " + (state == FenceState.TRUE ? "TRUE" : state == FenceState.FALSE ? "FALSE" : "UNKNOWN") + "\n";
+                    if (fenceKey.equals("locationFenceKey") && state == FenceState.TRUE) Singleton.getInstance().setFenceBool(true);
+                }
+                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                String text = "\n\n[Fences @ " + timestamp + "]\n" + "> Fences' states:\n" + (fenceInfo.equals("") ? "No registered fences." : fenceInfo);
+                Log.d(TAG, text);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                String text = "\n\n[Fences @ " + timestamp + "]\n" + "Fences could not be queried: " + e.getMessage();
+                Log.d(TAG, text);
+            }
+        });
+    }
+
+    private void checkPermission() {
+        if (ContextCompat.checkSelfPermission(DescompressaoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ActivityCompat.requestPermissions(DescompressaoActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 42);
+        try {
+            int locationMode = Settings.Secure.getInt(getContentResolver(), Settings.Secure.LOCATION_MODE);
+            if (locationMode != Settings.Secure.LOCATION_MODE_HIGH_ACCURACY)
+                Log.e(TAG, "Error: high accuracy location mode must be enabled in the device.");
+        } catch (Settings.SettingNotFoundException e) {
+            Log.e(TAG, "Error: could not access location mode" + e);
+        }
     }
 
     @Override

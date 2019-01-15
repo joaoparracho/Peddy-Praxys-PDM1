@@ -67,13 +67,13 @@ public class CloudTextRecognitionProcessor extends VisionProcessorBase<FirebaseV
             for (int j = 0; j < lines.size(); j++) {
                 List<FirebaseVisionText.Element> elements = lines.get(j).getElements();
                 for (int l = 0; l < elements.size(); l++) {
-                    if (elements.get(l).getText().equals("CRIATIVIDADE") || elements.get(l).getText().equals("CRIATIVIDADE!")) Singleton.getInstance().setShowFinishBtn(true);
+                    if (elements.get(l).getText().equals("CRIATIVIDADE") || elements.get(l).getText().equals("CRIATIVIDADE!")) Singleton.getInstance().setCriatividade(true);
                     CloudTextGraphic cloudTextGraphic = new CloudTextGraphic(graphicOverlay, elements.get(l));
                     graphicOverlay.add(cloudTextGraphic);
                 }
             }
         }
-        if (Singleton.getInstance().isShowFinishBtn()) {
+        if (Singleton.getInstance().isCriatividade()) {
             Message message = BibliotecaActivity.mHandler.obtainMessage();
             Bundle bundle = new Bundle();
             bundle.putString("FEEDBACK", text.getText());
