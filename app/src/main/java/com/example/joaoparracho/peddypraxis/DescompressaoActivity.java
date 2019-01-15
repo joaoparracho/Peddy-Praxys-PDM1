@@ -62,7 +62,7 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
     private FenceReceiver fenceReceiver;
     private PendingIntent myPendingIntent;
     private TextView timeTextView;
-    private long startMillis = 10000; // 60 * 10000
+    private long startMillis = 60 * 10000;
     private long mTimeInMillis = startMillis;
     private CountDownTimer2 m2;
     private boolean pauseCounterOnce;

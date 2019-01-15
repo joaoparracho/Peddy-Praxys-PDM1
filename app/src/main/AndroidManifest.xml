@@ -42,16 +42,36 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".PasswordActivity" />
-        <activity android:name=".UserProfileActivity" />
-        <activity android:name=".GameScreenActivity" />
-        <activity android:name=".PreambuloActivity" />
-        <activity android:name=".PatioActivity" />
-        <activity android:name=".EdificioActivity" />
-        <activity android:name=".BibliotecaActivity" />
-        <activity android:name=".CorridaActivity" />
-        <activity android:name=".PerguntaActivity" />
-        <activity android:name=".DescompressaoActivity" />
+        <activity
+            android:name=".PasswordActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UserProfileActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".GameScreenActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".PreambuloActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".PatioActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".EdificioActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".BibliotecaActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".CorridaActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".PerguntaActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".DescompressaoActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

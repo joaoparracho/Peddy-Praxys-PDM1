@@ -59,7 +59,7 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
     private CameraSourcePreview preview;
     private GraphicOverlay graphicOverlay;
     private TextView mTextViewCountDown;
-    private long mTimeInMillis = 60 * 100;
+    private long mTimeInMillis = 60 * 1000 * 5;
     private boolean pauseCounterOnce;
     private int counterDelay;
     private boolean checkWarning;
