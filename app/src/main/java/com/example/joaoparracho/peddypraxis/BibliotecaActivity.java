@@ -55,9 +55,7 @@ public class BibliotecaActivity extends AppCompatActivity implements GoogleApiCl
     private ImageView preview;
     private GraphicOverlay graphicOverlay;
     private Uri imageUri;
-    // Max width (portrait mode)
     private Integer imageMaxWidth;
-    // Max height (portrait mode)
     private Integer imageMaxHeight;
     private VisionImageProcessor imageProcessor;
     private String selectedSize = SIZE_PREVIEW;

@@ -156,7 +156,7 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
                 break;
             case "finishGameKey":
                 titlePreamTextV.setText("Game Finished");
-                if (Singleton.getInstance().getNumTasksComplete() == numTask) {
+                if (Singleton.getInstance().getNumTasksComplete() >= numTask) {
                     finishTime = System.currentTimeMillis() - Singleton.getInstance().getStartTime();
                     int min = (int) (((finishTime) / 1000) % 3600) / 60;
                     int sec = (int) (finishTime / 1000) % 60;
@@ -171,7 +171,7 @@ public class PreambuloActivity extends AppCompatActivity implements GoogleApiCli
                         Singleton.getInstance().getCurrentUser().setMelhorTempo(finishTime);
                     }
                 } else
-                    preambTextV.setText(getString(R.string.finTime) + Singleton.getInstance().getNumTasksComplete() + getString(R.string.numTask));
+                    preambTextV.setText(getString(R.string.finTime) + numTask + getString(R.string.numTask));
 
                 btnPream.setText(getString(R.string.returnGmMn));
                 sendData();

@@ -25,7 +25,7 @@ import java.util.Locale;
 public class CorridaActivity extends AppCompatActivity {
     private static final String TAG = "CorridaActivity";
     private TextView timeTextView;
-    private long mTimeInMillis = 60 * 1000;
+    private long mTimeInMillis = 60 * 1000 * 5;
     private CountDownTimer2 m2;
 
     @Override

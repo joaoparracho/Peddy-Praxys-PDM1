@@ -7,7 +7,7 @@
     <string name="biblioteca">The Library</string>
     <string name="preambBiblioteca">The José Saramago Library is perhaps the most emblematic of Campus 2 buildings. Any self-respecting e-Godfather should motivate his freshman to acclimatize to this temple of knowledge.\nFreshman, for goodness sake, go to the Library!\n\nTask: The José Saramago Library is an area of ​​Culture, Knowledge and …? </string>
     <string name="descompressao">Decompression</string>
-    <string name="preambDescompressao">Being \"praxado\" is a lot of fun, but in the end you have to go back to the real world … \n The freshman should carry out an outdoor meditation session that allows him to relax so that you can go back to class calm and focused.\nFreshman, for goodness sake, head out to the courtyard in front of the bar of Building A!\n\nTask: The freshman must be seated for 10 minutes, in the courtyard of the Building A, with the phone on your lap with the screen facing down (it s for relaxing!). If it is raining the freshman can fulfill this task in one of the 3 points of interest near the place where it is.</string>
+    <string name="preambDescompressao">Being \"praxado\" is a lot of fun, but in the end you have to go back to the real world … \n The freshman should carry out an outdoor meditation session that allows him to relax so that you can go back to class calm and focused.\nFreshman, for goodness sake, head out to the courtyard in front of the bar of Building A!\n\nTask: The freshman must be seated for 10 minutes, in the courtyard of the Building A, with the phone on your lap with the screen facing down (it s for relaxing!).\nIf it is raining the freshman can fulfill this task in one of the 3 points of interest near the place where it is.</string>
     <string name="RegSuc">Registered successfully</string>
     <string name="RegFail">Failed registration:</string>
     <string name="EmpPass">User password can not be empty</string>    
@@ -41,8 +41,8 @@
     <string name="fnshGameInTime">Good Freshman! You have completed everything in</string> 
     <string name="min">minutes and </string> 
     <string name="sec">seconds </string>
-    <string name="finTime">Unfortunately the time is up! You just completed </string>
-    <string name="numTask"> tasks</string>
+    <string name="finTime">"Unfortunately the time is up! You just completed "</string>
+    <string name="numTask">" tasks"</string>
     <string name="returnGmMn">Back Game Menu</string>    
     <string name="goPatA">Freshman, head for the courtyard of A</string>    
     <string name="goRotA">Freshman, go to the roundabout near the A</string>    
@@ -106,7 +106,9 @@
     <string name="estarNoPatA">You have to be at the courtyard of A!</string>
     <string name="errado">Wrong!</string>
     <string name="descEdificios">The freshman has to take a picture of something that identifies each of the four buildings. Clue: \"Edifício X\"</string>
-    <string name="preambPergunta">QQ COISA, JÁ VAI!</string>
+    <string name="preambPergunta">We all know that the calorie is ignoble, a rhombus, a being of little cognitive and penetrating capacity, so the need arises to ask you a great and important question, which you must answer correctly.\nFreshman, for goodness sake, head out to the courtyard in front of the bar of Building A!\n\nTask: The freshman has to find out the question through QR Codes scattered around the courtyard. In the end you have to answer it correctly.</string>
     <string name="linguagem">Language</string>
-    <string name="descPergunta">Já vai</string>
+    <string name="descPergunta">The freshman has to find out the question through QR Codes scattered around the courtyard. In the end you have to answer it correctly.</string>
+    <string name="nao">No</string>
+    <string name="logout">Logout</string>
 </resources>

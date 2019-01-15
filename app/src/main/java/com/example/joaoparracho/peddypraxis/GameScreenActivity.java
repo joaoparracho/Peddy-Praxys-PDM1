@@ -92,26 +92,25 @@ public class GameScreenActivity extends AppCompatActivity {
     }
 
     public void showLogoutDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("Logout")
-                .setMessage(R.string.qstnLog)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        firebaseAuth.signOut();
-                        finish();
-                        Intent i = new Intent(GameScreenActivity.this, LoginActivity.class);
-                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(i);
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(GameScreenActivity.this, getString(R.string.lestPlay), Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .create().show();
+
+        SpannableStringBuilder ssBuilder = new SpannableStringBuilder(getString(R.string.logout));
+        ssBuilder.setSpan(new ForegroundColorSpan(Color.RED), 0, getString(R.string.logout).length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        new AlertDialog.Builder(this).setTitle(ssBuilder).setMessage(R.string.qstnLog).setPositiveButton(R.string.sim, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                firebaseAuth.signOut();
+                finish();
+                Intent i = new Intent(GameScreenActivity.this, LoginActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+            }
+        }).setNegativeButton(R.string.nao, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(GameScreenActivity.this, getString(R.string.lestPlay), Toast.LENGTH_SHORT).show();
+            }
+        }).create().show();
     }
 
     private void sendData() {
@@ -128,62 +127,38 @@ public class GameScreenActivity extends AppCompatActivity {
     }
 
     public void showDescription() {
-        float precVit=0;
-        int sec=0;
-        int min=0;
-        if(Singleton.getInstance().getCurrentUser().getNumJogosTerm()!=0) {
+        float precVit = 0;
+        int sec = 0;
+        int min = 0;
+        if (Singleton.getInstance().getCurrentUser().getNumJogosTerm() != 0) {
             precVit = (Singleton.getInstance().getCurrentUser().getNumJogosTerm() * 100) / (Singleton.getInstance().getCurrentUser().getNumJogosInic());
             min = (int) (((Singleton.getInstance().getCurrentUser().getMelhorTempo()) / 1000) % 3600) / 60;
             sec = (int) (Singleton.getInstance().getCurrentUser().getMelhorTempo() / 1000) % 60;
         }
 
-        ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(Color.RED);
         SpannableStringBuilder ssBuilder = new SpannableStringBuilder(getString(R.string.estatiTitle));
+        ssBuilder.setSpan(new ForegroundColorSpan(Color.RED), 0, getString(R.string.estatiTitle).length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        // Apply the text color span
-        ssBuilder.setSpan(
-                foregroundColorSpan,
-                0,
-                getString(R.string.estatiTitle).length(),
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-        );
-
-        new AlertDialog.Builder(this)
-                .setTitle(ssBuilder)
-                .setMessage(getString(R.string.name) + Singleton.getInstance().getCurrentUser().getName()
-                        +"\n"+getString(R.string.age) + Singleton.getInstance().getCurrentUser().getIdade()
-                        +"\n"+getString(R.string.bestTime) + min + ":" + sec
-                        +"\n"+getString(R.string.numGameStr) + Singleton.getInstance().getCurrentUser().getNumJogosInic()
-                        +"\n"+getString(R.string.finishGame) + Singleton.getInstance().getCurrentUser().getNumJogosTerm()
-                        +"\n"+getString(R.string.percVict) + precVit+"%")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .create().show();
+        new AlertDialog.Builder(this).setTitle(ssBuilder).setMessage(getString(R.string.name) + Singleton.getInstance().getCurrentUser().getName()
+                + "\n" + getString(R.string.age) + Singleton.getInstance().getCurrentUser().getIdade()
+                + "\n" + getString(R.string.bestTime) + min + ":" + sec
+                + "\n" + getString(R.string.numGameStr) + Singleton.getInstance().getCurrentUser().getNumJogosInic()
+                + "\n" + getString(R.string.finishGame) + Singleton.getInstance().getCurrentUser().getNumJogosTerm()
+                + "\n" + getString(R.string.percVict) + precVit + "%").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        }).create().show();
     }
 
     public void showDialogScoreboard(String scoreboard) {
-        ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(Color.RED);
         SpannableStringBuilder ssBuilder = new SpannableStringBuilder("Ranking");
-
-        // Apply the text color span
-        ssBuilder.setSpan(
-                foregroundColorSpan,
-                0,
-               7,
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-        );
-        new AlertDialog.Builder(this)
-                .setTitle(ssBuilder)
-                .setMessage(scoreboard)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .create().show();
+        ssBuilder.setSpan(new ForegroundColorSpan(Color.RED), 0, 7, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        new AlertDialog.Builder(this).setTitle(ssBuilder).setMessage(scoreboard).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        }).create().show();
     }
 
     public void verifyPrvInfo() {
@@ -197,7 +172,7 @@ public class GameScreenActivity extends AppCompatActivity {
                     Utilizador uInfo = new Utilizador();
                     uInfo.setName(ds.getValue(Utilizador.class).getName());
                     uInfo.setMelhorTempo(ds.getValue(Utilizador.class).getMelhorTempo());
-                    if(uInfo.getMelhorTempo()!=0) {
+                    if (uInfo.getMelhorTempo() != 0) {
                         users.add(uInfo);
                     }
                     //display all the information
@@ -214,6 +189,7 @@ public class GameScreenActivity extends AppCompatActivity {
                 }
                 showDialogScoreboard(sb.toString());
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }

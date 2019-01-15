@@ -8,7 +8,7 @@
     <string name="biblioteca">A Biblioteca</string>
     <string name="preambBiblioteca">A Biblioteca José Saramago é talvez, o mais emblemático dos edifícios do Campus 2. Qualquer e-Padrinho que se preze deve motivar o seu caloiro a aclimatar-se a este templo de saber.\nCaloiro, por obséquio, dirija-se para a Biblioteca!\n\nTarefa: A Biblioteca José Saramago é um espaço de Cultura, Conhecimento e …?</string>
     <string name="descompressao">Descompressão</string>
-    <string name="preambDescompressao">Ser praxado é muito divertido mas, no fim, há que regressar ao mundo real…\n O caloiro deve levar a cabo uma sessão de meditação ao ar livre que lhe permita relaxar de forma a que possa regressar às aulas calmo e concentrado.\nCaloiro, por obséquio, dirija-se para o pátio em frente ao bar do Edifício A!\n\nTarefa:O caloiro tem de estar sentado durante 10 minutos, no pátio do ed. A, com o telemóvel pousado no colo com o ecrã virado para baixo (é para relaxar!). Se estiver a chover o caloiro pode cumprir esta tarefa num dos 3 pontos de interesse mais próximos do local onde se encontra.</string>
+    <string name="preambDescompressao">Ser praxado é muito divertido mas, no fim, há que regressar ao mundo real…\n O caloiro deve levar a cabo uma sessão de meditação ao ar livre que lhe permita relaxar de forma a que possa regressar às aulas calmo e concentrado.\nCaloiro, por obséquio, dirija-se para o pátio em frente ao bar do Edifício A!\n\nTarefa:O caloiro tem de estar sentado durante 10 minutos, no pátio do ed. A, com o telemóvel pousado no colo com o ecrã virado para baixo (é para relaxar!).\nSe estiver a chover o caloiro pode cumprir esta tarefa num dos 3 pontos de interesse mais próximos do local onde se encontra.</string>
     <string name="RegSuc">Resgistado com sucesso</string>
     <string name="RegFail">Registo falhado:</string>
     <string name="EmpPass">Password do Utilizador não pode estar vazia</string>
@@ -35,9 +35,9 @@
     <string name="passResSnt">Email com reset password enviado</string>
     <string name="errEmailRstPass">Erro ao enviar o email de reset de password</string>  
     <string name="corrida">Corrida</string>  
-    <string name="preambCorrida">O caloiro tem 1 minuto para se deslocar ate ao patio do A. Comece na ESSLei.</string>  
+    <string name="preambCorrida">O caloiro tem 1 minuto para se deslocar ate ao pátio do A. Comece na ESSLei.</string>  
     <string name="pergunta">A pergunta</string>  
-    <string name="preambPergunta">Todos sabemos que o calorio é ignóbil, um rombo, um ser de pouca capacidade cognitiva e penetrante, pelo que surge a necessidade de lhe fazer uma grande e importante pergunta, a qual deve responder corretamente. Caloiro, por obséquio, dirija-se para o pátio em frente ao bar do Edifício A!  Tarefa:O caloiro tem de descobrir a pergunta através de QR Codes espalhados pelo pátio. No final tem de respondar corretamente a esta.</string>  
+    <string name="preambPergunta">Todos sabemos que o calorio é ignóbil, um rombo, um ser de pouca capacidade cognitiva e penetrante, pelo que surge a necessidade de lhe fazer uma grande e importante pergunta, a qual deve responder corretamente.\n\nCaloiro, por obséquio, dirija-se para o pátio em frente ao bar do Edifício A!  Tarefa:O caloiro tem de descobrir a pergunta através de QR Codes espalhados pelo pátio. No final tem de respondar corretamente a esta.</string>  
     <string name="resposta">Resposta?</string>  
     <string name="fnsGame1h">Boa Caloiro! Conseguiste concluir tudo em 1 hora, mesmo por pouco!</string>
     <string name="fnshGameInTime">Boa Caloiro! Conseguiste concluir tudo em</string>
@@ -96,8 +96,8 @@
     <string name="sim">Sim</string>
     <string name="OK">OK</string>
     <string name="descEdificios">O caloiro tem ir junto de todos os edifícios e confirmar que se encontra perto deles ao mostrar com a câmara \"Edifício X\"</string>
-    <string name="ediErrado">Ediífio errado!</string>
-    <string name="ediEncontrado">"Encontrou o ediífio "</string>
+    <string name="ediErrado">Edifício errado!</string>
+    <string name="ediEncontrado">"Encontrou o edifício "</string>
     <string name="ediFalta">Faltam os edifícios:</string>
     <string name="qrErrado">QR Code errado!</string>
     <string name="qual">"Qual "</string>
@@ -110,4 +110,6 @@
     <string name="dentroBiblio">Tens de estar dentro da Biblioteca</string>
     <string name="linguagem">Linguagem</string>
     <string name="descPergunta">O caloiro tem de descobrir a pergunta através de QR Codes espalhados pelo pátio. No final tem de respondar corretamente a esta.</string>
+    <string name="nao">Não</string>
+    <string name="logout">Terminar sessão</string>
 </resources>
