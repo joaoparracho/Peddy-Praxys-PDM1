@@ -52,15 +52,11 @@ public class PerguntaActivity extends AppCompatActivity implements ActivityCompa
 
     private static final String TAG = "PerguntaActivity";
     private static final String FEEDBACK = "FEEDBACK";
-    private static final String FENCE_RECEIVER_ACTION = "FENCE_RECEIVER_ACTION";
     public static Handler mHandler;
     private CameraSource cameraSource = null;
     private CameraSourcePreview preview;
     private GraphicOverlay graphicOverlay;
     private TextView textViewQRCode;
-    private GoogleApiClient mGoogleApiClient;
-    private FenceReceiver fenceReceiver;
-    private PendingIntent myPendingIntent;
     private boolean[] palavras = {false, false, false, false};
     private String tempString = "";
     private boolean completa = true;
@@ -77,13 +73,6 @@ public class PerguntaActivity extends AppCompatActivity implements ActivityCompa
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_pergunta);
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(Places.GEO_DATA_API).addApi(Places.PLACE_DETECTION_API).enableAutoManage(this, this).build();
-
-        Intent intent = new Intent(FENCE_RECEIVER_ACTION);
-        myPendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-        fenceReceiver = new FenceReceiver();
-        registerReceiver(fenceReceiver, new IntentFilter(FENCE_RECEIVER_ACTION));
 
         textViewQRCode = findViewById(R.id.tVInfo);
 
@@ -143,15 +132,6 @@ public class PerguntaActivity extends AppCompatActivity implements ActivityCompa
             }
         });
     }
-
-//    public void onClickActivity(View view) {
-//        queryFences();
-//        new AlertDialog.Builder(PerguntaActivity.this).setTitle("Fences").setMessage(text2).setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//            }
-//        }).create().show();
-//    }
 
     public void onClickShowPreamb(MenuItem item) {
         new AlertDialog.Builder(this).setTitle(R.string.pergunta).setMessage(getString(R.string.descPergunta)).setPositiveButton("OK", new DialogInterface.OnClickListener() {

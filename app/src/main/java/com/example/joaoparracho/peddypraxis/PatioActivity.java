@@ -57,16 +57,13 @@ import java.util.Locale;
 @KeepName
 public final class PatioActivity extends AppCompatActivity implements OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "PatioActivity";
-    private static final String FENCE_RECEIVER_ACTION = "FENCE_RECEIVER_ACTION";
     public static Handler mHandler;
     CountDownTimer2 m1;
     private CameraSource cameraSource = null;
     private CameraSourcePreview preview;
     private GraphicOverlay graphicOverlay;
     private TextView mTextViewCountDown;
-    private GoogleApiClient mGoogleApiClient;
-    private FenceReceiver fenceReceiver;
-    private PendingIntent myPendingIntent;
+    //private GoogleApiClient mGoogleApiClient;
     private long mTimeInMillis = 60 * 100;
     private boolean pauseCounterOnce;
     private int counterDelay;
@@ -84,13 +81,6 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_patio);
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(Places.GEO_DATA_API).addApi(Places.PLACE_DETECTION_API).enableAutoManage(this, this).build();
-
-        Intent intent = new Intent(FENCE_RECEIVER_ACTION);
-        myPendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-        fenceReceiver = new FenceReceiver();
-        registerReceiver(fenceReceiver, new IntentFilter(FENCE_RECEIVER_ACTION));
 
         mTextViewCountDown = findViewById(R.id.tVInfo);
         m1 = new CountDownTimer2(mTimeInMillis, 1000) {
@@ -143,39 +133,6 @@ public final class PatioActivity extends AppCompatActivity implements OnRequestP
         return String.format(Locale.getDefault(), "%02d:%02d", ((mTimeInMillis / 1000) % 3600) / 60, (mTimeInMillis / 1000) % 60);
     }
 
-//    private String updateCountDownText() {
-//        String timeLeftFormatted;
-//        int hours = (int) (mTimeInMillis / 1000) / 3600;
-//        int minutes = (int) ((mTimeInMillis / 1000) % 3600) / 60;
-//        int seconds = (int) (mTimeInMillis / 1000) % 60;
-//        int a, b;
-//
-//        a = Singleton.getInstance().isFenceBool() ? 1 : 0;
-//        b = Singleton.getInstance().isWalkingBool() ? 1 : 0;
-//
-//        if (hours > 0) {
-//            if (Singleton.getInstance().getFd()) timeLeftFormatted = String.format(Locale.getDefault(), "%d:%02d:%02d-TRUE %d %d %d", hours, minutes, seconds, counterDelay, a, b);
-//            else timeLeftFormatted = String.format(Locale.getDefault(), "%d:%02d:%02d--FALSE %d %d %d", hours, minutes, seconds, counterDelay, a, b);
-//        } else {
-//            if (Singleton.getInstance().getFd()) timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d---TRUE %d %d %d", minutes, seconds, counterDelay, a, b);
-//            else timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d--FALSE %d %d %d", minutes, seconds, counterDelay, a, b);
-//        }
-//        return timeLeftFormatted;
-//    }
-
-//    public void onClickActivity(View view) {
-//        //printLocation();
-//        queryFences();
-//        new AlertDialog.Builder(PatioActivity.this)
-//                .setTitle("Fences")
-//                .setMessage(text2)
-//                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                    }
-//                })
-//                .create().show();
-//    }
 
     public void onClickShowPreamb(MenuItem item) {
         new AlertDialog.Builder(this)

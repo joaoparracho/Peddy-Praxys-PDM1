@@ -14,7 +14,6 @@ public class Game implements Serializable {
     private int duration;
     private Calendar dataUltimaAlteracao;
     private String autor;
-    private ArrayList<Task> tasks = new ArrayList<>();
 
     public Game(String title, String description, String authors, int duration) {
         this.gameTitle = title;
@@ -46,14 +45,6 @@ public class Game implements Serializable {
 
     public void setDuration(int duration) {
         this.duration = duration;
-    }
-
-    public ArrayList<Task> getTasks() {
-        return tasks;
-    }
-
-    public void setTasks(ArrayList<Task> tasks) {
-        this.tasks = tasks;
     }
 
     public String getAutor() {

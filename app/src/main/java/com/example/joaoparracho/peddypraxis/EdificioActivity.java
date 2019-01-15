@@ -48,15 +48,11 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
 
     private static final String TAG = "EdificioActivity";
     private static final String FEEDBACK = "FEEDBACK";
-    private static final String FENCE_RECEIVER_ACTION = "FENCE_RECEIVER_ACTION";
     public static Handler mHandler;
     private CameraSource cameraSource = null;
     private CameraSourcePreview preview;
     private GraphicOverlay graphicOverlay;
     private TextView textViewEdificio;
-    private GoogleApiClient mGoogleApiClient;
-    private FenceReceiver fenceReceiver;
-    private PendingIntent myPendingIntent;
     private String edificios;
     private String tempString = " ";
     private boolean completa = true;
@@ -75,13 +71,6 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
         setContentView(R.layout.activity_edificio);
         edificios = getString(R.string.ediFalta);
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(Places.GEO_DATA_API).addApi(Places.PLACE_DETECTION_API).enableAutoManage(this, this).build();
-
-      /*  Intent intent = new Intent(FENCE_RECEIVER_ACTION);
-        myPendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-        fenceReceiver = new FenceReceiver();
-        registerReceiver(fenceReceiver, new IntentFilter(FENCE_RECEIVER_ACTION));
-*/
         textViewEdificio = findViewById(R.id.tVInfo);
         tempString = " ";
         for (int i = 0; i < 5; i++) if (Singleton.getInstance().getFaltaEdificios(i)) tempString += ((char) (65 + i)) + " ";
@@ -126,28 +115,6 @@ public class EdificioActivity extends AppCompatActivity implements ActivityCompa
             }
         };
     }
-
-//    public void onClickActivity(View view) {
-//        tempString = " ";
-//        for (int i = 0; i < 5; i++) {
-//            Singleton.getInstance().setFaltaEdificios(i, true);
-//            tempString += ((char) (65 + i)) + " ";
-//        }
-//        textViewEdificio.setText(edificios + tempString);
-//    }
-//
-//    public void onClickFence(View view) {
-//        queryFences();
-//        new AlertDialog.Builder(EdificioActivity.this)
-//                .setTitle("Fences")
-//                .setMessage(text2)
-//                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                    }
-//                })
-//                .create().show();
-//    }
 
     public void onClickShowPreamb(MenuItem item) {
         new AlertDialog.Builder(this)

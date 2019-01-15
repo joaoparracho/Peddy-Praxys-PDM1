@@ -64,7 +64,6 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
     private PendingIntent myPendingIntent;
     private GoogleApiClient mGoogleApiClient;
     private TextView timeTextView;
-    //    private long startMillis = 60 * 10000;
     private long startMillis = 10000;
     private long mTimeInMillis = startMillis;
     private CountDownTimer2 m2;
@@ -117,8 +116,6 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
                                 Log.e(TAG, "weatherSnap: Could not get Weather: " + e);
                             }
                         });
-                if (Singleton.getInstance().isFenceBool()) bRain = true;
-                if (Singleton.getInstance().isNearbyBool()) bRain = false;
                 if (!bRain && bFaceDown && (Singleton.getInstance().isFenceBool() || Singleton.getInstance().isNearbyBool()) && bCheck) {
                     if (m2.ismPaused()) {
                         m2.cancel();
@@ -186,12 +183,6 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
                         for (int i = 0; i < (pll.size() < 3 ? pll.size() : 3); i++) {
                             PlaceLikelihood pl = pll.get(i);
                             plText += "\t#" + (i + 1) + ": " + pl.getPlace().getName().toString() + "\n";
-//                                    + "\n\tlikelihood: " + pl.getLikelihood()
-//                                    + "\n\taddress: " + pl.getPlace().getAddress()
-//                                    + "\n\tlocation: " + pl.getPlace().getLatLng()
-//                                    + "\n\twebsite: " + pl.getPlace().getWebsiteUri()
-//                                    + "\n\tplaceTypes: " + pl.getPlace().getPlaceTypes()
-//                                    + "\t" + printPlaceTypes(pl.getPlace().getPlaceTypes()) + "\n";
                         }
                         setupNearbyFences(pll.get(0).getPlace().getLatLng().latitude, pll.get(0).getPlace().getLatLng().longitude,
                                 pll.get(1).getPlace().getLatLng().latitude, pll.get(1).getPlace().getLatLng().longitude,
@@ -259,7 +250,6 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
                 });
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -281,7 +271,9 @@ public class DescompressaoActivity extends AppCompatActivity implements SensorEv
     public void onSensorChanged(SensorEvent sensorEvent) {
         bFaceDown = sensorEvent.values[2] < -9.5;
         if (!bFaceDown) {
-            mTimeInMillis = startMillis;
+            mTimeInMillis =startMillis;
+            m2.cancel();
+            m2.start();
             timeTextView.setText(updateCountDownText());
         }
     }
